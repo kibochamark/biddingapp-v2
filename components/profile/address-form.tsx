@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Address } from "@/lib/types";
-import { createAddress, updateAddress } from "@/lib/api/addresses";
+import { apiFetchClient } from "@/lib/api";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 interface AddressFormProps {
   userId: string;
@@ -18,6 +19,7 @@ export default function AddressForm({
   onCancel,
 }: AddressFormProps) {
   const [loading, setLoading] = useState(false);
+  const { getAccessTokenRaw } = useKindeBrowserClient();
   const [formData, setFormData] = useState({
     recipientName: initialData?.recipientName || "",
     street: initialData?.street || "",
@@ -34,16 +36,29 @@ export default function AddressForm({
     setLoading(true);
 
     try {
+      const accessToken = getAccessTokenRaw();
+      if (!accessToken) throw new Error("Not authenticated");
+
       let savedAddress: Address;
 
       if (initialData) {
         // Update existing address
-        savedAddress = await updateAddress(initialData.id, formData);
+        savedAddress = await apiFetchClient<Address>(
+          `/addresses/${initialData.id}`,
+          accessToken,
+          {
+            method: "PUT",
+            body: JSON.stringify(formData),
+          }
+        );
       } else {
         // Create new address
-        savedAddress = await createAddress({
-          ...formData,
-          userId,
+        savedAddress = await apiFetchClient<Address>(`/addresses`, accessToken, {
+          method: "POST",
+          body: JSON.stringify({
+            ...formData,
+            userId,
+          }),
         });
       }
 

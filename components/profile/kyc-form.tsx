@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { Upload, X } from "lucide-react";
 import { KYCVerification } from "@/lib/types";
-import { submitKYC, uploadKYCDocument } from "@/lib/api/kyc";
+import { apiFetchClient } from "@/lib/api";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 interface KYCFormProps {
   userId: string;
@@ -14,6 +15,7 @@ interface KYCFormProps {
 export default function KYCForm({ userId, onSuccess, onCancel }: KYCFormProps) {
   const [loading, setLoading] = useState(false);
   const [uploadingDoc, setUploadingDoc] = useState<string | null>(null);
+  const { getAccessTokenRaw } = useKindeBrowserClient();
   const [formData, setFormData] = useState({
     fullName: "",
     dateOfBirth: "",
@@ -34,8 +36,30 @@ export default function KYCForm({ userId, onSuccess, onCancel }: KYCFormProps) {
   ) => {
     setUploadingDoc(documentType);
     try {
-      const url = await uploadKYCDocument(file, documentType);
-      setFormData({ ...formData, [fieldName]: url });
+      const accessToken = getAccessTokenRaw();
+      if (!accessToken) throw new Error("Not authenticated");
+
+      const formDataUpload = new FormData();
+      formDataUpload.append("file", file);
+      formDataUpload.append("documentType", documentType);
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/kyc/upload`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: formDataUpload,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      setFormData({ ...formData, [fieldName]: data.url });
     } catch (error) {
       alert("Failed to upload document. Please try again.");
     } finally {
@@ -54,10 +78,20 @@ export default function KYCForm({ userId, onSuccess, onCancel }: KYCFormProps) {
 
     setLoading(true);
     try {
-      const verification = await submitKYC({
-        userId,
-        ...formData,
-      });
+      const accessToken = getAccessTokenRaw();
+      if (!accessToken) throw new Error("Not authenticated");
+
+      const verification = await apiFetchClient<KYCVerification>(
+        `/kyc`,
+        accessToken,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            userId,
+            ...formData,
+          }),
+        }
+      );
       onSuccess(verification);
     } catch (error) {
       alert("Failed to submit verification. Please try again.");
@@ -228,7 +262,7 @@ export default function KYCForm({ userId, onSuccess, onCancel }: KYCFormProps) {
         {formData.idType !== "passport" && (
           <div>
             <label className="block text-sm font-medium mb-2">
-              ID Back Image {formData.idType !== "passport" && "*"}
+              ID Back Image *
             </label>
             <div className="relative">
               {formData.idBackImage ? (

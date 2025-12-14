@@ -17,22 +17,28 @@ interface ProfileClientProps {
   addresses: Address[];
   kycStatus: KYCVerification | null;
   userId: string;
+  user: {
+    name: string;
+    email: string;
+    picture: string | null;
+  };
 }
 
 export default function ProfileClient({
   addresses,
   kycStatus,
   userId,
+  user,
 }: ProfileClientProps) {
   const [activeTab, setActiveTab] = useState<
     "profile" | "addresses" | "kyc" | "bids" | "listings"
   >("profile");
 
-  // Mock user data (will be replaced with actual auth data)
-  const user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    joinedDate: "January 2024",
+  const userProfile = {
+    name: user.name,
+    email: user.email,
+    picture: user.picture,
+    joinedDate: "January 2024", // This could be fetched from user metadata if needed
     verified: kycStatus?.status === "APPROVED",
   };
 
@@ -86,7 +92,7 @@ export default function ProfileClient({
                     </label>
                     <input
                       type="text"
-                      defaultValue={user.name}
+                      defaultValue={userProfile.name}
                       className="w-full px-4 py-2 border border-input rounded-lg bg-background"
                     />
                   </div>
@@ -96,7 +102,7 @@ export default function ProfileClient({
                     </label>
                     <input
                       type="email"
-                      defaultValue={user.email}
+                      defaultValue={userProfile.email}
                       className="w-full px-4 py-2 border border-input rounded-lg bg-background"
                       disabled
                     />
@@ -122,7 +128,7 @@ export default function ProfileClient({
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Member since</span>
-                    <span className="font-medium">{user.joinedDate}</span>
+                    <span className="font-medium">{userProfile.joinedDate}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">
@@ -130,10 +136,10 @@ export default function ProfileClient({
                     </span>
                     <span
                       className={`font-medium ${
-                        user.verified ? "text-green-600" : "text-yellow-600"
+                        userProfile.verified ? "text-green-600" : "text-yellow-600"
                       }`}
                     >
-                      {user.verified ? "Verified" : "Not Verified"}
+                      {userProfile.verified ? "Verified" : "Not Verified"}
                     </span>
                   </div>
                 </div>

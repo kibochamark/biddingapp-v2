@@ -1,24 +1,44 @@
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import ProfileClient from "./profile-client";
 import { fetchUserAddresses } from "@/lib/api/addresses";
 import { fetchKYCStatus } from "@/lib/api/kyc";
 import { ProfileSkeleton } from "@/components/loading-skeleton";
 
-// Dummy user ID for development (will be replaced with actual Kinde auth)
-const DUMMY_USER_ID = "dummy_kinde_user_123";
-
 async function ProfileContent() {
-  // Fetch user data in parallel
+  const { isAuthenticated, getUser, getAccessTokenRaw } = getKindeServerSession();
+
+  // Check if user is authenticated
+  const authenticated = await isAuthenticated();
+  if (!authenticated) {
+    redirect("/api/auth/login");
+  }
+
+  // Get user data and access token
+  const user = await getUser();
+  const accessToken = await getAccessTokenRaw();
+
+  if (!user?.id || !accessToken) {
+    redirect("/api/auth/login");
+  }
+
+  // Fetch user data in parallel with access token for authorization
   const [addresses, kycStatus] = await Promise.all([
-    fetchUserAddresses(DUMMY_USER_ID),
-    fetchKYCStatus(DUMMY_USER_ID),
+    fetchUserAddresses(user.id).catch(() => []),
+    fetchKYCStatus(user.id).catch(() => null),
   ]);
 
   return (
     <ProfileClient
       addresses={addresses}
       kycStatus={kycStatus}
-      userId={DUMMY_USER_ID}
+      userId={user.id}
+      user={{
+        name: `${user.given_name || ""} ${user.family_name || ""}`.trim() || "User",
+        email: user.email || "",
+        picture: user.picture || null,
+      }}
     />
   );
 }

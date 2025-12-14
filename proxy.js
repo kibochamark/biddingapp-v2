@@ -1,0 +1,44 @@
+
+import {withAuth} from "@kinde-oss/kinde-auth-nextjs/middleware";
+import { NextResponse } from "next/server";
+
+const publicroutes = ["/", "/catalog", "/product"];
+
+
+const apiAuthPrefix = "/api/auth";
+
+const DEFAULT_LOGIN_REDIRECT = "/";
+
+
+
+export default function proxy(req) {
+    const { nextUrl } = req;
+    const isauthenticated = !!req.auth
+
+
+  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
+  const isPublicRoute = publicroutes.includes(nextUrl.pathname);
+
+
+  if (isApiAuthRoute) {
+    if (isauthenticated){
+        return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, req.url));
+    }
+    return null;
+  }
+
+  if (isPublicRoute) {
+    return null;
+  }
+
+  return withAuth(req, {
+    isReturnToCurrentPage: true
+  });
+}
+
+
+
+
+export const config = {
+  matcher: ["/(api|trpc)(.*)", "/", "/:path*", "/catalog", "/product/:path*"],
+};

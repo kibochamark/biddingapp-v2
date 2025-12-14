@@ -1,7 +1,7 @@
 // Type definitions based on API documentation
 
 export type ProductCondition = "NEW" | "LIKE_NEW" | "GOOD" | "FAIR" | "POOR";
-export type KycStatus = "PENDING" | "APPROVED" | "REJECTED";
+export type KycStatus = "NOT_SUBMITTED" | "PENDING" | "APPROVED" | "REJECTED";
 
 export interface Category {
   id: string;
@@ -47,14 +47,17 @@ export interface Account {
 
 export interface Address {
   id: string;
-  accountId: string;
-  label?: string;
+  userId: string;
+  recipientName: string;
+  phone: string;
   street: string;
   city: string;
+  state: string;
   zipCode: string;
   country: string;
-  createdAt: Date;
-  updatedAt: Date;
+  isDefault: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface KYC {
@@ -67,6 +70,28 @@ export interface KYC {
   reviewedBy?: string;
   submittedAt: Date;
   reviewedAt?: Date;
+}
+
+// Extended KYC type for verification forms
+export interface KYCVerification {
+  id?: string;
+  userId: string;
+  status: KycStatus;
+  fullName?: string;
+  dateOfBirth?: string;
+  nationality?: string;
+  idType?: "passport" | "drivers_license" | "national_id";
+  idNumber?: string;
+  idExpiryDate?: string;
+  idFrontImage?: string;
+  idBackImage?: string;
+  selfieImage?: string;
+  addressProofImage?: string;
+  rejectionReason?: string;
+  submittedAt?: string;
+  verifiedAt?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface CartItem {

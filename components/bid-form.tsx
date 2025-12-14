@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { formatPrice } from "@/lib/format";
 import { Gavel } from "lucide-react";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { LoginLink } from "@kinde-oss/kinde-auth-nextjs";
 
 interface BidFormProps {
   currentBid: number;
@@ -18,13 +20,20 @@ export default function BidForm({
   productTitle,
 }: BidFormProps) {
   const [bidAmount, setBidAmount] = useState<string>(minBid.toString());
+  const { isAuthenticated, isLoading } = useKindeBrowserClient();
 
   const handlePlaceBid = () => {
+    if (!isAuthenticated) {
+      return; // This should not happen as the button is disabled
+    }
     // This would initiate the payment process - out of scope for now
     alert(`Bid placement initiated for ${formatPrice(parseFloat(bidAmount))} on "${productTitle}". Payment processing is not implemented in this MVP.`);
   };
 
   const handleBuyNow = () => {
+    if (!isAuthenticated) {
+      return; // This should not happen as the button is disabled
+    }
     // This would initiate the payment process - out of scope for now
     alert(`Buy Now initiated for ${formatPrice(buyNowPrice!)} on "${productTitle}". Payment processing is not implemented in this MVP.`);
   };
@@ -59,33 +68,50 @@ export default function BidForm({
       </div>
 
       {/* Place Bid Button */}
-      <button
-        onClick={handlePlaceBid}
-        disabled={parseFloat(bidAmount) < minBid}
-        className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-      >
-        <Gavel className="h-5 w-5" />
-        Place Bid
-      </button>
-
-      {/* Buy Now Button */}
-      {buyNowPrice && (
+      {!isLoading && (
         <>
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border"></div>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">or</span>
-            </div>
-          </div>
+          {isAuthenticated ? (
+            <button
+              onClick={handlePlaceBid}
+              disabled={parseFloat(bidAmount) < minBid}
+              className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              <Gavel className="h-5 w-5" />
+              Place Bid
+            </button>
+          ) : (
+            <LoginLink className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 flex items-center justify-center gap-2">
+              <Gavel className="h-5 w-5" />
+              Sign In to Place Bid
+            </LoginLink>
+          )}
 
-          <button
-            onClick={handleBuyNow}
-            className="w-full py-3 bg-secondary text-secondary-foreground rounded-lg font-semibold hover:bg-secondary/90 border border-border"
-          >
-            Buy Now for {formatPrice(buyNowPrice)}
-          </button>
+          {/* Buy Now Button */}
+          {buyNowPrice && (
+            <>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-border"></div>
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">or</span>
+                </div>
+              </div>
+
+              {isAuthenticated ? (
+                <button
+                  onClick={handleBuyNow}
+                  className="w-full py-3 bg-secondary text-secondary-foreground rounded-lg font-semibold hover:bg-secondary/90 border border-border"
+                >
+                  Buy Now for {formatPrice(buyNowPrice)}
+                </button>
+              ) : (
+                <LoginLink className="w-full py-3 bg-secondary text-secondary-foreground rounded-lg font-semibold hover:bg-secondary/90 border border-border block text-center">
+                  Sign In to Buy Now
+                </LoginLink>
+              )}
+            </>
+          )}
         </>
       )}
 

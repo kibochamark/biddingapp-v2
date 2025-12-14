@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Search, ShoppingCart, User, Menu } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, LogOut } from "lucide-react";
 import { useState } from "react";
+import { LoginLink, LogoutLink, useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const { isAuthenticated, user, isLoading } = useKindeBrowserClient();
 
   return (
     <nav className="sticky top-0 z-50 glass-navbar">
@@ -61,18 +64,71 @@ export default function Navbar() {
                 0
               </span>
             </Link>
-            <Link
-              href="/profile"
-              className="hidden md:flex p-2 hover:bg-accent rounded-lg transition-colors"
-            >
-              <User className="h-5 w-5" />
-            </Link>
-            <Link
-              href="/signin"
-              className="hidden md:block px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
-            >
-              Sign In
-            </Link>
+
+            {/* Desktop Auth UI */}
+            {!isLoading && (
+              <>
+                {isAuthenticated ? (
+                  <div className="hidden md:flex items-center gap-2 relative">
+                    <button
+                      onClick={() => setShowUserMenu(!showUserMenu)}
+                      className="flex items-center gap-2 p-2 hover:bg-accent rounded-lg transition-colors"
+                    >
+                      {user?.picture ? (
+                        <img
+                          src={user.picture}
+                          alt={user.given_name || "User"}
+                          className="w-8 h-8 rounded-full"
+                        />
+                      ) : (
+                        <User className="h-5 w-5" />
+                      )}
+                      <span className="text-sm font-medium">
+                        {user?.given_name || "Account"}
+                      </span>
+                    </button>
+
+                    {/* User Dropdown Menu */}
+                    {showUserMenu && (
+                      <div className="absolute top-12 right-0 w-48 glass-card rounded-lg shadow-lg py-2 z-50">
+                        <Link
+                          href="/profile"
+                          className="block px-4 py-2 text-sm hover:bg-accent transition-colors"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          My Profile
+                        </Link>
+                        <Link
+                          href="/profile?tab=bids"
+                          className="block px-4 py-2 text-sm hover:bg-accent transition-colors"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          My Bids
+                        </Link>
+                        <Link
+                          href="/profile?tab=listings"
+                          className="block px-4 py-2 text-sm hover:bg-accent transition-colors"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          My Listings
+                        </Link>
+                        <hr className="my-2 border-border" />
+                        <LogoutLink className="block px-4 py-2 text-sm hover:bg-accent transition-colors text-destructive">
+                          <div className="flex items-center gap-2">
+                            <LogOut className="h-4 w-4" />
+                            Sign Out
+                          </div>
+                        </LogoutLink>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <LoginLink className="hidden md:block px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium">
+                    Sign In
+                  </LoginLink>
+                )}
+              </>
+            )}
 
             {/* Mobile Menu Button */}
             <button
@@ -122,20 +178,58 @@ export default function Navbar() {
             >
               Ending Soon
             </Link>
-            <Link
-              href="/profile"
-              className="block text-sm font-medium hover:text-primary"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Profile
-            </Link>
-            <Link
-              href="/signin"
-              className="block px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 text-center text-sm font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Sign In
-            </Link>
+
+            {!isLoading && (
+              <>
+                {isAuthenticated ? (
+                  <>
+                    <hr className="my-2 border-border" />
+                    <div className="flex items-center gap-2 px-2">
+                      {user?.picture ? (
+                        <img
+                          src={user.picture}
+                          alt={user.given_name || "User"}
+                          className="w-8 h-8 rounded-full"
+                        />
+                      ) : (
+                        <User className="h-5 w-5" />
+                      )}
+                      <span className="text-sm font-medium">
+                        {user?.given_name || "Account"}
+                      </span>
+                    </div>
+                    <Link
+                      href="/profile"
+                      className="block text-sm font-medium hover:text-primary"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      My Profile
+                    </Link>
+                    <Link
+                      href="/profile?tab=bids"
+                      className="block text-sm font-medium hover:text-primary"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      My Bids
+                    </Link>
+                    <Link
+                      href="/profile?tab=listings"
+                      className="block text-sm font-medium hover:text-primary"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      My Listings
+                    </Link>
+                    <LogoutLink className="block px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 text-center text-sm font-medium">
+                      Sign Out
+                    </LogoutLink>
+                  </>
+                ) : (
+                  <LoginLink className="block px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 text-center text-sm font-medium">
+                    Sign In
+                  </LoginLink>
+                )}
+              </>
+            )}
           </div>
         </div>
       )}

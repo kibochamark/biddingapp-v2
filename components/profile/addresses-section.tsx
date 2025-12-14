@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { Plus, Edit, Trash2, MapPin } from "lucide-react";
 import { Address } from "@/lib/types";
-import { deleteAddress, setDefaultAddress } from "@/lib/api/addresses";
+import { apiFetchClient } from "@/lib/api";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import AddressForm from "./address-form";
 
 interface AddressesSectionProps {
@@ -19,13 +20,20 @@ export default function AddressesSection({
   const [showForm, setShowForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [loading, setLoading] = useState<string | null>(null);
+  const { getAccessTokenRaw } = useKindeBrowserClient();
 
   const handleDelete = async (addressId: string) => {
     if (!confirm("Are you sure you want to delete this address?")) return;
 
     setLoading(addressId);
     try {
-      await deleteAddress(addressId, userId);
+      const accessToken = getAccessTokenRaw();
+      if (!accessToken) throw new Error("Not authenticated");
+
+      await apiFetchClient(`/addresses/${addressId}`, accessToken, {
+        method: "DELETE",
+      });
+
       setAddresses(addresses.filter((a) => a.id !== addressId));
     } catch (error) {
       alert("Failed to delete address. Please try again.");
@@ -37,7 +45,14 @@ export default function AddressesSection({
   const handleSetDefault = async (addressId: string) => {
     setLoading(addressId);
     try {
-      await setDefaultAddress(addressId, userId);
+      const accessToken = getAccessTokenRaw();
+      if (!accessToken) throw new Error("Not authenticated");
+
+      await apiFetchClient<Address>(
+        `/addresses/${addressId}/default`,
+        accessToken,
+        { method: "PATCH" }
+      );
       // Update local state
       setAddresses(
         addresses.map((a) => ({

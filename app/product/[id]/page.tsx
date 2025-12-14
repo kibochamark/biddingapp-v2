@@ -61,39 +61,39 @@ const hoursFromNow = (hours: number) => {
 export default async function ProductPage({ params }: ProductPageProps) {
   const product_id = await params.id;
   
-  // const product = await fetchProductById(params.id);
+  const product = await fetchProductById(params.id);
 
 
-  let product={
-      id: "6",
-      title: "Apple Watch Ultra 2",
-      description: "Rugged and capable Apple Watch Ultra 2 with 49mm titanium case. GPS + Cellular with Ocean Band. Perfect for outdoor adventures.",
-      categoryId: "5",
-      condition: "NEW" as ProductCondition,
-      images: [
-        "/placeholder.jpg",
-        "/placeholder.jpg",
-      ],
-      startingPrice: 649,
-      currentBid: 749,
-      bidsCount: 12,
-      buyNowPrice: 849,
-      endDate: hoursFromNow(18),
-      startDate: daysFromNow(-1),
-      sellerId: "seller2",
-      sellerName: "Apple Certified Reseller",
-      sellerRating: 4.9,
-      specifications: {
-        "Case Size": "49mm",
-        Material: "Titanium",
-        Band: "Ocean Band",
-        GPS: "Yes",
-        Cellular: "Yes",
-      },
-      isActive: true,
-      createdAt: daysFromNow(-1),
-      updatedAt: new Date(),
-    }
+  // let product={
+  //     id: "6",
+  //     title: "Apple Watch Ultra 2",
+  //     description: "Rugged and capable Apple Watch Ultra 2 with 49mm titanium case. GPS + Cellular with Ocean Band. Perfect for outdoor adventures.",
+  //     categoryId: "5",
+  //     condition: "NEW" as ProductCondition,
+  //     images: [
+  //       "/placeholder.jpg",
+  //       "/placeholder.jpg",
+  //     ],
+  //     startingPrice: 649,
+  //     currentBid: 749,
+  //     bidsCount: 12,
+  //     buyNowPrice: 849,
+  //     endDate: hoursFromNow(18),
+  //     startDate: daysFromNow(-1),
+  //     sellerId: "seller2",
+  //     sellerName: "Apple Certified Reseller",
+  //     sellerRating: 4.9,
+  //     specifications: {
+  //       "Case Size": "49mm",
+  //       Material: "Titanium",
+  //       Band: "Ocean Band",
+  //       GPS: "Yes",
+  //       Cellular: "Yes",
+  //     },
+  //     isActive: true,
+  //     createdAt: daysFromNow(-1),
+  //     updatedAt: new Date(),
+  //   }
 
   if (!product) {
     notFound();

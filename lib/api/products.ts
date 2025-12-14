@@ -103,6 +103,13 @@ export async function fetchEndingSoonProducts(limit: number = 8): Promise<Produc
       `/products/ending-soon?limit=${limit}`,
       { tags: [PRODUCT_TAGS.all, PRODUCT_TAGS.endingSoon] }
     );
+
+    // If API returns no ending soon products, fallback to mock data
+    if (!data || data.length === 0) {
+      console.log("No ending soon products from API, using mock data");
+      return getEndingSoonProducts(limit);
+    }
+
     return data;
   } catch (error) {
     console.warn("API failed, using mock data:", error);
@@ -117,6 +124,13 @@ export async function fetchNewestProducts(limit: number = 8): Promise<Product[]>
       `/products/newest?limit=${limit}`,
       { tags: [PRODUCT_TAGS.all, PRODUCT_TAGS.newest] }
     );
+
+    // If API returns no newest products, fallback to mock data
+    if (!data || data.length === 0) {
+      console.log("No newest products from API, using mock data");
+      return getNewestProducts(limit);
+    }
+
     return data;
   } catch (error) {
     console.warn("API failed, using mock data:", error);
@@ -131,6 +145,13 @@ export async function fetchFeaturedProducts(): Promise<Product[]> {
       `/products/ending-soon?limit=6`,
       { tags: [PRODUCT_TAGS.all, PRODUCT_TAGS.endingSoon] }
     );
+
+    // If API returns no ending soon products, fallback to featured/newest products
+    if (!data || data.length === 0) {
+      console.log("No ending soon products from API, using featured mock data");
+      return getFeaturedProducts();
+    }
+
     return data;
   } catch (error) {
     console.warn("API failed, using mock data:", error);
