@@ -1,6 +1,7 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getProductById, mockProducts } from "@/lib/mock-data";
+import { fetchProductById, searchProducts } from "@/lib/api/products";
 import {
   formatPrice,
   formatTimeRemaining,
@@ -11,7 +12,9 @@ import {
 import ImageGallery from "@/components/image-gallery";
 import BidForm from "@/components/bid-form";
 import ProductCard from "@/components/product-card";
+import { ProductDetailSkeleton, ProductsGridSkeleton } from "@/components/loading-skeleton";
 import { Clock, Package, Shield, Truck, ChevronRight } from "lucide-react";
+import { ProductCondition } from "@/lib/types";
 
 interface ProductPageProps {
   params: {
@@ -19,17 +22,84 @@ interface ProductPageProps {
   };
 }
 
-export default function ProductPage({ params }: ProductPageProps) {
-  const product = getProductById(params.id);
+// Server component for related products
+async function RelatedProducts({ categoryId, currentProductId }: { categoryId: string; currentProductId: string }) {
+  const { data } = await searchProducts({
+    categoryId,
+    limit: 4,
+  });
+
+  const relatedProducts = data.filter(p => p.id !== currentProductId).slice(0, 4);
+
+  if (relatedProducts.length === 0) return null;
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-6">Similar Auctions</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {relatedProducts.map((relatedProduct) => (
+          <ProductCard key={relatedProduct.id} product={relatedProduct} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Helper function to generate dates
+const daysFromNow = (days: number) => {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date;
+};
+
+const hoursFromNow = (hours: number) => {
+  const date = new Date();
+  date.setHours(date.getHours() + hours);
+  return date;
+};
+
+export default async function ProductPage({ params }: ProductPageProps) {
+  const product_id = await params.id;
+  
+  // const product = await fetchProductById(params.id);
+
+
+  let product={
+      id: "6",
+      title: "Apple Watch Ultra 2",
+      description: "Rugged and capable Apple Watch Ultra 2 with 49mm titanium case. GPS + Cellular with Ocean Band. Perfect for outdoor adventures.",
+      categoryId: "5",
+      condition: "NEW" as ProductCondition,
+      images: [
+        "/placeholder.jpg",
+        "/placeholder.jpg",
+      ],
+      startingPrice: 649,
+      currentBid: 749,
+      bidsCount: 12,
+      buyNowPrice: 849,
+      endDate: hoursFromNow(18),
+      startDate: daysFromNow(-1),
+      sellerId: "seller2",
+      sellerName: "Apple Certified Reseller",
+      sellerRating: 4.9,
+      specifications: {
+        "Case Size": "49mm",
+        Material: "Titanium",
+        Band: "Ocean Band",
+        GPS: "Yes",
+        Cellular: "Yes",
+      },
+      isActive: true,
+      createdAt: daysFromNow(-1),
+      updatedAt: new Date(),
+    }
 
   if (!product) {
     notFound();
   }
 
   const minBid = (product.currentBid || product.startingPrice) + 5;
-  const relatedProducts = mockProducts
-    .filter((p) => p.categoryId === product.categoryId && p.id !== product.id && p.isActive)
-    .slice(0, 4);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -168,16 +238,25 @@ export default function ProductPage({ params }: ProductPageProps) {
       </div>
 
       {/* Related Products */}
-      {relatedProducts.length > 0 && (
-        <div>
-          <h2 className="text-2xl font-bold mb-6">Similar Auctions</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts.map((relatedProduct) => (
-              <ProductCard key={relatedProduct.id} product={relatedProduct} />
-            ))}
-          </div>
-        </div>
-      )}
+      <Suspense fallback={<ProductsGridSkeleton count={4} />}>
+        <RelatedProducts categoryId={product.categoryId} currentProductId={product.id} />
+      </Suspense>
     </div>
   );
+}
+
+// Generate metadata for SEO
+export async function generateMetadata({ params }: ProductPageProps) {
+  const product = await fetchProductById(params.id);
+
+  if (!product) {
+    return {
+      title: "Product Not Found",
+    };
+  }
+
+  return {
+    title: `${product.title} - BidMarket`,
+    description: product.description,
+  };
 }

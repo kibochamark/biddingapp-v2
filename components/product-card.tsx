@@ -9,16 +9,26 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const timeRemaining = formatTimeRemaining(product.endDate);
-  const isEndingSoon = product.endDate.getTime() - new Date().getTime() < 24 * 60 * 60 * 1000;
+  // convert the date strings to Date objects
+  let product_endDate= new Date(product.endDate);
+  const timeRemaining = formatTimeRemaining(product_endDate);
+  const isEndingSoon = product_endDate.getTime() - new Date().getTime() < 24 * 60 * 60 * 1000;
 
+  console.log("Rendering ProductCard for:", product.images[0]);
+  const imageSrc =
+    Array.isArray(product.images) &&
+      product.images.length > 0 &&
+      typeof product.images[0] === "string" &&
+      product.images[0].trim() !== ""
+      ? product.images[0]
+      : "/placeholder.png";
   return (
     <Link href={`/product/${product.id}`} className="group">
       <div className="glass-card rounded-lg overflow-hidden hover:shadow-2xl hover:border-primary/30 transition-all duration-300">
         {/* Image */}
         <div className="relative aspect-square overflow-hidden bg-muted">
           <Image
-            src={product.images[0]}
+            src={imageSrc}
             alt={product.title}
             fill
             className="object-cover group-hover:scale-[1.02] transition-transform duration-500"

@@ -1,47 +1,89 @@
+import { Suspense } from "react";
 import HeroCarousel from "@/components/hero-carousel";
 import ProductCarousel from "@/components/product-carousel";
 import CategoryGrid from "@/components/category-grid";
 import {
-  mockCategories,
-  getFeaturedProducts,
-  getNewestProducts,
-  getEndingSoonProducts,
-} from "@/lib/mock-data";
+  HeroCarouselSkeleton,
+  ProductsGridSkeleton,
+  CategoryGridSkeleton,
+} from "@/components/loading-skeleton";
+import {
+  fetchFeaturedProducts,
+  fetchNewestProducts,
+  fetchEndingSoonProducts,
+} from "@/lib/api/products";
+import { fetchCategories } from "@/lib/api/categories";
+
+// Server component for featured products
+async function FeaturedSection() {
+  const featuredProducts = await fetchFeaturedProducts();
+
+  return <HeroCarousel products={featuredProducts} />;
+}
+
+// Server component for categories
+async function CategoriesSection() {
+  const categories = await fetchCategories();
+
+  return <CategoryGrid categories={categories} />;
+}
+
+// Server component for ending soon products
+async function EndingSoonSection() {
+  const endingSoonProducts = await fetchEndingSoonProducts(8);
+
+  return (
+    <ProductCarousel
+      title="Ending Soon"
+      products={endingSoonProducts}
+      viewAllLink="/catalog?sort=ending_soon"
+    />
+  );
+}
+
+// Server component for new arrivals
+async function NewArrivalsSection() {
+  const newestProducts = await fetchNewestProducts(8);
+
+  return (
+    <ProductCarousel
+      title="New Arrivals"
+      products={newestProducts}
+      viewAllLink="/catalog?sort=newest"
+    />
+  );
+}
 
 export default function Home() {
-  const featuredProducts = getFeaturedProducts();
-  const newestProducts = getNewestProducts(8);
-  const endingSoonProducts = getEndingSoonProducts(8);
-
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <HeroCarousel products={featuredProducts} />
+        <Suspense fallback={<HeroCarouselSkeleton />}>
+          <FeaturedSection />
+        </Suspense>
       </section>
 
       {/* Categories */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h2 className="text-2xl font-bold mb-6">Shop by Category</h2>
-        <CategoryGrid categories={mockCategories} />
+        <Suspense fallback={<CategoryGridSkeleton />}>
+          <CategoriesSection />
+        </Suspense>
       </section>
 
       {/* Ending Soon */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <ProductCarousel
-          title="Ending Soon"
-          products={endingSoonProducts}
-          viewAllLink="/catalog?sort=ending_soon"
-        />
+        <Suspense fallback={<ProductsGridSkeleton count={8} />}>
+          <EndingSoonSection />
+        </Suspense>
       </section>
 
       {/* New Arrivals */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <ProductCarousel
-          title="New Arrivals"
-          products={newestProducts}
-          viewAllLink="/catalog?sort=newest"
-        />
+        <Suspense fallback={<ProductsGridSkeleton count={8} />}>
+          <NewArrivalsSection />
+        </Suspense>
       </section>
 
       {/* Trust Section */}

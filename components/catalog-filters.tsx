@@ -73,7 +73,7 @@ export default function CatalogFilters({
       {/* Filters Sidebar */}
       <div
         className={`
-        fixed lg:static inset-0 z-40 bg-background lg:bg-transparent
+        fixed lg:static inset-0 z-50 bg-background lg:bg-transparent
         transform transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         lg:w-64 overflow-y-auto
