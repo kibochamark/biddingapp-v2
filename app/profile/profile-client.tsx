@@ -8,15 +8,25 @@ import {
   Package,
   Gavel,
   Plus,
+  Loader,
 } from "lucide-react";
 import { Address, KYCVerification } from "@/lib/types";
 import AddressesSection from "@/components/profile/addresses-section";
 import KYCSection from "@/components/profile/kyc-section";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { createProfile } from "@/lib/api/account";
+import { form } from "framer-motion/client";
 
 interface ProfileClientProps {
   addresses: Address[];
   kycStatus: KYCVerification | null;
   userId: string;
+  userProfile: {
+    fullName: string;
+    contact: string;
+    email: string;
+  };
   user: {
     name: string;
     email: string;
@@ -28,19 +38,14 @@ export default function ProfileClient({
   addresses,
   kycStatus,
   userId,
+  userProfile,
   user,
 }: ProfileClientProps) {
   const [activeTab, setActiveTab] = useState<
     "profile" | "addresses" | "kyc" | "bids" | "listings"
   >("profile");
 
-  const userProfile = {
-    name: user.name,
-    email: user.email,
-    picture: user.picture,
-    joinedDate: "January 2024", // This could be fetched from user metadata if needed
-    verified: kycStatus?.status === "APPROVED",
-  };
+ 
 
   const tabs = [
     { id: "profile", label: "Profile", icon: User },
@@ -49,6 +54,36 @@ export default function ProfileClient({
     { id: "bids", label: "My Bids", icon: Gavel },
     { id: "listings", label: "My Listings", icon: Package },
   ];
+
+  const profileFormikForm =useFormik({
+    initialValues:{
+      fullName: userProfile.fullName,
+      contact: userProfile.contact,
+      email: userProfile.email
+    },
+    validationSchema: Yup.object({
+      fullName: Yup.string().required('Full name is required'),
+      email: Yup.string().email('Invalid email address').required('Email is required'),
+      contact: Yup.string()
+        .matches(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number')
+        .required('Contact number is required'),
+    }),
+    validateOnBlur:true,
+    validateOnChange:true,
+    onSubmit: async(values) => {
+      console.log("Profile form submitted with values:", values);
+
+      try {
+        await createProfile(values)
+        // alert("Profile updated successfully!");
+        
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        throw error;
+      }
+
+    }
+  })
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -85,14 +120,20 @@ export default function ProfileClient({
             <div className="space-y-6">
               <div className="glass-card rounded-lg p-6">
                 <h2 className="text-xl font-bold mb-6">Profile Information</h2>
-                <div className="space-y-4">
+                <form className="space-y-4" onSubmit={profileFormikForm.handleSubmit}>
                   <div>
                     <label className="block text-sm font-medium mb-2">
                       Full Name
                     </label>
+                    {profileFormikForm.errors.fullName && profileFormikForm.touched.fullName && (
+                      <div className="text-red-500 text-sm mb-1">{profileFormikForm.errors.fullName}</div>
+                    )}
                     <input
                       type="text"
-                      defaultValue={userProfile.name}
+                      defaultValue={profileFormikForm.values.fullName}
+                      onChange={profileFormikForm.handleChange}
+                      name="fullName"
+                      onBlur={profileFormikForm.handleBlur}
                       className="w-full px-4 py-2 border border-input rounded-lg bg-background"
                     />
                   </div>
@@ -100,9 +141,15 @@ export default function ProfileClient({
                     <label className="block text-sm font-medium mb-2">
                       Email
                     </label>
+                    {profileFormikForm.errors.email && profileFormikForm.touched.email && (
+                      <div className="text-red-500 text-sm mb-1">{profileFormikForm.errors.email}</div>
+                    )}
                     <input
                       type="email"
-                      defaultValue={userProfile.email}
+                      defaultValue={profileFormikForm.values.email}
+                      onChange={profileFormikForm.handleChange}
+                      name="email"
+                      onBlur={profileFormikForm.handleBlur}
                       className="w-full px-4 py-2 border border-input rounded-lg bg-background"
                       disabled
                     />
@@ -111,16 +158,23 @@ export default function ProfileClient({
                     <label className="block text-sm font-medium mb-2">
                       Phone Number
                     </label>
+                    {profileFormikForm.errors.contact && profileFormikForm.touched.contact && (
+                      <div className="text-red-500 text-sm mb-1">{profileFormikForm.errors.contact}</div>
+                    )}
                     <input
                       type="tel"
                       placeholder="+1 (555) 000-0000"
+                      defaultValue={profileFormikForm.values.contact}
+                      onChange={profileFormikForm.handleChange}
+                      name="contact"
+                      onBlur={profileFormikForm.handleBlur}
                       className="w-full px-4 py-2 border border-input rounded-lg bg-background"
                     />
                   </div>
-                  <button className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90">
-                    Save Changes
+                  <button className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 cursor-pointer" disabled={profileFormikForm.isSubmitting}>
+                    {profileFormikForm.isSubmitting ? <><Loader className="text-white animate animate-spin"/></> : 'Save Changes'}
                   </button>
-                </div>
+                </form>
               </div>
 
               <div className="glass-card rounded-lg p-6">
@@ -128,7 +182,7 @@ export default function ProfileClient({
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Member since</span>
-                    <span className="font-medium">{userProfile.joinedDate}</span>
+                    {/* <span className="font-medium">{userProfile.joinedDate}</span> */}
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">
@@ -136,10 +190,12 @@ export default function ProfileClient({
                     </span>
                     <span
                       className={`font-medium ${
-                        userProfile.verified ? "text-green-600" : "text-yellow-600"
+                        // userProfile.verified ? "text-green-600" : "text-yellow-600"
+                        "text-yellow-600"
                       }`}
                     >
-                      {userProfile.verified ? "Verified" : "Not Verified"}
+                      {/* {userProfile.verified ? "Verified" : "Not Verified"} */}
+                    Not Verified
                     </span>
                   </div>
                 </div>

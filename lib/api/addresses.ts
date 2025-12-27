@@ -14,7 +14,7 @@ export const ADDRESS_TAGS = {
 export async function fetchUserAddresses(userId: string): Promise<Address[]> {
   try {
     const data = await apiFetch<Address[]>(
-      `/addresses?userId=${userId}`,
+      `/addresses?accountId=${userId}`,
       { tags: [ADDRESS_TAGS.all, ADDRESS_TAGS.user(userId)] }
     );
     return data;
