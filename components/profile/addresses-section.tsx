@@ -1,11 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, Edit, Trash2, MapPin } from "lucide-react";
 import { Address } from "@/lib/types";
-import { apiFetchClient } from "@/lib/api";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { deleteAddress, setPrimaryAddress } from "@/lib/api/addresses";
 import AddressForm from "./address-form";
+import { toast } from "@/lib/toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface AddressesSectionProps {
   initialAddresses: Address[];
@@ -16,73 +26,68 @@ export default function AddressesSection({
   initialAddresses,
   userId,
 }: AddressesSectionProps) {
-  const [addresses, setAddresses] = useState<Address[]>(initialAddresses);
+  const router = useRouter();
   const [showForm, setShowForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [loading, setLoading] = useState<string | null>(null);
-  const { getAccessTokenRaw } = useKindeBrowserClient();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState<string | null>(null);
 
-  const handleDelete = async (addressId: string) => {
-    if (!confirm("Are you sure you want to delete this address?")) return;
+  const handleDeleteClick = (addressId: string) => {
+    setAddressToDelete(addressId);
+    setDeleteDialogOpen(true);
+  };
 
-    setLoading(addressId);
+  const handleDeleteConfirm = async () => {
+    if (!addressToDelete) return;
+
+    setLoading(addressToDelete);
+    setDeleteDialogOpen(false);
+
     try {
-      const accessToken = getAccessTokenRaw();
-      if (!accessToken) throw new Error("Not authenticated");
-
-      await apiFetchClient(`/addresses/${addressId}`, accessToken, {
-        method: "DELETE",
-      });
-
-      setAddresses(addresses.filter((a) => a.id !== addressId));
-    } catch (error) {
-      alert("Failed to delete address. Please try again.");
+      await deleteAddress(addressToDelete);
+      toast.address.deleted();
+      router.refresh(); // Refresh server data
+    } catch (error: any) {
+      console.error("Failed to delete address:", error);
+      toast.address.failed("delete");
     } finally {
       setLoading(null);
+      setAddressToDelete(null);
     }
   };
 
-  const handleSetDefault = async (addressId: string) => {
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setAddressToDelete(null);
+  };
+
+  const handleSetPrimary = async (addressId: string) => {
     setLoading(addressId);
     try {
-      const accessToken = getAccessTokenRaw();
-      if (!accessToken) throw new Error("Not authenticated");
-
-      await apiFetchClient<Address>(
-        `/addresses/${addressId}/default`,
-        accessToken,
-        { method: "PATCH" }
-      );
-      // Update local state
-      setAddresses(
-        addresses.map((a) => ({
-          ...a,
-          isDefault: a.id === addressId,
-        }))
-      );
-    } catch (error) {
-      alert("Failed to set default address. Please try again.");
+      const updatedAddress = await setPrimaryAddress(addressId);
+      toast.address.primarySet();
+      router.refresh(); // Refresh server data
+    } catch (error: any) {
+      console.error("Failed to set primary address:", error);
+      toast.address.failed("set primary");
     } finally {
       setLoading(null);
     }
   };
 
   const handleFormSuccess = (address: Address) => {
-    if (editingAddress) {
-      // Update existing
-      setAddresses(addresses.map((a) => (a.id === address.id ? address : a)));
-    } else {
-      // Add new
-      setAddresses([...addresses, address]);
-    }
     setShowForm(false);
     setEditingAddress(null);
+    router.refresh(); // Refresh server data to show new/updated address
   };
 
   const handleEdit = (address: Address) => {
     setEditingAddress(address);
     setShowForm(true);
   };
+
+  
 
   return (
     <div className="space-y-6">
@@ -117,7 +122,7 @@ export default function AddressesSection({
         </div>
       )}
 
-      {addresses.length === 0 ? (
+      {initialAddresses.length === 0 ? (
         <div className="glass-card rounded-lg p-8 text-center">
           <MapPin className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
           <p className="text-muted-foreground">
@@ -125,69 +130,104 @@ export default function AddressesSection({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {addresses.map((address) => (
-            <div
-              key={address.id}
-              className={`glass-card rounded-lg p-6 relative ${
-                address.isDefault ? "ring-2 ring-primary" : ""
-              }`}
-            >
-              {address.isDefault && (
-                <div className="absolute top-4 left-4">
-                  <span className="text-xs font-semibold px-2 py-1 bg-primary text-primary-foreground rounded">
-                    Default
-                  </span>
-                </div>
-              )}
-              <div className="absolute top-4 right-4 flex gap-2">
-                <button
-                  onClick={() => handleEdit(address)}
-                  className="p-2 hover:bg-accent rounded-lg"
-                  disabled={loading === address.id}
-                >
-                  <Edit className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => handleDelete(address.id)}
-                  className="p-2 hover:bg-destructive/10 hover:text-destructive rounded-lg"
-                  disabled={loading === address.id}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-              <div className={address.isDefault ? "pr-16 pl-0" : "pr-16"}>
-                <h3 className="font-semibold text-lg mb-2">
-                  {address.recipientName}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {address.street}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {address.city}, {address.state} {address.zipCode}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {address.country}
-                </p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  {address.phone}
-                </p>
-                {!address.isDefault && (
+        <ScrollArea className="h-[600px] w-full rounded-md">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-4">
+              {initialAddresses.map((address) => (
+              <div
+                key={address.id}
+                className={`glass-card rounded-lg p-6 relative ${
+                  address.isPrimary  ? "ring-2 ring-primary" : ""
+                }`}
+              >
+                {address.isPrimary && (
+                  <div className="absolute top-4 left-4">
+                    <span className="text-xs font-semibold px-2 py-1 bg-primary text-primary-foreground rounded">
+                      Default
+                    </span>
+                  </div>
+                )}
+                <div className="absolute top-4 right-4 flex gap-2">
                   <button
-                    onClick={() => handleSetDefault(address.id)}
-                    className="mt-3 text-sm text-primary hover:underline"
+                    onClick={() => handleEdit(address)}
+                    className="p-2 hover:bg-accent rounded-lg"
                     disabled={loading === address.id}
                   >
-                    {loading === address.id
-                      ? "Setting as default..."
-                      : "Set as default"}
+                    <Edit className="h-4 w-4" />
                   </button>
-                )}
+                  <button
+                    onClick={() => handleDeleteClick(address.id)}
+                    className="p-2 hover:bg-destructive/10 hover:text-destructive rounded-lg"
+                    disabled={loading === address.id}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+                <div className={address.isPrimary ? "pr-16 pl-0 mt-6" : "pr-16"}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="font-semibold text-lg">
+                      {address.recipientName}
+                    </h3>
+                    {address.label && (
+                      <span className="text-xs px-2 py-0.5 bg-muted text-muted-foreground rounded">
+                        {address.label}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {address.street}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {address.city}, {address.state} {address.zipCode}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {address.country}
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    {address.phone}
+                  </p>
+                  {!address.isPrimary && (
+                    <button
+                      onClick={() => handleSetPrimary(address.id)}
+                      className="mt-3 text-sm text-primary hover:underline"
+                      disabled={loading === address.id}
+                    >
+                      {loading === address.id
+                        ? "Setting as primary..."
+                        : "Set as primary"}
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </ScrollArea>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Address</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this address? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <button
+              onClick={handleDeleteCancel}
+              className="px-4 py-2 border border-input rounded-lg font-medium hover:bg-accent"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleDeleteConfirm}
+              className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg font-medium hover:bg-destructive/90"
+            >
+              Delete
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

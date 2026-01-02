@@ -18,6 +18,7 @@ import MyBidsSection from "@/components/profile/my-bids-section";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { createProfile } from "@/lib/api/account";
+import { toast } from "@/lib/toast";
 
 interface ProfileClientProps {
   addresses: Address[];
@@ -87,16 +88,19 @@ export default function ProfileClient({
       console.log("Profile form submitted with values:", values);
 
       try {
-        await createProfile(values)
-        // alert("Profile updated successfully!");
-        
-      } catch (error) {
+        await createProfile(values);
+        toast.profile.updated();
+      } catch (error: any) {
         console.error("Error updating profile:", error);
+        toast.profile.updateFailed(error.message);
         throw error;
       }
-
     }
   })
+
+
+ 
+
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

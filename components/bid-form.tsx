@@ -6,6 +6,7 @@ import { Gavel } from "lucide-react";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { LoginLink } from "@kinde-oss/kinde-auth-nextjs";
 import { useRouter } from "next/navigation";
+import { toast } from "@/lib/toast";
 
 interface BidFormProps {
   productId: string;
@@ -42,21 +43,15 @@ export default function BidForm({
         throw new Error(error.error || "Failed to place bid");
       }
 
-      const bid = await response.json();
+      await response.json();
 
-      // Show success message
-      alert(
-        `🎉 Bid placed successfully!\n\n` +
-        `Product: ${productTitle}\n` +
-        `Bid Fee: ${formatPrice(biddingFee)}\n` +
-        `Your Entry #${totalBids + 1}\n\n` +
-        `Good luck! Winner will be selected when bidding ends.`
-      );
+      // Show success message with toast
+      toast.bid.placed(totalBids + 1);
 
       // Refresh the page to show updated bid count
       router.refresh();
     } catch (error: any) {
-      alert(`Failed to place bid: ${error.message}`);
+      toast.bid.failed(error.message);
     } finally {
       setIsPlacingBid(false);
     }
