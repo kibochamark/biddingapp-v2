@@ -22,7 +22,7 @@ interface ProductPageProps {
   };
 }
 
-// Server component for related products
+
 async function RelatedProducts({ categoryId, currentProductId }: { categoryId: string; currentProductId: string }) {
   const { data } = await searchProducts({
     categoryId,
@@ -45,7 +45,7 @@ async function RelatedProducts({ categoryId, currentProductId }: { categoryId: s
   );
 }
 
-// Helper function to generate dates
+
 const daysFromNow = (days: number) => {
   const date = new Date();
   date.setDate(date.getDate() + days);
@@ -61,10 +61,10 @@ const hoursFromNow = (hours: number) => {
 export default async function ProductPage({ params }: ProductPageProps) {
   const product_id = await params.id;
   
-  // const product = await fetchProductById(params.id);
 
 
-  let product={
+
+  const product={
       id: "6",
       title: "Apple Watch Ultra 2",
       description: "Rugged and capable Apple Watch Ultra 2 with 49mm titanium case. GPS + Cellular with Ocean Band. Perfect for outdoor adventures.",
@@ -79,7 +79,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       bidsCount: 12,
       buyNowPrice: 849,
 
-      // Bidding system fields
+  
       biddingFee: 10,
       originalPrice: 849,
       totalBids: 12,
@@ -109,7 +109,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Breadcrumb */}
+    
       <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
         <Link href="/" className="hover:text-foreground">
           Home
