@@ -2,6 +2,7 @@
 
 import { Address } from "../types";
 import { apiFetch } from "../api";
+import axios from "axios";
 
 // Cache tags for revalidation
 export const ADDRESS_TAGS = {
@@ -9,6 +10,12 @@ export const ADDRESS_TAGS = {
   user: (userId: string) => `addresses-user-${userId}`,
   detail: (id: string) => `address-${id}`,
 };
+
+
+interface CreateAddressResponse {
+  status: number;
+  address: Address;
+}
 
 // Fetch all addresses for a user
 export async function fetchUserAddresses(userId: string): Promise<Address[]> {
@@ -39,30 +46,30 @@ export async function fetchAddressById(id: string): Promise<Address | null> {
 }
 
 // Create new address
-export async function createAddress(addressData: Omit<Address, "id" | "createdAt" | "updatedAt">): Promise<Address> {
+export async function createAddress(addressData: Omit<Address, "id" | "createdAt" | "updatedAt">): Promise<CreateAddressResponse> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/addresses`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(addressData),
-    });
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+    console.log("Creating address with data:", addressData);
+
+    // using axios instead
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/addresses`, addressData);
+    if (!res || res.status !== 201) {
+      throw new Error("Failed to create address");
     }
-
-    const data = await response.json();
 
     // Revalidate cache after creating
     await fetch("/api/revalidate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tag: ADDRESS_TAGS.user(addressData.userId) }),
+      body: JSON.stringify({ tag: ADDRESS_TAGS.user(res.data.userId) }),
     });
 
-    return data;
+    return {
+      status: res.status,
+      address: {
+        ...res.data
+      }
+    }
   } catch (error) {
     console.error("Failed to create address:", error);
     throw error;

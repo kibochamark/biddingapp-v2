@@ -5,67 +5,89 @@ import { formatPrice } from "@/lib/format";
 import { Gavel } from "lucide-react";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { LoginLink } from "@kinde-oss/kinde-auth-nextjs";
+import { useRouter } from "next/navigation";
 
 interface BidFormProps {
-  currentBid: number;
-  minBid: number;
-  buyNowPrice?: number;
+  productId: string;
   productTitle: string;
+  biddingFee?: number;
+  totalBids?: number;
+  productStatus?: string;
 }
 
 export default function BidForm({
-  currentBid,
-  minBid,
-  buyNowPrice,
+  productId,
   productTitle,
+  biddingFee = 5,  // Default $5 per bid
+  totalBids = 0,
+  productStatus = "ACTIVE",
 }: BidFormProps) {
-  const [bidAmount, setBidAmount] = useState<string>(minBid.toString());
+  const [isPlacingBid, setIsPlacingBid] = useState(false);
   const { isAuthenticated, isLoading } = useKindeBrowserClient();
+  const router = useRouter();
 
-  const handlePlaceBid = () => {
-    if (!isAuthenticated) {
-      return; // This should not happen as the button is disabled
+  const handlePlaceBid = async () => {
+    if (!isAuthenticated || isPlacingBid) return;
+
+    setIsPlacingBid(true);
+    try {
+      const response = await fetch("/api/bids", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to place bid");
+      }
+
+      const bid = await response.json();
+
+      // Show success message
+      alert(
+        `🎉 Bid placed successfully!\n\n` +
+        `Product: ${productTitle}\n` +
+        `Bid Fee: ${formatPrice(biddingFee)}\n` +
+        `Your Entry #${totalBids + 1}\n\n` +
+        `Good luck! Winner will be selected when bidding ends.`
+      );
+
+      // Refresh the page to show updated bid count
+      router.refresh();
+    } catch (error: any) {
+      alert(`Failed to place bid: ${error.message}`);
+    } finally {
+      setIsPlacingBid(false);
     }
-    // This would initiate the payment process - out of scope for now
-    alert(`Bid placement initiated for ${formatPrice(parseFloat(bidAmount))} on "${productTitle}". Payment processing is not implemented in this MVP.`);
   };
 
-  const handleBuyNow = () => {
-    if (!isAuthenticated) {
-      return; // This should not happen as the button is disabled
-    }
-    // This would initiate the payment process - out of scope for now
-    alert(`Buy Now initiated for ${formatPrice(buyNowPrice!)} on "${productTitle}". Payment processing is not implemented in this MVP.`);
-  };
+  const isActive = productStatus === "ACTIVE";
+  const canBid = isActive && isAuthenticated && !isPlacingBid;
 
   return (
     <div className="space-y-4">
-      {/* Current Bid */}
+      {/* Bidding Info */}
       <div className="p-4 glass-card rounded-lg">
-        <p className="text-sm text-muted-foreground mb-1">Current bid</p>
-        <p className="text-3xl font-bold">{formatPrice(currentBid)}</p>
+        <p className="text-sm text-muted-foreground mb-1">Entry Fee per Bid</p>
+        <p className="text-3xl font-bold">{formatPrice(biddingFee)}</p>
         <p className="text-sm text-muted-foreground mt-1">
-          Minimum next bid: {formatPrice(minBid)}
+          Total Entries: {totalBids}
         </p>
       </div>
 
-      {/* Bid Input */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Your bid amount</label>
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-            $
-          </span>
-          <input
-            type="number"
-            value={bidAmount}
-            onChange={(e) => setBidAmount(e.target.value)}
-            min={minBid}
-            step="1"
-            className="w-full pl-8 pr-4 py-3 border border-input rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-          />
+      {/* Status Message */}
+      {!isActive && (
+        <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+          <p className="text-sm text-yellow-800 dark:text-yellow-200">
+            {productStatus === "CLOSED" && "Bidding has ended. Winner selection in progress."}
+            {productStatus === "WINNER_SELECTED" && "Winner has been selected!"}
+            {productStatus === "COMPLETED" && "This auction is completed."}
+            {productStatus === "CANCELLED" && "This auction has been cancelled."}
+            {productStatus === "DRAFT" && "This auction is not yet active."}
+          </p>
         </div>
-      </div>
+      )}
 
       {/* Place Bid Button */}
       {!isLoading && (
@@ -73,11 +95,11 @@ export default function BidForm({
           {isAuthenticated ? (
             <button
               onClick={handlePlaceBid}
-              disabled={parseFloat(bidAmount) < minBid}
+              disabled={!canBid}
               className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <Gavel className="h-5 w-5" />
-              Place Bid
+              {isPlacingBid ? "Placing Bid..." : "Place Bid"}
             </button>
           ) : (
             <LoginLink className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 flex items-center justify-center gap-2">
@@ -85,41 +107,15 @@ export default function BidForm({
               Sign In to Place Bid
             </LoginLink>
           )}
-
-          {/* Buy Now Button */}
-          {buyNowPrice && (
-            <>
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border"></div>
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">or</span>
-                </div>
-              </div>
-
-              {isAuthenticated ? (
-                <button
-                  onClick={handleBuyNow}
-                  className="w-full py-3 bg-secondary text-secondary-foreground rounded-lg font-semibold hover:bg-secondary/90 border border-border"
-                >
-                  Buy Now for {formatPrice(buyNowPrice)}
-                </button>
-              ) : (
-                <LoginLink className="w-full py-3 bg-secondary text-secondary-foreground rounded-lg font-semibold hover:bg-secondary/90 border border-border block text-center">
-                  Sign In to Buy Now
-                </LoginLink>
-              )}
-            </>
-          )}
         </>
       )}
 
       {/* Info */}
       <div className="text-xs text-muted-foreground space-y-1">
-        <p>• Bids are binding commitments</p>
-        <p>• Payment will be processed if you win</p>
-        <p>• Secure checkout with buyer protection</p>
+        <p>• Each bid costs {formatPrice(biddingFee)} (entry fee)</p>
+        <p>• You can place multiple bids to increase your chances</p>
+        <p>• Winner is randomly selected when bidding ends</p>
+        <p>• More entries = higher chance of winning</p>
       </div>
     </div>
   );

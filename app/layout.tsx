@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import { Figtree } from 'next/font/google'
+
+const figtree = Figtree({ subsets: ['latin'], weight: ['500', '700'] })
+
 
 export const metadata: Metadata = {
   title: "BidMarket - Your Trusted Bidding Marketplace",
@@ -15,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className={`${figtree.className} bg-background text-foreground min-h-screen flex flex-col`}>
         <Navbar />
         <main className="min-h-screen">{children}</main>
         <Footer />

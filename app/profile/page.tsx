@@ -4,6 +4,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import ProfileClient from "./profile-client";
 import { fetchUserAddresses } from "@/lib/api/addresses";
 import { fetchKYCStatus } from "@/lib/api/kyc";
+import { fetchUserBids } from "@/lib/api/bids";
 import { ProfileSkeleton } from "@/components/loading-skeleton";
 import { fetchProfile } from "@/lib/api/account";
 
@@ -24,23 +25,27 @@ async function ProfileContent() {
     redirect("/api/auth/login");
   }
 
-
-  console.log("Fetching profile data for user:", user);
-
   // Fetch user data in parallel with access token for authorization
-  const [addresses, kycStatus, profile] = await Promise.all([
-
+  const [addresses, kycStatus, userBids, userProfile] = await Promise.all([
     fetchUserAddresses(user.id).catch(() => []),
     fetchKYCStatus(user.id).catch(() => null),
-    fetchProfile().catch(() => ({ fullName: '', contact: '', email: '' }))
+    fetchUserBids(user.id).catch(() => []),
+    fetchProfile().catch(() => null),
   ]);
+
+  // console.log("User Profile Data:", userProfile);
 
   return (
     <ProfileClient
       addresses={addresses}
       kycStatus={kycStatus}
       userId={user.id}
-      userProfile={profile}
+      userBids={userBids}
+      userProfile={{
+        fullName: `${userProfile?.fullName || ""}`.trim() || "Guest User",
+        contact: `${userProfile?.contact || ""}`.trim() || "",
+        email: user.email || "",
+      }}
       user={{
         name: `${user.given_name || ""} ${user.family_name || ""}`.trim() || "User",
         email: user.email || "",

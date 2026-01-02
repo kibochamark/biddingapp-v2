@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   User,
   MapPin,
@@ -10,18 +11,19 @@ import {
   Plus,
   Loader,
 } from "lucide-react";
-import { Address, KYCVerification } from "@/lib/types";
+import { Address, KYCVerification, Bid } from "@/lib/types";
 import AddressesSection from "@/components/profile/addresses-section";
 import KYCSection from "@/components/profile/kyc-section";
+import MyBidsSection from "@/components/profile/my-bids-section";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { createProfile } from "@/lib/api/account";
-import { form } from "framer-motion/client";
 
 interface ProfileClientProps {
   addresses: Address[];
   kycStatus: KYCVerification | null;
   userId: string;
+  userBids: Bid[];
   userProfile: {
     fullName: string;
     contact: string;
@@ -34,16 +36,27 @@ interface ProfileClientProps {
   };
 }
 
+type TabType = "profile" | "addresses" | "kyc" | "bids" | "listings";
+
 export default function ProfileClient({
   addresses,
   kycStatus,
   userId,
+  userBids,
   userProfile,
   user,
 }: ProfileClientProps) {
-  const [activeTab, setActiveTab] = useState<
-    "profile" | "addresses" | "kyc" | "bids" | "listings"
-  >("profile");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab") as TabType | null;
+
+  const [activeTab, setActiveTab] = useState<TabType>("profile");
+
+  // Set initial tab from URL parameter
+  useEffect(() => {
+    if (tabParam && ["profile", "addresses", "kyc", "bids", "listings"].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
 
  
 
@@ -215,21 +228,7 @@ export default function ProfileClient({
 
           {/* My Bids Tab */}
           {activeTab === "bids" && (
-            <div className="space-y-6">
-              <h2 className="text-xl font-bold">My Active Bids</h2>
-              <div className="bg-card border border-border rounded-lg p-8 text-center">
-                <Gavel className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">
-                  You don't have any active bids
-                </p>
-                <a
-                  href="/catalog"
-                  className="inline-block mt-4 text-primary hover:underline"
-                >
-                  Browse auctions
-                </a>
-              </div>
-            </div>
+            <MyBidsSection bids={userBids} />
           )}
 
           {/* My Listings Tab */}

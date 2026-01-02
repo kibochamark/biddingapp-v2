@@ -58,7 +58,7 @@ export async function fetchProfile(): Promise<ProfileData> {
     const userId = user.id;
     const data = await apiFetch<ProfileData>(
       `/accounts/${userId}`,
-      { tags: ["fetchedaccount"] }
+      { tags: ["fetchedaccount"], next:{ revalidate:60} }
     );
     return data;
   } catch (error) {

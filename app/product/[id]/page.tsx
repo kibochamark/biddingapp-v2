@@ -61,45 +61,51 @@ const hoursFromNow = (hours: number) => {
 export default async function ProductPage({ params }: ProductPageProps) {
   const product_id = await params.id;
   
-  const product = await fetchProductById(params.id);
+  // const product = await fetchProductById(params.id);
 
 
-  // let product={
-  //     id: "6",
-  //     title: "Apple Watch Ultra 2",
-  //     description: "Rugged and capable Apple Watch Ultra 2 with 49mm titanium case. GPS + Cellular with Ocean Band. Perfect for outdoor adventures.",
-  //     categoryId: "5",
-  //     condition: "NEW" as ProductCondition,
-  //     images: [
-  //       "/placeholder.jpg",
-  //       "/placeholder.jpg",
-  //     ],
-  //     startingPrice: 649,
-  //     currentBid: 749,
-  //     bidsCount: 12,
-  //     buyNowPrice: 849,
-  //     endDate: hoursFromNow(18),
-  //     startDate: daysFromNow(-1),
-  //     sellerId: "seller2",
-  //     sellerName: "Apple Certified Reseller",
-  //     sellerRating: 4.9,
-  //     specifications: {
-  //       "Case Size": "49mm",
-  //       Material: "Titanium",
-  //       Band: "Ocean Band",
-  //       GPS: "Yes",
-  //       Cellular: "Yes",
-  //     },
-  //     isActive: true,
-  //     createdAt: daysFromNow(-1),
-  //     updatedAt: new Date(),
-  //   }
+  let product={
+      id: "6",
+      title: "Apple Watch Ultra 2",
+      description: "Rugged and capable Apple Watch Ultra 2 with 49mm titanium case. GPS + Cellular with Ocean Band. Perfect for outdoor adventures.",
+      categoryId: "5",
+      condition: "NEW" as ProductCondition,
+      images: [
+        "/placeholder.jpg",
+        "/placeholder.jpg",
+      ],
+      startingPrice: 649,
+      currentBid: 749,
+      bidsCount: 12,
+      buyNowPrice: 849,
+
+      // Bidding system fields
+      biddingFee: 10,
+      originalPrice: 849,
+      totalBids: 12,
+      totalRevenue: 120,
+      status: "ACTIVE" as const,
+
+      endDate: hoursFromNow(18),
+      startDate: daysFromNow(-1),
+      sellerId: "seller2",
+      sellerName: "Apple Certified Reseller",
+      sellerRating: 4.9,
+      specifications: {
+        "Case Size": "49mm",
+        Material: "Titanium",
+        Band: "Ocean Band",
+        GPS: "Yes",
+        Cellular: "Yes",
+      },
+      isActive: true,
+      createdAt: daysFromNow(-1),
+      updatedAt: new Date(),
+    }
 
   if (!product) {
     notFound();
   }
-
-  const minBid = (product.currentBid || product.startingPrice) + 5;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -167,10 +173,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           {/* Bid Form */}
           <BidForm
-            currentBid={product.currentBid || product.startingPrice}
-            minBid={minBid}
-            buyNowPrice={product.buyNowPrice}
+            productId={product.id}
             productTitle={product.title}
+            biddingFee={product.biddingFee || 5}
+            totalBids={product.totalBids || product.bidsCount || 0}
+            productStatus={product.status || "ACTIVE"}
           />
 
           {/* Trust Badges */}
