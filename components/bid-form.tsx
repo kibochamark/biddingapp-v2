@@ -5,9 +5,6 @@ import { formatPrice } from "@/lib/format";
 import { Gavel, CreditCard, Wallet, X, Loader2 } from "lucide-react";
 import { useKindeBrowserClient, LoginLink } from "@kinde-oss/kinde-auth-nextjs";
 import { createBidCheckout } from "@/lib/stripe-actions";
-import { Gavel } from "lucide-react";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
-import { LoginLink } from "@kinde-oss/kinde-auth-nextjs";
 import { useRouter } from "next/navigation";
 import { toast } from "@/lib/toast";
 
