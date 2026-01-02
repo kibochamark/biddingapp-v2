@@ -1,15 +1,12 @@
 // Address API functions with caching and revalidation
-
+"use server"
 import { Address } from "../types";
 import { apiFetch } from "../api";
 import axios from "axios";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { ADDRESS_TAGS } from "../revalidatetags";
+import { revalidateTag } from "next/cache";
 
-// Cache tags for revalidation
-export const ADDRESS_TAGS = {
-  all: "addresses",
-  user: (userId: string) => `addresses-user-${userId}`,
-  detail: (id: string) => `address-${id}`,
-};
 
 
 interface CreateAddressResponse {
@@ -22,7 +19,7 @@ export async function fetchUserAddresses(userId: string): Promise<Address[]> {
   try {
     const data = await apiFetch<Address[]>(
       `/addresses?accountId=${userId}`,
-      { tags: [ADDRESS_TAGS.all, ADDRESS_TAGS.user(userId)] }
+      { tags: ["addresses"] }
     );
     return data;
   } catch (error) {
@@ -49,6 +46,19 @@ export async function fetchAddressById(id: string): Promise<Address | null> {
 export async function createAddress(addressData: Omit<Address, "id" | "createdAt" | "updatedAt">): Promise<CreateAddressResponse> {
   try {
 
+    const {isAuthenticated, getUser} = await getKindeServerSession();
+    const authenticated = await isAuthenticated();
+
+    if (!authenticated) {
+      throw new Error("User is not authenticated");
+    }
+    const user = await getUser();
+    if (!user?.id) {
+      throw new Error("User ID is missing");
+    }
+    addressData.accountId = user.id;
+ 
+
     console.log("Creating address with data:", addressData);
 
     // using axios instead
@@ -57,12 +67,12 @@ export async function createAddress(addressData: Omit<Address, "id" | "createdAt
       throw new Error("Failed to create address");
     }
 
-    // Revalidate cache after creating
-    await fetch("/api/revalidate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tag: ADDRESS_TAGS.user(res.data.userId) }),
-    });
+    console.log("Create address response data:", res.data);
+
+    // Revalidate cache after creating (using revalidateTag from next/cache instead)
+    revalidateTag("addresses", "max");
+
+    console.log("Address created successfully:", res.data);
 
     return {
       status: res.status,
@@ -79,28 +89,32 @@ export async function createAddress(addressData: Omit<Address, "id" | "createdAt
 // Update existing address
 export async function updateAddress(id: string, addressData: Partial<Address>): Promise<Address> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/addresses/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(addressData),
-    });
+    const {isAuthenticated} = getKindeServerSession();
+    const authenticated = await isAuthenticated();
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+    if (!authenticated) {
+      throw new Error("User is not authenticated");
     }
 
-    const data = await response.json();
+    console.log("Updating address with data:", addressData);
+
+    // Using axios instead
+    const res = await axios.patch(
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/addresses/${id}`,
+      addressData
+    );
+
+    if (!res || res.status !== 200) {
+      throw new Error("Failed to update address");
+    }
+
+    console.log("Address updated successfully:", res.data);
 
     // Revalidate cache after updating
-    await fetch("/api/revalidate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tag: ADDRESS_TAGS.detail(id) }),
-    });
+    revalidateTag("addresses", "max");
 
-    return data;
+
+    return res.data;
   } catch (error) {
     console.error("Failed to update address:", error);
     throw error;
@@ -108,51 +122,76 @@ export async function updateAddress(id: string, addressData: Partial<Address>): 
 }
 
 // Delete address
-export async function deleteAddress(id: string, userId: string): Promise<void> {
+export async function deleteAddress(id: string): Promise<void> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/addresses/${id}`, {
-      method: "DELETE",
-    });
+    const {isAuthenticated, getUser} = getKindeServerSession();
+    const authenticated = await isAuthenticated();
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+    if (!authenticated) {
+      throw new Error("User is not authenticated");
     }
 
+    const user = await getUser();
+    if (!user?.id) {
+      throw new Error("User ID is missing");
+    }
+
+    console.log("Deleting address:", id);
+
+    // Using axios instead
+    const res = await axios.delete(
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/addresses/${id}`
+    );
+
+    if (!res || res.status !== 200) {
+      throw new Error("Failed to delete address");
+    }
+
+    console.log("Address deleted successfully");
+
     // Revalidate cache after deleting
-    await fetch("/api/revalidate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tag: ADDRESS_TAGS.user(userId) }),
-    });
+    revalidateTag("addresses", "max");
+
   } catch (error) {
     console.error("Failed to delete address:", error);
     throw error;
   }
 }
 
-// Set default address
-export async function setDefaultAddress(id: string, userId: string): Promise<Address> {
+// Set primary address
+export async function setPrimaryAddress(id: string): Promise<Address> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/addresses/${id}/default`, {
-      method: "PATCH",
-    });
+    const {isAuthenticated, getUser} = getKindeServerSession();
+    const authenticated = await isAuthenticated();
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+    if (!authenticated) {
+      throw new Error("User is not authenticated");
     }
 
-    const data = await response.json();
+    const user = await getUser();
+    if (!user?.id) {
+      throw new Error("User ID is missing");
+    }
 
-    // Revalidate user's addresses cache
-    await fetch("/api/revalidate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tag: ADDRESS_TAGS.user(userId) }),
-    });
+    console.log("Setting primary address:", id);
 
-    return data;
+    // Using axios to set primary address
+    const res = await axios.patch(
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/addresses/${id}/primary`
+    );
+
+    if (!res || res.status !== 200) {
+      throw new Error("Failed to set primary address");
+    }
+
+    console.log("Primary address set successfully:", res.data);
+
+    revalidateTag("addresses", "max");
+
+
+    return res.data;
   } catch (error) {
-    console.error("Failed to set default address:", error);
+    console.error("Failed to set primary address:", error);
     throw error;
   }
 }

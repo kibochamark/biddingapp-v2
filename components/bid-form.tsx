@@ -5,6 +5,11 @@ import { formatPrice } from "@/lib/format";
 import { Gavel, CreditCard, Wallet, X, Loader2 } from "lucide-react";
 import { useKindeBrowserClient, LoginLink } from "@kinde-oss/kinde-auth-nextjs";
 import { createBidCheckout } from "@/lib/stripe-actions";
+import { Gavel } from "lucide-react";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { LoginLink } from "@kinde-oss/kinde-auth-nextjs";
+import { useRouter } from "next/navigation";
+import { toast } from "@/lib/toast";
 
 interface BidFormProps {
   productId: string;
@@ -28,10 +33,28 @@ export default function BidForm({
   const handleStripeChoice = async () => {
     setIsRedirecting(true);
     try {
-      await createBidCheckout(productId, productTitle, biddingFee);
-    } catch (error) {
-      console.error(error);
-      setIsRedirecting(false);
+      const response = await fetch("/api/bids", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to place bid");
+      }
+
+      await response.json();
+
+      // Show success message with toast
+      toast.bid.placed(totalBids + 1);
+
+      // Refresh the page to show updated bid count
+      router.refresh();
+    } catch (error: any) {
+      toast.bid.failed(error.message);
+    } finally {
+      setIsPlacingBid(false);
     }
   };
 

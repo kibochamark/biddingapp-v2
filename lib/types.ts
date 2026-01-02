@@ -68,7 +68,8 @@ export interface Account {
 
 export interface Address {
   id: string;
-  userId: string;
+  label?: string; 
+  accountId?: string;
   recipientName: string;
   phone: string;
   street: string;
@@ -76,7 +77,7 @@ export interface Address {
   state: string;
   zipCode: string;
   country: string;
-  isDefault: boolean;
+  isPrimary: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
