@@ -1,9 +1,10 @@
 "use client";
 
-import { Menu, Clock, TrendingUp, User } from "lucide-react";
+import { Menu, Clock, TrendingUp, User, X } from "lucide-react";
 import { useState } from "react";
 import { LoginLink, LogoutLink } from "@kinde-oss/kinde-auth-nextjs";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface MobileMenuProps {
   isAuthenticated: boolean;
@@ -24,20 +25,35 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         className="md:hidden p-2 hover:bg-accent rounded-lg transition-colors"
       >
-        <Menu className="h-5 w-5 text-foreground" />
+        {isMobileMenuOpen ? (
+          <></>
+        ) : (
+           <Menu className="h-5 w-5 text-foreground" />
+        )}
       </button>
 
       {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/20 z-40 md:hidden"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-30 md:hidden"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
 
-          {/* Menu Panel */}
-          <div className="fixed inset-y-0 right-0 w-64 bg-card shadow-xl z-50 md:hidden overflow-y-auto">
+            {/* Menu Panel - Dropdown style below navbar */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="fixed top-16 left-0 right-0 bg-card border-b border-border shadow-lg z-40 max-h-[calc(100vh-4rem)] overflow-y-auto md:hidden"
+            >
             <div className="p-4 space-y-3">
               {/* Close button */}
               <div className="flex justify-end mb-2">
@@ -45,7 +61,7 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="p-2 hover:bg-accent rounded-lg transition-colors"
                 >
-                  <Menu className="h-5 w-5 text-foreground" />
+                  <X className="h-5 w-5 text-foreground" />
                 </button>
               </div>
 
@@ -126,9 +142,10 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
                 </LoginLink>
               )}
             </div>
-          </div>
-        </>
-      )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 }

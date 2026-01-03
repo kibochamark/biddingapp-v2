@@ -59,7 +59,7 @@ export function SearchBar() {
   return (
     <>
       {/* Desktop Search Bar */}
-      <div className="hidden md:flex flex-1 max-w-xl mx-8">
+      <div className="hidden md:flex w-lg">
         <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
           <PopoverTrigger asChild>
             <div className="relative w-full">
@@ -70,32 +70,33 @@ export function SearchBar() {
                 value={searchQuery}
                 onChange={handleSearchChange}
                 onFocus={() => searchQuery.length > 0 && setIsSearchOpen(true)}
-                className="w-full px-4 py-2.5 pl-10 pr-10 rounded-full border border-input bg-muted focus:bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-sm"
+                className="w-full h-10 px-4 py-2 pl-10 pr-10 rounded-full border border-input bg-muted focus:bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-sm"
               />
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               {searchQuery && !isSearching && (
                 <button
                   onClick={handleClearSearch}
-                  className="absolute right-3 top-2.5 p-0.5 hover:bg-accent rounded-full transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-accent rounded-full transition-colors"
                 >
                   <X className="h-4 w-4 text-muted-foreground" />
                 </button>
               )}
               {isSearching && (
-                <Loader2 className="absolute right-3 top-3 h-4 w-4 text-primary animate-spin" />
+                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary animate-spin" />
               )}
             </div>
           </PopoverTrigger>
           <PopoverContent
-            className="w-[600px] p-0 mt-2"
+            className="w-[500px] p-2 mt-16 md:mt-0"
             align="start"
             onOpenAutoFocus={(e) => e.preventDefault()}
           >
-            <div className="max-h-[500px] overflow-y-auto">
+            <div className="max-h-[500px]  overflow-y-auto">
+              
               {/* Search Results */}
               {searchResults.length > 0 ? (
                 <div className="p-2">
-                  <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <div className="px-3 py-2 text-xs font-semibold text-white uppercase tracking-wider">
                     Found {searchResults.length} result{searchResults.length !== 1 ? 's' : ''}
                   </div>
                   {searchResults.slice(0, 6).map((product) => (
@@ -181,8 +182,8 @@ export function SearchBar() {
       </div>
 
       {/* Mobile Search Bar */}
-      <div className="md:hidden pb-4">
-        <div className="relative w-full">
+      <div className="md:hidden pb-4 relative"> 
+        <div className="relative w-full mt-4">
           <input
             type="text"
             placeholder="Search products..."
@@ -201,9 +202,11 @@ export function SearchBar() {
           )}
         </div>
 
+        
+
         {/* Mobile Search Results */}
-        {searchResults.length > 0 && (
-          <div className="mt-2 bg-background rounded-lg border border-border shadow-lg max-h-96 overflow-y-auto">
+        {/* {searchResults.length > 0 && (
+          <div className="mt-4 absolute z-50 top-10 bg-background rounded-lg border border-border shadow-lg max-h-96 overflow-y-auto">
             {searchResults.slice(0, 5).map((product) => (
               <Link
                 key={product.id}
@@ -235,7 +238,7 @@ export function SearchBar() {
               </Link>
             ))}
           </div>
-        )}
+        )} */}
       </div>
     </>
   );

@@ -5,7 +5,7 @@ import { apiFetch } from "../api";
 import axios from "axios";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ADDRESS_TAGS } from "../revalidatetags";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 
 
@@ -70,7 +70,7 @@ export async function createAddress(addressData: Omit<Address, "id" | "createdAt
     console.log("Create address response data:", res.data);
 
     // Revalidate cache after creating (using revalidateTag from next/cache instead)
-    revalidateTag("addresses", "max");
+    revalidatePath("/profile/addresses");
 
     console.log("Address created successfully:", res.data);
 
@@ -177,7 +177,10 @@ export async function setPrimaryAddress(id: string): Promise<Address> {
 
     // Using axios to set primary address
     const res = await axios.patch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/addresses/${id}/primary`
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/addresses/${id}`,
+      {
+        isPrimary: true
+      }
     );
 
     if (!res || res.status !== 200) {
@@ -186,7 +189,7 @@ export async function setPrimaryAddress(id: string): Promise<Address> {
 
     console.log("Primary address set successfully:", res.data);
 
-    revalidateTag("addresses", "max");
+    revalidatePath("/profile/addresses");
 
 
     return res.data;

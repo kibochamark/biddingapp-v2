@@ -12,17 +12,18 @@ export default async function Navbar() {
   const user = isUserAuthenticated ? await getUser() : null;
 
   return (
-    <nav className="sticky top-0 z-50 glass-navbar backdrop-blur-md">
+    <nav className="sticky top-0 z-40 glass-navbar backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center gap-1 sm:gap-4 h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center transform group-hover:scale-110 transition-transform">
               <TrendingUp className="h-5 w-5 text-primary-foreground" />
             </div>
-            <div className="text-xl font-bold text-foreground">
+            <div className="text-xl font-bold text-foreground hidden md:block">
               BidMarket
             </div>
+            <div className="text-xl font-bold text-foreground md:hidden">BM</div>
           </Link>
 
           {/* Desktop Navigation */}
@@ -53,7 +54,9 @@ export default async function Navbar() {
           </div>
 
           {/* Search Bar - Client Component */}
-          <SearchBar />
+          <div className="">
+            <SearchBar />
+          </div>
 
           {/* Right Icons */}
           <div className="flex items-center space-x-4">

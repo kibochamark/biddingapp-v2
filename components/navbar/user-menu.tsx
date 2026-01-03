@@ -44,10 +44,10 @@ export function UserMenu({ user }: UserMenuProps) {
         <>
           {/* Backdrop to close menu when clicking outside */}
           <div
-            className="fixed inset-0 z-40"
+            className="fixed inset-0 z-30"
             onClick={() => setShowUserMenu(false)}
           />
-          <div className="absolute top-12 right-0 w-56 bg-card rounded-xl shadow-lg border border-border py-2 z-50">
+          <div className="absolute top-12 right-0 w-56 bg-card rounded-xl shadow-lg border border-border py-2 z-40">
             <div className="px-4 py-3 border-b border-border">
               <p className="text-sm font-semibold text-card-foreground">
                 {user?.given_name} {user?.family_name}

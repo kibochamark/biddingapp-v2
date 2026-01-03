@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { CookieConsent } from "@/components/cookie-consent";
+import StoreProvider from "@/lib/redux/StoreProvider";
 import { Figtree } from 'next/font/google'
 import { Toaster } from "@/components/ui/sonner";
 
@@ -22,11 +23,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${figtree.className} bg-background text-foreground min-h-screen flex flex-col`}>
-        <Toaster />
-        <Navbar />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
-        <CookieConsent />
+        <StoreProvider>
+          <Toaster />
+          <Navbar />
+          <main className="min-h-screen">{children}</main>
+          <Footer />
+          <CookieConsent />
+        </StoreProvider>
       </body>
     </html>
   );
