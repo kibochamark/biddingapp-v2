@@ -173,7 +173,7 @@ export async function setPrimaryAddress(id: string): Promise<Address> {
       throw new Error("User ID is missing");
     }
 
-    console.log("Setting primary address:", id);
+    // console.log("Setting primary address:", id);
 
     // Using axios to set primary address
     const res = await axios.patch(
