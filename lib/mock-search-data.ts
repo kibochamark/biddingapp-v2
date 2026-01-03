@@ -1,0 +1,206 @@
+import { Product } from "./types";
+
+// Mock products for search functionality
+export const mockSearchProducts: Product[] = [
+  {
+    id: "1",
+    title: "iPhone 15 Pro Max 256GB",
+    description: "Latest iPhone with titanium design and A17 Pro chip",
+    categoryId: "electronics",
+    condition: "NEW",
+    images: ["https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400"],
+    startingPrice: 999,
+    biddingFee: 5,
+    originalPrice: 1199,
+    totalBids: 45,
+    status: "ACTIVE",
+    endDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+    sellerId: "seller1",
+    sellerName: "Tech Store",
+    sellerRating: 4.8,
+    specifications: {},
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "2",
+    title: "MacBook Pro 14-inch M3",
+    description: "Powerful laptop with M3 chip, 16GB RAM, 512GB SSD",
+    categoryId: "electronics",
+    condition: "NEW",
+    images: ["https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400"],
+    startingPrice: 1599,
+    biddingFee: 10,
+    originalPrice: 1999,
+    totalBids: 78,
+    status: "ACTIVE",
+    endDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+    sellerId: "seller2",
+    sellerName: "Apple Reseller",
+    sellerRating: 4.9,
+    specifications: {},
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "3",
+    title: "Sony PlayStation 5 Slim",
+    description: "Next-gen gaming console with 1TB storage",
+    categoryId: "gaming",
+    condition: "NEW",
+    images: ["https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400"],
+    startingPrice: 399,
+    biddingFee: 3,
+    originalPrice: 499,
+    totalBids: 120,
+    status: "ACTIVE",
+    endDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+    sellerId: "seller3",
+    sellerName: "Gaming Hub",
+    sellerRating: 4.7,
+    specifications: {},
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "4",
+    title: "Samsung 65-inch QLED 4K TV",
+    description: "Stunning 4K display with quantum dot technology",
+    categoryId: "electronics",
+    condition: "NEW",
+    images: ["https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400"],
+    startingPrice: 799,
+    biddingFee: 8,
+    originalPrice: 1299,
+    totalBids: 34,
+    status: "ACTIVE",
+    endDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+    sellerId: "seller1",
+    sellerName: "Tech Store",
+    sellerRating: 4.8,
+    specifications: {},
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "5",
+    title: "AirPods Pro 2nd Gen",
+    description: "Active noise cancellation, USB-C charging",
+    categoryId: "audio",
+    condition: "NEW",
+    images: ["https://images.unsplash.com/photo-1606841837239-c5a1a4a07af7?w=400"],
+    startingPrice: 179,
+    biddingFee: 2,
+    originalPrice: 249,
+    totalBids: 89,
+    status: "ACTIVE",
+    endDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+    sellerId: "seller2",
+    sellerName: "Apple Reseller",
+    sellerRating: 4.9,
+    specifications: {},
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "6",
+    title: "Canon EOS R6 Camera Body",
+    description: "Professional mirrorless camera with 20MP sensor",
+    categoryId: "cameras",
+    condition: "LIKE_NEW",
+    images: ["https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400"],
+    startingPrice: 1899,
+    biddingFee: 12,
+    originalPrice: 2499,
+    totalBids: 23,
+    status: "ACTIVE",
+    endDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+    sellerId: "seller4",
+    sellerName: "Camera World",
+    sellerRating: 4.6,
+    specifications: {},
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "7",
+    title: "Nintendo Switch OLED",
+    description: "Enhanced display model with vibrant OLED screen",
+    categoryId: "gaming",
+    condition: "NEW",
+    images: ["https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=400"],
+    startingPrice: 279,
+    biddingFee: 3,
+    originalPrice: 349,
+    totalBids: 156,
+    status: "ACTIVE",
+    endDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+    sellerId: "seller3",
+    sellerName: "Gaming Hub",
+    sellerRating: 4.7,
+    specifications: {},
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "8",
+    title: "Apple Watch Series 9",
+    description: "Smartwatch with S9 chip and always-on display",
+    categoryId: "wearables",
+    condition: "NEW",
+    images: ["https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=400"],
+    startingPrice: 329,
+    biddingFee: 4,
+    originalPrice: 429,
+    totalBids: 67,
+    status: "ACTIVE",
+    endDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+    sellerId: "seller2",
+    sellerName: "Apple Reseller",
+    sellerRating: 4.9,
+    specifications: {},
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
+
+/**
+ * Search products by query string
+ * @param query - Search query
+ * @returns Filtered products matching the query
+ */
+export function searchProducts(query: string): Product[] {
+  if (!query || query.trim().length === 0) {
+    return [];
+  }
+
+  const lowerQuery = query.toLowerCase().trim();
+
+  return mockSearchProducts.filter((product) => {
+    const titleMatch = product.title.toLowerCase().includes(lowerQuery);
+    const descriptionMatch = product.description.toLowerCase().includes(lowerQuery);
+    const sellerMatch = product.sellerName.toLowerCase().includes(lowerQuery);
+
+    return titleMatch || descriptionMatch || sellerMatch;
+  });
+}
+
+/**
+ * Get popular search suggestions
+ */
+export const popularSearches = [
+  "iPhone",
+  "MacBook",
+  "PlayStation",
+  "Camera",
+  "AirPods",
+  "Watch",
+];

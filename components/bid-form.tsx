@@ -26,6 +26,9 @@ export default function BidForm({
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const { isAuthenticated, isLoading } = useKindeBrowserClient();
+  const router = useRouter();
+
+  const [isPlacingBid, setIsPlacingBid] = useState(false);
 
   const handleStripeChoice = async () => {
     setIsRedirecting(true);

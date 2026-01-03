@@ -2,7 +2,7 @@
 import {withAuth} from "@kinde-oss/kinde-auth-nextjs/middleware";
 import { NextResponse } from "next/server";
 
-const publicroutes = ["/", "/catalog", "/product"];
+const publicroutes = ["/", "/catalog", "/product", "/about", "/cookies", "/terms", "/privacy", "/faq", "/how-it-works"];
 
 
 const apiAuthPrefix = "/api/auth";
@@ -17,7 +17,11 @@ export default function proxy(req) {
 
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isPublicRoute = publicroutes.includes(nextUrl.pathname);
+  const isPublicRoute = publicroutes.includes(nextUrl.pathname ) || publicroutes.some((route) => nextUrl.pathname.startsWith(route + "/"));
+
+  
+
+
 
 
   if (isApiAuthRoute) {
@@ -40,5 +44,5 @@ export default function proxy(req) {
 
 
 export const config = {
-  matcher: ["/(api|trpc)(.*)", "/", "/:path*", "/catalog", "/product/:path*"],
+  matcher: ["/(api|trpc)(.*)", "/", "/:path*"],
 };
