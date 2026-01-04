@@ -1,19 +1,11 @@
 // Product API functions with caching and revalidation
-
+"use server"
 import { Product } from "../types";
 import { apiFetch } from "../api";
 import { mockProducts, getFeaturedProducts, getNewestProducts, getEndingSoonProducts, getProductById } from "../mock-data";
+import { PRODUCT_TAGS } from "../revalidatetags";
 
-// Cache tags for revalidation
-export const PRODUCT_TAGS = {
-  all: "products",
-  list: "products-list",
-  detail: (id: string) => `product-${id}`,
-  category: (id: string) => `products-category-${id}`,
-  search: "products-search",
-  endingSoon: "products-ending-soon",
-  newest: "products-newest",
-};
+
 
 // Fetch all products with search and filters
 export async function searchProducts(params?: {

@@ -1,9 +1,9 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
-import { fetchKYCStatus } from "@/app/actions/kyc";
-import KYCSectionNew from "@/components/profile/kyc-section-new";
+import { fetchUSERKYCStatus } from "@/app/actions/kyc";
+import KYCSectionNew from "@/components/profile/kyc-section";
 
-export default async function VerificationPage() {
+export default async function page() {
   const { isAuthenticated, getUser } = getKindeServerSession();
 
   const authenticated = await isAuthenticated();
@@ -17,7 +17,8 @@ export default async function VerificationPage() {
   }
 
   // Fetch KYC status from server
-  const kycResult = await fetchKYCStatus();
+  const kycResult = await fetchUSERKYCStatus();
+  console.log('KYC Result in page:', kycResult);
   const kycData = kycResult.success ? kycResult.data : null;
 
   return <KYCSectionNew accountId={user.id} initialKYCData={kycData} />;

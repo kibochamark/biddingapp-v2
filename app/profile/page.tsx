@@ -2,6 +2,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
 import { fetchProfile } from "@/lib/api/account";
 import ProfileInfoClient from "@/components/profile/profile-info-client";
+import { fetchUSERKYCStatus } from "../actions/kyc";
 
 export default async function ProfilePage() {
   const { isAuthenticated, getUser } = getKindeServerSession();
@@ -15,6 +16,7 @@ export default async function ProfilePage() {
 
   // Fetch user profile data
   const userProfile = await fetchProfile().catch(() => null);
+  const verification_status = await fetchUSERKYCStatus() || "UNKNOWN";
 
   const profileData = {
     fullName: userProfile?.fullName || "",
@@ -22,5 +24,5 @@ export default async function ProfilePage() {
     email: user?.email || "",
   };
 
-  return <ProfileInfoClient initialData={profileData} />;
+  return <ProfileInfoClient initialData={profileData} verification_status={verification_status.data?.status ||"NOT_SUBMITTED"} />;
 }

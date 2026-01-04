@@ -6,6 +6,7 @@ import { Loader } from "lucide-react";
 import { createProfile } from "@/lib/api/account";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/lib/redux/hooks";
 
 interface ProfileInfoClientProps {
   initialData: {
@@ -13,6 +14,7 @@ interface ProfileInfoClientProps {
     contact: string;
     email: string;
   };
+  verification_status: "NOT_SUBMITTED" | "PENDING" | "VERIFIED" | "REJECTED" | "UNKNOWN";
 }
 
 const profileSchema = Yup.object({
@@ -23,8 +25,9 @@ const profileSchema = Yup.object({
     .required("Contact number is required"),
 });
 
-export default function ProfileInfoClient({ initialData }: ProfileInfoClientProps) {
+export default function ProfileInfoClient({ initialData, verification_status }: ProfileInfoClientProps) {
   const router = useRouter();
+
 
   const formik = useFormik({
     initialValues: initialData,
@@ -42,6 +45,8 @@ export default function ProfileInfoClient({ initialData }: ProfileInfoClientProp
       }
     },
   });
+
+
 
   return (
     <div className="space-y-6">
@@ -127,8 +132,13 @@ export default function ProfileInfoClient({ initialData }: ProfileInfoClientProp
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Verification status</span>
-            <span className="font-medium text-yellow-600">
-              Check Verification Tab
+            <span className={verification_status === 'VERIFIED' ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+              {verification_status === 'VERIFIED' ? 'Verified' : verification_status === 'NOT_SUBMITTED' ? 'Not Submitted' : verification_status === 'PENDING' ? 'Pending' : 'Not Verified'}
+              {verification_status !== 'VERIFIED'  && (
+                <span className="ml-2 text-sm text-primary underline cursor-pointer" onClick={() => router.push('/profile/verification')}>
+                  {verification_status === 'NOT_SUBMITTED' ? 'Start Verification' : verification_status === 'PENDING' ? 'View Status' : 'Retry Verification'}
+                </span>
+              )}
             </span>
           </div>
         </div>

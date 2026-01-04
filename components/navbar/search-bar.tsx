@@ -3,7 +3,8 @@
 import { Search, X, Loader2, TrendingUp } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
-import { searchProducts, popularSearches } from "@/lib/mock-search-data";
+import { searchProducts } from "@/lib/api/products";
+import { popularSearches } from "@/lib/mock-search-data";
 import { Product } from "@/lib/types";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import Image from "next/image";
@@ -22,13 +23,20 @@ export function SearchBar() {
   useEffect(() => {
     if (debouncedSearchQuery.trim().length > 0) {
       setIsSearching(true);
-      // Simulate API delay
-      setTimeout(() => {
-        const results = searchProducts(debouncedSearchQuery);
-        setSearchResults(results);
-        setIsSearching(false);
-        setIsSearchOpen(true);
-      }, 200);
+
+      // Call server action
+      searchProducts({ query: debouncedSearchQuery, limit: 20 })
+        .then((response) => {
+          setSearchResults(response.data);
+          setIsSearching(false);
+          setIsSearchOpen(true);
+        })
+        .catch((error) => {
+          console.error("Search error:", error);
+          setSearchResults([]);
+          setIsSearching(false);
+          setIsSearchOpen(true);
+        });
     } else {
       setSearchResults([]);
       setIsSearching(false);

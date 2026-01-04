@@ -1,36 +1,51 @@
 "use client";
 
-import { useState } from "react";
-import { ShieldCheck, AlertCircle, CheckCircle, Clock } from "lucide-react";
-import { KYCVerification } from "@/lib/types";
-import KYCForm from "./kyc-form";
+import { useEffect, useState } from "react";
+import { ShieldCheck, AlertCircle, CheckCircle, Clock, AlertTriangle, HelpCircle } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { setKYCData } from "@/lib/redux/slices/kycSlice";
+import { fetchUSERKYCStatus } from "@/app/actions/kyc";
+import KYCFormNew from "./kyc-form";
 
-interface KYCSectionProps {
-  kycStatus: KYCVerification | null;
-  userId: string;
+interface KYCSectionNewProps {
+  accountId: string;
+  initialKYCData: any;
 }
 
-export default function KYCSection({ kycStatus, userId }: KYCSectionProps) {
+export default function KYCSectionNew({ accountId, initialKYCData }: KYCSectionNewProps) {
+  const dispatch = useAppDispatch();
+  const { data } = useAppSelector((state) => state.kyc);
   const [showForm, setShowForm] = useState(false);
-  const [currentStatus, setCurrentStatus] = useState(kycStatus);
 
-  const handleFormSuccess = (verification: KYCVerification) => {
-    setCurrentStatus(verification);
-    setShowForm(false);
-  };
+  // Initialize Redux state with server data
+  useEffect(() => {
+    if (initialKYCData) {
+      dispatch(setKYCData(initialKYCData));
+    } else {
+      // No KYC data, initialize empty state
+      dispatch(setKYCData({
+        accountId,
+        status: 'NOT_SUBMITTED',
+        documents: [],
+      }));
+    }
+  }, [accountId, initialKYCData, dispatch]);
 
-  const status = currentStatus?.status || "NOT_SUBMITTED";
+  const status = data?.status || 'NOT_SUBMITTED';
 
   return (
     <div className="space-y-6">
       <div className="glass-card rounded-lg p-6">
-        <h2 className="text-xl font-bold mb-4">Identity Verification</h2>
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+          <ShieldCheck className="h-6 w-6 text-primary" />
+          Identity Verification
+        </h2>
         <p className="text-muted-foreground mb-6">
-          Complete your identity verification to unlock higher bidding limits
-          and seller privileges.
+          Complete your identity verification to unlock full bidding privileges.
         </p>
 
-        {status === "NOT_SUBMITTED" && !showForm && (
+        {/* NOT_SUBMITTED */}
+        {status === 'NOT_SUBMITTED' && !showForm && (
           <div className="space-y-4">
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
               <div className="flex gap-3">
@@ -40,7 +55,7 @@ export default function KYCSection({ kycStatus, userId }: KYCSectionProps) {
                     Verification Required
                   </h3>
                   <p className="text-sm text-blue-700 dark:text-blue-300">
-                    To participate in auctions and list items, you need to verify
+                    To place bids and participate in auctions, you need to verify
                     your identity. This process typically takes 1-2 business days.
                   </p>
                 </div>
@@ -50,9 +65,9 @@ export default function KYCSection({ kycStatus, userId }: KYCSectionProps) {
             <div className="space-y-2">
               <h3 className="font-semibold">What you'll need:</h3>
               <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                <li>Valid government-issued ID (Passport, Driver's License, or National ID)</li>
+                <li>Valid government-issued ID (National ID, Passport, or Driver's License)</li>
                 <li>Clear photo of yourself (selfie)</li>
-                <li>Proof of address document</li>
+                <li>Proof of address document (utility bill or bank statement)</li>
               </ul>
             </div>
 
@@ -65,15 +80,25 @@ export default function KYCSection({ kycStatus, userId }: KYCSectionProps) {
           </div>
         )}
 
-        {showForm && (
-          <KYCForm
-            userId={userId}
-            onSuccess={handleFormSuccess}
+        {/* FORM */}
+        {showForm && status === 'NOT_SUBMITTED' && (
+          <KYCFormNew
+            accountId={accountId}
+            onSuccess={() => {
+              setShowForm(false);
+              // Refresh KYC status
+              fetchUSERKYCStatus().then(result => {
+                if (result.success && result.data) {
+                  dispatch(setKYCData(result.data));
+                }
+              });
+            }}
             onCancel={() => setShowForm(false)}
           />
         )}
 
-        {status === "PENDING" && (
+        {/* PENDING */}
+        {status === 'PENDING' && (
           <div className="text-center py-8">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 dark:bg-yellow-900 rounded-full mb-4">
               <Clock className="h-8 w-8 text-yellow-600 dark:text-yellow-300" />
@@ -83,16 +108,27 @@ export default function KYCSection({ kycStatus, userId }: KYCSectionProps) {
               Your documents are being reviewed. This usually takes 1-2 business
               days.
             </p>
-            {currentStatus?.submittedAt && (
-              <p className="text-sm text-muted-foreground">
-                Submitted on{" "}
-                {new Date(currentStatus.submittedAt).toLocaleDateString()}
+            {data?.personalInfo && (
+              <div className="mt-6 bg-muted rounded-lg p-4 max-w-md mx-auto text-left">
+                <h4 className="font-semibold mb-2 text-sm">Submitted Information:</h4>
+                <div className="space-y-1 text-sm">
+                  <p><span className="text-muted-foreground">Name:</span> {data.personalInfo.fullName}</p>
+                  <p><span className="text-muted-foreground">Date of Birth:</span> {data.personalInfo.dateOfBirth}</p>
+                  <p><span className="text-muted-foreground">Nationality:</span> {data.personalInfo.nationality}</p>
+                  <p><span className="text-muted-foreground">Documents:</span> {data.documents.length} uploaded</p>
+                </div>
+              </div>
+            )}
+            {data?.submittedAt && (
+              <p className="text-sm text-muted-foreground mt-4">
+                Submitted on {new Date(data.submittedAt).toLocaleDateString()}
               </p>
             )}
           </div>
         )}
 
-        {status === "APPROVED" && (
+        {/* APPROVED */}
+        {status === 'VERIFIED' && (
           <div className="text-center py-8">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full mb-4">
               <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-300" />
@@ -101,28 +137,29 @@ export default function KYCSection({ kycStatus, userId }: KYCSectionProps) {
               Verification Complete
             </h3>
             <p className="text-muted-foreground mb-4">
-              Your account is fully verified and ready to go!
+              Your account is fully verified and ready to bid!
             </p>
-            {currentStatus?.verifiedAt && (
+            {data?.reviewedAt && (
               <p className="text-sm text-muted-foreground">
-                Verified on{" "}
-                {new Date(currentStatus.verifiedAt).toLocaleDateString()}
+                Verified on {new Date(data.reviewedAt).toLocaleDateString()}
               </p>
             )}
-            <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+            <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg max-w-md mx-auto">
               <h4 className="font-semibold mb-2 text-green-900 dark:text-green-100">
                 Benefits Unlocked:
               </h4>
               <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
-                <li>• Higher bidding limits</li>
-                <li>• Ability to create listings</li>
-                <li>• Faster checkout process</li>
+                <li>✓ Unlimited bidding access</li>
+                <li>✓ Ability to create listings</li>
+                <li>✓ Priority customer support</li>
+                <li>✓ Faster checkout process</li>
               </ul>
             </div>
           </div>
         )}
 
-        {status === "REJECTED" && (
+        {/* REJECTED */}
+        {status === 'REJECTED' && (
           <div className="text-center py-8">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-red-900 rounded-full mb-4">
               <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-300" />
@@ -131,10 +168,10 @@ export default function KYCSection({ kycStatus, userId }: KYCSectionProps) {
             <p className="text-muted-foreground mb-2">
               Unfortunately, we couldn't verify your documents.
             </p>
-            {currentStatus?.rejectionReason && (
-              <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+            {data?.rejectionReason && (
+              <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg max-w-md mx-auto">
                 <p className="text-sm text-red-700 dark:text-red-300">
-                  <strong>Reason:</strong> {currentStatus.rejectionReason}
+                  <strong>Reason:</strong> {data.rejectionReason}
                 </p>
               </div>
             )}
@@ -148,6 +185,37 @@ export default function KYCSection({ kycStatus, userId }: KYCSectionProps) {
             >
               Resubmit Verification
             </button>
+          </div>
+        )}
+
+        {/* NEEDS MORE INFO STATE */}
+        {status === 'NEEDS_MORE_INFO' && (
+          <div className="text-center py-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 dark:bg-yellow-900 rounded-full mb-4">
+              <AlertTriangle className="h-8 w-8 text-yellow-600 dark:text-yellow-300" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">Info is not enough</h3>
+            <p className="text-muted-foreground mb-4">
+              {initialKYCData.rejectionReason || 'We need more information to verify your identity. Please provide the requested details.'}
+            </p>
+            {data?.submittedAt && (
+              <p className="text-sm text-muted-foreground">
+                Submitted on {new Date(data.submittedAt).toLocaleDateString()}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* UNKNOWN STATE */}
+        {status === 'UNKNOWN' && (
+          <div className="text-center py-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-900 rounded-full mb-4">
+              <HelpCircle className="h-8 w-8 text-gray-600 dark:text-gray-300" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">Verification Status Unknown</h3>
+            <p className="text-muted-foreground mb-4">
+              We couldn't determine your verification status. Please contact support.
+            </p>
           </div>
         )}
       </div>

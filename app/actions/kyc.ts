@@ -7,9 +7,9 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 /**
  * Fetch KYC status for the authenticated user
  */
-export async function fetchKYCStatus() {
+export async function fetchUSERKYCStatus() {
   try {
-    const { isAuthenticated, getAccessTokenRaw } = getKindeServerSession();
+    const { isAuthenticated, getAccessTokenRaw, getUser } = getKindeServerSession();
     const authenticated = await isAuthenticated();
 
     if (!authenticated) {
@@ -17,8 +17,12 @@ export async function fetchKYCStatus() {
     }
 
     const accessToken = await getAccessTokenRaw();
+    const user = await getUser();
 
-    const response = await fetch(`${API_URL}/kyc`, {
+
+    console.log('Fetching KYC status for user:', user);
+
+    const response = await fetch(`${API_URL}/kyc/status/${user?.id}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -41,6 +45,7 @@ export async function fetchKYCStatus() {
     }
 
     const data = await response.json();
+    // console.log('Fetched KYC status:', data);
     return { success: true, data };
   } catch (error) {
     console.error('Error fetching KYC status:', error);

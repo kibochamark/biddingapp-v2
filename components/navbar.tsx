@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { TrendingUp, Clock, Gavel } from "lucide-react";
+import { TrendingUp, Clock, Gavel, Package } from "lucide-react";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { SearchBar } from "./navbar/search-bar";
 import { UserMenu } from "./navbar/user-menu";
 import { MobileMenu } from "./navbar/mobile-menu";
+import { BidToolTip } from "./navbar/bidtooltip";
 
 export default async function Navbar() {
   const { isAuthenticated, getUser } = getKindeServerSession();
@@ -12,75 +13,70 @@ export default async function Navbar() {
   const user = isUserAuthenticated ? await getUser() : null;
 
   return (
-    <nav className="sticky top-0 z-40 glass-navbar backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center gap-1 sm:gap-4 h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 group">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center transform group-hover:scale-110 transition-transform">
-              <TrendingUp className="h-5 w-5 text-primary-foreground" />
+    <nav className="sticky top-0 z-40 glass-navbar backdrop-blur-md border-b border-border">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+        <div className="flex items-center justify-between h-16 gap-2 sm:gap-3">
+          {/* Logo - Responsive */}
+          <Link href="/" className="flex items-center gap-2 group shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-primary to-orange-600 rounded-lg flex items-center justify-center transform group-hover:scale-110 transition-transform shadow-md">
+              <Package className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
-            <div className="text-xl font-bold text-foreground hidden md:block">
-              BidMarket
+            <div className="hidden sm:block">
+              <div className="text-lg sm:text-xl font-bold text-foreground whitespace-nowrap">
+                BidMarket
+              </div>
             </div>
-            <div className="text-xl font-bold text-foreground md:hidden">BM</div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex lg:ml-2 items-center space-x-6">
+          {/* Desktop Navigation Links */}
+          <div className="hidden lg:flex items-center gap-1 xl:gap-2 shrink-0">
             <Link
               href="/catalog"
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors relative group"
+              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all whitespace-nowrap group"
             >
-              Browse Auctions
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
+              <Package className="h-4 w-4 group-hover:scale-110 transition-transform" />
+              <span>Browse</span>
             </Link>
             <Link
               href="/catalog?filter=ending-soon"
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors relative group flex items-center gap-1"
+              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all whitespace-nowrap group"
             >
-              <Clock className="h-4 w-4" />
-              Ending Soon
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
+              <Clock className="h-4 w-4 group-hover:scale-110 transition-transform" />
+              <span>Ending Soon</span>
             </Link>
             <Link
               href="/catalog?filter=trending"
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors relative group flex items-center gap-1"
+              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all whitespace-nowrap group"
             >
-              <TrendingUp className="h-4 w-4" />
-              Trending
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
+              <TrendingUp className="h-4 w-4 group-hover:scale-110 transition-transform" />
+              <span>Trending</span>
             </Link>
           </div>
 
-          {/* Search Bar - Client Component */}
-          <div className="">
+          {/* Search Bar - Flexible width */}
+          <div className="flex-1 max-w-md block mx-2 sm:mx-3 lg:mx-4">
             <SearchBar />
           </div>
 
-          {/* Right Icons */}
-          <div className="flex items-center space-x-4">
-            {/* My Bids - Only show when authenticated */}
+          {/* Right Section - Auth & Menu */}
+          <div className="flex items-center gap-2 mx-4 sm:gap-3 shrink-0">
+            {/* My Bids - Desktop only, icon + text on larger screens */}
             {isUserAuthenticated && (
-              <Link
-                href="/profile?tab=bids"
-                className="hidden md:flex items-center gap-2 px-4 py-2 hover:bg-accent rounded-full transition-colors group"
-              >
-                <Gavel className="h-4 w-4 text-foreground group-hover:text-primary transition-colors" />
-                <span className="text-sm font-medium text-foreground group-hover:text-primary">My Bids</span>
-              </Link>
+              <BidToolTip />
             )}
 
-            {/* Desktop Auth UI */}
-            {isUserAuthenticated && user ? (
-              <UserMenu user={user} />
-            ) : (
-              <LoginLink className="hidden md:block px-5 py-2.5 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-all text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105">
-                Sign In
-              </LoginLink>
-            )}
+            {/* Desktop Auth - Hidden on mobile */}
+            <div className="hidden md:flex items-center">
+              {isUserAuthenticated && user ? (
+                <UserMenu user={user} />
+              ) : (
+                <LoginLink className="px-4 py-2 bg-gradient-to-r from-primary to-orange-600 text-white rounded-lg hover:from-primary/90 hover:to-orange-600/90 transition-all text-sm font-medium shadow-md hover:shadow-lg whitespace-nowrap">
+                  Sign In
+                </LoginLink>
+              )}
+            </div>
 
-            {/* Mobile Menu - Client Component */}
+            {/* Mobile Menu - Always visible on small screens */}
             <MobileMenu
               isAuthenticated={!!isUserAuthenticated}
               user={user}

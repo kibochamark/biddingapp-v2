@@ -16,7 +16,7 @@ export interface KYCDocument {
 export interface KYCData {
   id?: string;
   accountId: string;
-  status: 'NOT_SUBMITTED' | 'PENDING' | 'APPROVED' | 'REJECTED';
+  status: 'NOT_SUBMITTED' | 'PENDING' | 'VERIFIED' | 'REJECTED' | 'NEEDS_MORE_INFO' | 'UNKNOWN';
   personalInfo?: KYCPersonalInfo;
   documents: KYCDocument[];
   rejectionReason?: string;
