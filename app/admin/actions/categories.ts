@@ -58,7 +58,7 @@ export async function fetchAdminCategories() {
 
     const accessToken = await getAccessTokenRaw();
 
-    const response = await fetch(`${API_URL}/admin/categories`, {
+    const response = await fetch(`${API_URL}/categories`, {
       headers: {
         "Authorization": `Bearer ${accessToken}`,
         "Content-Type": "application/json",
@@ -80,11 +80,49 @@ export async function fetchAdminCategories() {
 }
 
 /**
+ * Get category by ID
+ */
+export async function getCategoryById(categoryId: string) {
+  try {
+    const { getPermission, getAccessTokenRaw } = getKindeServerSession();
+
+    // Check permission
+    const canManageCategories = await getPermission("manage:categories");
+    if (!canManageCategories?.isGranted) {
+      return { success: false, error: "Unauthorized: Missing manage:categories permission" };
+    }
+
+    const accessToken = await getAccessTokenRaw();
+
+    const response = await fetch(`${API_URL}/admin/categories/${categoryId}`, {
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      return { success: false, error: error.message || "Failed to fetch category" };
+    }
+
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error fetching category:", error);
+    return { success: false, error: "An error occurred while fetching category" };
+  }
+}
+
+/**
  * Create a new category
  */
 export async function createCategory(categoryData: {
+  slug: string;
   name: string;
   description?: string;
+  icon?: string;
   parentId?: string | null;
 }) {
   try {
@@ -98,7 +136,7 @@ export async function createCategory(categoryData: {
 
     const accessToken = await getAccessTokenRaw();
 
-    const response = await fetch(`${API_URL}/admin/categories`, {
+    const response = await fetch(`${API_URL}/categories`, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${accessToken}`,
@@ -133,6 +171,7 @@ export async function updateCategory(
   categoryData: {
     name?: string;
     description?: string;
+    icon?: string;
     parentId?: string | null;
   }
 ) {
@@ -147,8 +186,8 @@ export async function updateCategory(
 
     const accessToken = await getAccessTokenRaw();
 
-    const response = await fetch(`${API_URL}/admin/categories/${categoryId}`, {
-      method: "PUT",
+    const response = await fetch(`${API_URL}/categories/${categoryId}`, {
+      method: "PATCH",
       headers: {
         "Authorization": `Bearer ${accessToken}`,
         "Content-Type": "application/json",
@@ -189,7 +228,7 @@ export async function deleteCategory(categoryId: string) {
 
     const accessToken = await getAccessTokenRaw();
 
-    const response = await fetch(`${API_URL}/admin/categories/${categoryId}`, {
+    const response = await fetch(`${API_URL}/categories/${categoryId}`, {
       method: "DELETE",
       headers: {
         "Authorization": `Bearer ${accessToken}`,

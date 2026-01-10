@@ -10,7 +10,7 @@ import DeleteModal from "@/components/admin/DeleteModal";
 import { deleteProduct } from "../actions/products";
 
 
-export const productcolumns: ColumnDef<Product & { category: { name :string}}>[] = [
+export const productcolumns: ColumnDef<Product>[] = [
     {
         id: "actions",
         header: "Actions",

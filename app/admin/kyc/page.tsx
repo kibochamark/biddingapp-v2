@@ -1,17 +1,6 @@
-import { Suspense } from "react";
-import { Loader, ShieldCheck, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import KYCList from "./kyc-list";
-
-function KYCLoading() {
-  return (
-    <div className="flex items-center justify-center min-h-[400px]">
-      <div className="flex flex-col items-center gap-4">
-        <Loader className="animate-spin text-primary w-12 h-12" />
-        <p className="text-muted-foreground">Loading KYC submissions...</p>
-      </div>
-    </div>
-  );
-}
+import { fetchKYCSubmissions, fetchKYCStats } from "../actions/kyc";
 
 // Stats cards for KYC overview
 function KYCStats({ stats }: { stats: any }) {
@@ -24,7 +13,7 @@ function KYCStats({ stats }: { stats: any }) {
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Pending</p>
-            <p className="text-2xl font-bold text-foreground">{stats.pending}</p>
+            <p className="text-2xl font-bold text-foreground">{stats.pending || 0}</p>
           </div>
         </div>
       </div>
@@ -35,7 +24,7 @@ function KYCStats({ stats }: { stats: any }) {
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Approved</p>
-            <p className="text-2xl font-bold text-foreground">{stats.approved}</p>
+            <p className="text-2xl font-bold text-foreground">{stats.approved || 0}</p>
           </div>
         </div>
       </div>
@@ -46,7 +35,7 @@ function KYCStats({ stats }: { stats: any }) {
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Rejected</p>
-            <p className="text-2xl font-bold text-foreground">{stats.rejected}</p>
+            <p className="text-2xl font-bold text-foreground">{stats.rejected || 0}</p>
           </div>
         </div>
       </div>
@@ -57,7 +46,7 @@ function KYCStats({ stats }: { stats: any }) {
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Not Submitted</p>
-            <p className="text-2xl font-bold text-foreground">{stats.notSubmitted}</p>
+            <p className="text-2xl font-bold text-foreground">{stats.notSubmitted || 0}</p>
           </div>
         </div>
       </div>
@@ -66,13 +55,18 @@ function KYCStats({ stats }: { stats: any }) {
 }
 
 export default async function KYCPage() {
-  // TODO: Fetch KYC stats from API
-  const stats = {
-    pending: 12,
-    approved: 458,
-    rejected: 23,
-    notSubmitted: 750,
+  // Fetch KYC stats and submissions from server
+  const statsResult = await fetchKYCStats();
+  const submissionsResult = await fetchKYCSubmissions();
+
+  const stats = statsResult.success ? statsResult.data : {
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+    notSubmitted: 0,
   };
+
+  const submissions = submissionsResult.success && submissionsResult.data ? submissionsResult.data : [];
 
   return (
     <div className="space-y-6">
@@ -88,9 +82,7 @@ export default async function KYCPage() {
       <KYCStats stats={stats} />
 
       {/* KYC List */}
-      <Suspense fallback={<KYCLoading />}>
-        <KYCList />
-      </Suspense>
+      <KYCList initialSubmissions={submissions} />
     </div>
   );
 }

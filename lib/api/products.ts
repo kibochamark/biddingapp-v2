@@ -154,10 +154,16 @@ export async function fetchFeaturedProducts(): Promise<Product[]> {
 // Fetch single product by ID
 export async function fetchProductById(id: string): Promise<Product | null> {
   try {
-    const data = await apiFetch<Product>(
-      `/products/${id}`,
-      { tags: [PRODUCT_TAGS.all, PRODUCT_TAGS.detail(id)] }
-    );
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`, 
+      {
+        next:{tags:[`product/${id}`]}
+      }
+    )
+
+    console.log(response)
+
+    const data = await response.json()
+    
     return data;
   } catch (error) {
     console.warn("API failed, using mock data:", error);

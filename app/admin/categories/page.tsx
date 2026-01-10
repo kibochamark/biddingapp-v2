@@ -1,19 +1,11 @@
-import { Suspense } from "react";
-import { Loader, FolderTree } from "lucide-react";
+import { FolderTree } from "lucide-react";
 import CategoriesManager from "./categories-manager";
-
-function CategoriesLoading() {
-  return (
-    <div className="flex items-center justify-center min-h-[400px]">
-      <div className="flex flex-col items-center gap-4">
-        <Loader className="animate-spin text-primary w-12 h-12" />
-        <p className="text-muted-foreground">Loading categories...</p>
-      </div>
-    </div>
-  );
-}
+import { fetchAdminCategories } from "../actions/categories";
 
 export default async function CategoriesPage() {
+  const result = await fetchAdminCategories();
+  const categories = result.success && result.data ? result.data : [];
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -34,9 +26,7 @@ export default async function CategoriesPage() {
       </div>
 
       {/* Categories Manager */}
-      <Suspense fallback={<CategoriesLoading />}>
-        <CategoriesManager />
-      </Suspense>
+      <CategoriesManager initialCategories={categories} />
     </div>
   );
 }

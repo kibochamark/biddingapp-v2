@@ -11,7 +11,7 @@ export function formatPrice(price: number): string {
 
 export function formatTimeRemaining(endDate: Date): string {
   const now = new Date();
-  const diff = endDate.getTime() - now.getTime();
+  const diff = new Date(endDate).getTime() - now.getTime();
 
   if (diff <= 0) {
     return "Ended";

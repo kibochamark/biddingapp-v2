@@ -7,9 +7,9 @@ import { ChevronRight, TrendingUp, PackageX } from "lucide-react";
 import ProductDetailClient from "@/components/product/product-detail-client";
 
 interface ProductPageProps {
-  params: {
+
     id: string;
-  };
+  
 }
 
 async function RelatedProducts({ categoryId, currentProductId }: { categoryId: string; currentProductId: string }) {
@@ -49,8 +49,9 @@ const hoursFromNow = (hours: number) => {
   return date;
 };
 
-export default async function ProductPage({ params }: ProductPageProps) {
-  const product_id = await params.id;
+export default async function ProductPage({ params }: {params:Promise<ProductPageProps>}) {
+  const product_id = (await params).id;
+  console.log(product_id)
 
   const product = await fetchProductById(product_id);
 
@@ -134,8 +135,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 }
 
 // Generate metadata for SEO
-export async function generateMetadata({ params }: ProductPageProps) {
-  const product = await fetchProductById(params.id);
+export async function generateMetadata({ params }: {params :Promise<ProductPageProps>}) {
+  const id = (await params).id
+  const product = await fetchProductById(id);
 
   if (!product) {
     return {

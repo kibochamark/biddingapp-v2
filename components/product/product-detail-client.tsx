@@ -110,7 +110,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 >
                   {formatCondition(product.condition)}
                 </span>
-                {product.endDate.getTime() - new Date().getTime() <
+                {new Date(product.endDate).getTime() - new Date().getTime() <
                   24 * 60 * 60 * 1000 && (
                   <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-linear-to-r from-red-500 to-orange-500 text-white animate-pulse">
                     Ending Soon
@@ -127,10 +127,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 <span className="text-sm font-medium text-muted-foreground">Time Remaining</span>
               </div>
               <p className="text-2xl font-bold text-primary">
-                {formatTimeRemaining(product.endDate)}
+                {formatTimeRemaining(new Date(product.endDate))}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Ends {formatDateTime(product.endDate)}
+                Ends {formatDateTime(new Date(product.endDate))}
               </p>
             </div>
 
@@ -143,7 +143,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   {product.sellerRating && (
                     <div className="flex items-center gap-1 mt-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-semibold">{product.sellerRating.toFixed(1)}</span>
+                      <span className="text-sm font-semibold">{product.sellerRating}</span>
                       <span className="text-xs text-muted-foreground">(124 reviews)</span>
                     </div>
                   )}

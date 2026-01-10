@@ -4,6 +4,38 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { revalidatePath } from "next/cache";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const KINDE_DOMAIN = process.env.KINDE_ISSUER_URL?.replace("https://", "") || "";
+const KINDE_M2M_CLIENT_ID = process.env.KINDE_M2M_CLIENT_ID;
+const KINDE_M2M_CLIENT_SECRET = process.env.KINDE_M2M_CLIENT_SECRET;
+
+/**
+ * Get Kinde Management API access token
+ */
+async function getKindeManagementToken() {
+  if (!KINDE_M2M_CLIENT_ID || !KINDE_M2M_CLIENT_SECRET) {
+    throw new Error("Kinde M2M credentials not configured");
+  }
+
+  const response = await fetch(`https://${KINDE_DOMAIN}/oauth2/token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      grant_type: "client_credentials",
+      client_id: KINDE_M2M_CLIENT_ID,
+      client_secret: KINDE_M2M_CLIENT_SECRET,
+      audience: `https://${KINDE_DOMAIN}/api`,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to get Kinde management token");
+  }
+
+  const data = await response.json();
+  return data.access_token;
+}
 
 /**
  * Fetch all user accounts
@@ -106,6 +138,7 @@ export async function terminateAccount(accountId: string, reason: string, perman
 
     const accessToken = await getAccessTokenRaw();
 
+    // Step 1: Terminate in our backend
     const response = await fetch(`${API_URL}/admin/accounts/${accountId}/terminate`, {
       method: "POST",
       headers: {
@@ -121,6 +154,48 @@ export async function terminateAccount(accountId: string, reason: string, perman
     }
 
     const data = await response.json();
+    const kindeUserId = data.kindeId;
+
+    // Step 2: Delete/Suspend user in Kinde if we have their Kinde ID
+    if (kindeUserId && permanent) {
+      try {
+        const managementToken = await getKindeManagementToken();
+
+        // Delete user from Kinde (permanent termination)
+        await fetch(`https://${KINDE_DOMAIN}/api/v1/user?id=${kindeUserId}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${managementToken}`,
+            "Accept": "application/json",
+          },
+        });
+      } catch (kindeError) {
+        console.error("Error deleting user from Kinde:", kindeError);
+        // Don't fail the whole operation if Kinde deletion fails
+        // The user is already marked as terminated in our system
+      }
+    } else if (kindeUserId && !permanent) {
+      try {
+        const managementToken = await getKindeManagementToken();
+
+        // Suspend user in Kinde (can be reactivated later)
+        await fetch(`https://${KINDE_DOMAIN}/api/v1/user`, {
+          method: "PATCH",
+          headers: {
+            "Authorization": `Bearer ${managementToken}`,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({
+            id: kindeUserId,
+            is_suspended: true,
+          }),
+        });
+      } catch (kindeError) {
+        console.error("Error suspending user in Kinde:", kindeError);
+        // Don't fail the whole operation if Kinde suspension fails
+      }
+    }
 
     // Revalidate accounts pages
     revalidatePath("/admin/accounts");
@@ -148,6 +223,7 @@ export async function reactivateAccount(accountId: string) {
 
     const accessToken = await getAccessTokenRaw();
 
+    // Step 1: Reactivate in our backend
     const response = await fetch(`${API_URL}/admin/accounts/${accountId}/reactivate`, {
       method: "POST",
       headers: {
@@ -162,6 +238,31 @@ export async function reactivateAccount(accountId: string) {
     }
 
     const data = await response.json();
+    const kindeUserId = data.kindeId;
+
+    // Step 2: Unsuspend user in Kinde if we have their Kinde ID
+    if (kindeUserId) {
+      try {
+        const managementToken = await getKindeManagementToken();
+
+        // Unsuspend user in Kinde
+        await fetch(`https://${KINDE_DOMAIN}/api/v1/user`, {
+          method: "PATCH",
+          headers: {
+            "Authorization": `Bearer ${managementToken}`,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({
+            id: kindeUserId,
+            is_suspended: false,
+          }),
+        });
+      } catch (kindeError) {
+        console.error("Error unsuspending user in Kinde:", kindeError);
+        // Don't fail the whole operation if Kinde unsuspension fails
+      }
+    }
 
     // Revalidate accounts pages
     revalidatePath("/admin/accounts");

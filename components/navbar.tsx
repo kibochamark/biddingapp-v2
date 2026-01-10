@@ -8,9 +8,16 @@ import { UserMenu } from "./navbar/user-menu";
 import { MobileMenu } from "./navbar/mobile-menu";
 import { BidToolTip } from "./navbar/bidtooltip";
 import { usePathname } from "next/navigation";
-import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
+import { KindeUser, useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
-export default  function Navbar(user:any, isUserAuthenticated:boolean=false) {
+export default  function Navbar() {
+  const {isAuthenticated, getUser} = useKindeBrowserClient()
+
+  let user:any ={}
+  if(isAuthenticated){
+    user = getUser()
+  }
+
   const router = usePathname();
 
   if (router.startsWith("/admin")) {
@@ -66,13 +73,13 @@ export default  function Navbar(user:any, isUserAuthenticated:boolean=false) {
           {/* Right Section - Auth & Menu */}
           <div className="flex items-center gap-2 mx-4 sm:gap-3 shrink-0">
             {/* My Bids - Desktop only, icon + text on larger screens */}
-            {isUserAuthenticated && (
+            {isAuthenticated && (
               <BidToolTip />
             )}
 
             {/* Desktop Auth - Hidden on mobile */}
             <div className="hidden md:flex items-center">
-              {isUserAuthenticated && user ? (
+              {isAuthenticated && user ? (
                 <UserMenu user={user} />
               ) : (
                 <LoginLink className="px-4 py-2 bg-linear-to-r from-primary to-orange-600 text-white rounded-lg hover:from-primary/90 hover:to-orange-600/90 transition-all text-sm font-medium shadow-md hover:shadow-lg whitespace-nowrap">
@@ -83,7 +90,7 @@ export default  function Navbar(user:any, isUserAuthenticated:boolean=false) {
 
             {/* Mobile Menu - Always visible on small screens */}
             <MobileMenu
-              isAuthenticated={!!isUserAuthenticated}
+              isAuthenticated={!!isAuthenticated}
               user={user}
             />
           </div>

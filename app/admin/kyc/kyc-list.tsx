@@ -1,66 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { Eye, CheckCircle, XCircle, User, FileText, Calendar } from "lucide-react";
+import { useState, useEffect } from "react";
+import { XCircle, CheckCircle, User, FileText, X, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { approveKYC, rejectKYC } from "../actions/kyc";
+import { approveKYC, rejectKYC, deleteKYC, requestMoreInfo } from "../actions/kyc";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { DataTable } from "@/Globalcomponents/ReusableTable";
+import { kycColumns } from "./columns";
 
-// Mock data - replace with real data from server
-const mockKYCSubmissions = [
-  {
-    id: "1",
-    accountId: "acc_123",
-    userName: "John Doe",
-    userEmail: "john@example.com",
-    status: "PENDING",
-    submittedAt: new Date("2024-01-15"),
-    personalInfo: {
-      fullName: "John Doe",
-      dateOfBirth: "1990-05-15",
-      nationality: "United States",
-    },
-    documents: [
-      { documentType: "NATIONAL_ID", url: "/placeholder.png" },
-      { documentType: "SELFIE", url: "/placeholder.png" },
-    ],
-  },
-  {
-    id: "2",
-    accountId: "acc_456",
-    userName: "Jane Smith",
-    userEmail: "jane@example.com",
-    status: "PENDING",
-    submittedAt: new Date("2024-01-16"),
-    personalInfo: {
-      fullName: "Jane Smith",
-      dateOfBirth: "1992-08-20",
-      nationality: "Canada",
-    },
-    documents: [
-      { documentType: "PASSPORT", url: "/placeholder.png" },
-      { documentType: "SELFIE", url: "/placeholder.png" },
-    ],
-  },
-];
-
-function StatusBadge({ status }: { status: string }) {
-  const styles = {
-    PENDING: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-    APPROVED: "bg-green-500/10 text-green-600 border-green-500/20",
-    REJECTED: "bg-red-500/10 text-red-600 border-red-500/20",
-    NOT_SUBMITTED: "bg-gray-500/10 text-gray-600 border-gray-500/20",
-  };
-
-  return (
-    <span
-      className={`px-2 py-1 text-xs font-medium rounded-full border ${
-        styles[status as keyof typeof styles]
-      }`}
-    >
-      {status.replace("_", " ")}
-    </span>
-  );
+interface KYCListProps {
+  initialSubmissions: any[];
 }
 
 function KYCReviewModal({
@@ -68,29 +18,52 @@ function KYCReviewModal({
   onClose,
   onApprove,
   onReject,
+  onRequestMoreInfo,
+  onDelete,
 }: {
   submission: any;
   onClose: () => void;
   onApprove: () => void;
   onReject: (reason: string) => void;
+  onRequestMoreInfo: (reason: string) => void;
+  onDelete: () => void;
 }) {
   const [rejectionReason, setRejectionReason] = useState("");
+  const [moreInfoReason, setMoreInfoReason] = useState("");
   const [showRejectForm, setShowRejectForm] = useState(false);
+  const [showMoreInfoForm, setShowMoreInfoForm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleApprove = async () => {
+  const handleApprove = () => {
     setIsSubmitting(true);
-    await onApprove();
+    onApprove();
     setIsSubmitting(false);
   };
 
-  const handleReject = async () => {
+  const handleReject = () => {
     if (!rejectionReason.trim()) {
-      alert("Please provide a rejection reason");
+      toast.error("Please provide a rejection reason");
       return;
     }
     setIsSubmitting(true);
-    await onReject(rejectionReason);
+    onReject(rejectionReason);
+    setIsSubmitting(false);
+  };
+
+  const handleRequestMoreInfo = () => {
+    if (!moreInfoReason.trim()) {
+      toast.error("Please provide a reason for requesting more information");
+      return;
+    }
+    setIsSubmitting(true);
+    onRequestMoreInfo(moreInfoReason);
+    setIsSubmitting(false);
+  };
+
+  const handleDelete = () => {
+    setIsSubmitting(true);
+    onDelete();
     setIsSubmitting(false);
   };
 
@@ -98,19 +71,19 @@ function KYCReviewModal({
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-card rounded-xl border border-border max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-card border-b border-border p-6">
+        <div className="sticky top-0 bg-card border-b border-border p-6 z-10">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-foreground">KYC Review</h2>
               <p className="text-sm text-muted-foreground mt-1">
-                Review submission for {submission.userName}
+                Review submission for {submission.fullName}
               </p>
             </div>
             <button
               onClick={onClose}
               className="p-2 hover:bg-accent rounded-lg transition-colors"
             >
-              ✕
+              <X className="h-5 w-5" />
             </button>
           </div>
         </div>
@@ -127,25 +100,31 @@ function KYCReviewModal({
               <div>
                 <p className="text-sm text-muted-foreground">Full Name</p>
                 <p className="text-base font-medium text-foreground">
-                  {submission.personalInfo.fullName}
+                  {submission.fullName}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Date of Birth</p>
                 <p className="text-base font-medium text-foreground">
-                  {submission.personalInfo.dateOfBirth}
+                  {submission.dateOfBirth}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Nationality</p>
                 <p className="text-base font-medium text-foreground">
-                  {submission.personalInfo.nationality}
+                  {submission.nationality}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Email</p>
+                <p className="text-sm text-muted-foreground">Account ID</p>
+                <p className="text-xs font-medium text-foreground font-mono">
+                  {submission.accountId}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Document Type</p>
                 <p className="text-base font-medium text-foreground">
-                  {submission.userEmail}
+                  {submission.documentType?.replace("_", " ") || "N/A"}
                 </p>
               </div>
             </div>
@@ -157,32 +136,116 @@ function KYCReviewModal({
               <FileText className="h-5 w-5" />
               Uploaded Documents
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {submission.documents.map((doc: any, index: number) => (
-                <div key={index} className="border border-border rounded-lg p-4">
-                  <p className="text-sm font-medium text-foreground mb-3">
-                    {doc.documentType.replace("_", " ")}
-                  </p>
-                  <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* ID Document */}
+              {submission.idDocumentUrl && (
+                <div className="border border-border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-foreground">
+                      {submission.documentType?.replace("_", " ") || "ID Document"}
+                    </p>
+                    {submission.idDocumentNumber && (
+                      <span className="text-xs text-muted-foreground">
+                        #{submission.idDocumentNumber}
+                      </span>
+                    )}
+                  </div>
+                  <div className="relative aspect-video bg-muted rounded-lg overflow-hidden group">
                     <Image
-                      src={doc.url}
-                      alt={doc.documentType}
+                      src={submission.idDocumentUrl}
+                      alt="ID Document"
                       fill
                       className="object-cover"
                     />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <a
+                        href={submission.idDocumentUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1.5 bg-white text-black rounded-md text-xs font-medium hover:bg-white/90"
+                      >
+                        View Full Size
+                      </a>
+                    </div>
                   </div>
-                  <a
-                    href={doc.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-primary hover:underline mt-2 inline-block"
-                  >
-                    View Full Size
-                  </a>
                 </div>
-              ))}
+              )}
+
+              {/* Proof of Address */}
+              {submission.proofOfAddressUrl && (
+                <div className="border border-border rounded-lg p-4 space-y-3">
+                  <p className="text-sm font-medium text-foreground">
+                    Proof of Address
+                  </p>
+                  <div className="relative aspect-video bg-muted rounded-lg overflow-hidden group">
+                    <Image
+                      src={submission.proofOfAddressUrl}
+                      alt="Proof of Address"
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <a
+                        href={submission.proofOfAddressUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1.5 bg-white text-black rounded-md text-xs font-medium hover:bg-white/90"
+                      >
+                        View Full Size
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Selfie */}
+              {submission.selfieUrl && (
+                <div className="border border-border rounded-lg p-4 space-y-3">
+                  <p className="text-sm font-medium text-foreground">
+                    Selfie Verification
+                  </p>
+                  <div className="relative aspect-video bg-muted rounded-lg overflow-hidden group">
+                    <Image
+                      src={submission.selfieUrl}
+                      alt="Selfie"
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <a
+                        href={submission.selfieUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1.5 bg-white text-black rounded-md text-xs font-medium hover:bg-white/90"
+                      >
+                        View Full Size
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!submission.idDocumentUrl && !submission.proofOfAddressUrl && !submission.selfieUrl && (
+                <p className="text-sm text-muted-foreground col-span-full">No documents uploaded</p>
+              )}
             </div>
           </div>
+
+          {/* Rejection Reason (if rejected) */}
+          {submission.status === "REJECTED" && submission.rejectionReason && (
+            <div className="border border-red-500/20 rounded-lg p-4 bg-red-500/5">
+              <h3 className="text-sm font-semibold text-foreground mb-2">Rejection Reason</h3>
+              <p className="text-sm text-muted-foreground">{submission.rejectionReason}</p>
+            </div>
+          )}
+
+          {/* More Info Reason (if needs more info) */}
+          {submission.status === "NEEDS_MORE_INFO" && submission.rejectionReason && (
+            <div className="border border-blue-500/20 rounded-lg p-4 bg-blue-500/5">
+              <h3 className="text-sm font-semibold text-foreground mb-2">Additional Information Requested</h3>
+              <p className="text-sm text-muted-foreground">{submission.rejectionReason}</p>
+            </div>
+          )}
 
           {/* Rejection Form */}
           {showRejectForm && (
@@ -199,55 +262,134 @@ function KYCReviewModal({
               />
             </div>
           )}
+
+          {/* Request More Info Form */}
+          {showMoreInfoForm && (
+            <div className="border border-border rounded-lg p-4 bg-blue-500/5">
+              <label className="block text-sm font-medium text-foreground mb-2">
+                What additional information is needed? *
+              </label>
+              <textarea
+                value={moreInfoReason}
+                onChange={(e) => setMoreInfoReason(e.target.value)}
+                placeholder="Explain what additional information or documents are needed..."
+                className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                rows={4}
+              />
+            </div>
+          )}
+
+          {/* Delete Confirmation */}
+          {showDeleteConfirm && (
+            <div className="border border-destructive/20 rounded-lg p-4 bg-destructive/5">
+              <p className="text-sm font-medium text-foreground mb-2">
+                Are you sure you want to delete this KYC submission?
+              </p>
+              <p className="text-xs text-muted-foreground">This action cannot be undone.</p>
+            </div>
+          )}
         </div>
 
         {/* Actions */}
         <div className="sticky bottom-0 bg-card border-t border-border p-6">
-          <div className="flex items-center justify-end gap-3">
+          <div className="flex items-center justify-between gap-3">
             <button
-              onClick={onClose}
+              onClick={() => setShowDeleteConfirm(!showDeleteConfirm)}
               disabled={isSubmitting}
-              className="px-6 py-2.5 border border-border rounded-lg hover:bg-accent transition-all text-sm font-medium disabled:opacity-50"
+              className="px-4 py-2 text-destructive hover:bg-destructive/10 rounded-lg transition-all text-sm font-medium flex items-center gap-2 disabled:opacity-50"
             >
-              Cancel
+              <Trash2 className="h-4 w-4" />
+              Delete KYC
             </button>
-            {!showRejectForm ? (
-              <>
-                <button
-                  onClick={() => setShowRejectForm(true)}
-                  disabled={isSubmitting}
-                  className="px-6 py-2.5 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-all text-sm font-medium flex items-center gap-2 disabled:opacity-50"
-                >
-                  <XCircle className="h-4 w-4" />
-                  Reject
-                </button>
-                <button
-                  onClick={handleApprove}
-                  disabled={isSubmitting}
-                  className="px-6 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all text-sm font-medium flex items-center gap-2 disabled:opacity-50"
-                >
-                  <CheckCircle className="h-4 w-4" />
-                  {isSubmitting ? "Approving..." : "Approve"}
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => setShowRejectForm(false)}
-                  disabled={isSubmitting}
-                  className="px-6 py-2.5 border border-border rounded-lg hover:bg-accent transition-all text-sm font-medium disabled:opacity-50"
-                >
-                  Back
-                </button>
-                <button
-                  onClick={handleReject}
-                  disabled={isSubmitting}
-                  className="px-6 py-2.5 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-all text-sm font-medium disabled:opacity-50"
-                >
-                  {isSubmitting ? "Rejecting..." : "Confirm Rejection"}
-                </button>
-              </>
-            )}
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={onClose}
+                disabled={isSubmitting}
+                className="px-6 py-2.5 border border-border rounded-lg hover:bg-accent transition-all text-sm font-medium disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              {showDeleteConfirm ? (
+                <>
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    disabled={isSubmitting}
+                    className="px-6 py-2.5 border border-border rounded-lg hover:bg-accent transition-all text-sm font-medium disabled:opacity-50"
+                  >
+                    Back
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    disabled={isSubmitting}
+                    className="px-6 py-2.5 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-all text-sm font-medium disabled:opacity-50"
+                  >
+                    {isSubmitting ? "Deleting..." : "Confirm Delete"}
+                  </button>
+                </>
+              ) : !showRejectForm && !showMoreInfoForm && submission.status === "PENDING" ? (
+                <>
+                  <button
+                    onClick={() => setShowMoreInfoForm(true)}
+                    disabled={isSubmitting}
+                    className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all text-sm font-medium flex items-center gap-2 disabled:opacity-50"
+                  >
+                    <FileText className="h-4 w-4" />
+                    Request More Info
+                  </button>
+                  <button
+                    onClick={() => setShowRejectForm(true)}
+                    disabled={isSubmitting}
+                    className="px-6 py-2.5 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-all text-sm font-medium flex items-center gap-2 disabled:opacity-50"
+                  >
+                    <XCircle className="h-4 w-4" />
+                    Reject
+                  </button>
+                  <button
+                    onClick={handleApprove}
+                    disabled={isSubmitting}
+                    className="px-6 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all text-sm font-medium flex items-center gap-2 disabled:opacity-50"
+                  >
+                    <CheckCircle className="h-4 w-4" />
+                    {isSubmitting ? "Approving..." : "Approve"}
+                  </button>
+                </>
+              ) : showRejectForm ? (
+                <>
+                  <button
+                    onClick={() => setShowRejectForm(false)}
+                    disabled={isSubmitting}
+                    className="px-6 py-2.5 border border-border rounded-lg hover:bg-accent transition-all text-sm font-medium disabled:opacity-50"
+                  >
+                    Back
+                  </button>
+                  <button
+                    onClick={handleReject}
+                    disabled={isSubmitting}
+                    className="px-6 py-2.5 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-all text-sm font-medium disabled:opacity-50"
+                  >
+                    {isSubmitting ? "Rejecting..." : "Confirm Rejection"}
+                  </button>
+                </>
+              ) : showMoreInfoForm ? (
+                <>
+                  <button
+                    onClick={() => setShowMoreInfoForm(false)}
+                    disabled={isSubmitting}
+                    className="px-6 py-2.5 border border-border rounded-lg hover:bg-accent transition-all text-sm font-medium disabled:opacity-50"
+                  >
+                    Back
+                  </button>
+                  <button
+                    onClick={handleRequestMoreInfo}
+                    disabled={isSubmitting}
+                    className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all text-sm font-medium disabled:opacity-50"
+                  >
+                    {isSubmitting ? "Requesting..." : "Send Request"}
+                  </button>
+                </>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
@@ -255,21 +397,19 @@ function KYCReviewModal({
   );
 }
 
-export default function KYCList() {
+export default function KYCList({ initialSubmissions }: KYCListProps) {
   const router = useRouter();
   const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
-  const [filter, setFilter] = useState<string>("PENDING");
-
-  const filteredSubmissions = mockKYCSubmissions.filter(
-    (sub) => filter === "ALL" || sub.status === filter
-  );
 
   const handleApprove = async () => {
     if (!selectedSubmission) return;
     const result = await approveKYC(selectedSubmission.id);
     if (result.success) {
+      toast.success("KYC approved successfully");
       setSelectedSubmission(null);
       router.refresh();
+    } else {
+      toast.error(result.error || "Failed to approve KYC");
     }
   };
 
@@ -277,120 +417,84 @@ export default function KYCList() {
     if (!selectedSubmission) return;
     const result = await rejectKYC(selectedSubmission.id, reason);
     if (result.success) {
+      toast.success("KYC rejected");
       setSelectedSubmission(null);
       router.refresh();
+    } else {
+      toast.error(result.error || "Failed to reject KYC");
     }
   };
 
+  const handleRequestMoreInfo = async (reason: string) => {
+    if (!selectedSubmission) return;
+    const result = await requestMoreInfo(selectedSubmission.id, reason);
+    if (result.success) {
+      toast.success("Request for additional information sent");
+      setSelectedSubmission(null);
+      router.refresh();
+    } else {
+      toast.error(result.error || "Failed to request more information");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!selectedSubmission) return;
+    const result = await deleteKYC(selectedSubmission.id);
+    if (result.success) {
+      toast.success("KYC submission deleted");
+      setSelectedSubmission(null);
+      router.refresh();
+    } else {
+      toast.error(result.error || "Failed to delete KYC");
+    }
+  };
+
+  // Listen for custom review events from the table
+  useEffect(() => {
+    const handleReviewEvent = (event: any) => {
+      setSelectedSubmission(event.detail.submission);
+    };
+
+    document.addEventListener("kyc-review", handleReviewEvent);
+    return () => {
+      document.removeEventListener("kyc-review", handleReviewEvent);
+    };
+  }, []);
+
   return (
     <div className="space-y-4">
-      {/* Filters */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <button
-          onClick={() => setFilter("ALL")}
-          className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-            filter === "ALL"
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-foreground hover:bg-accent"
-          }`}
-        >
-          All
-        </button>
-        <button
-          onClick={() => setFilter("PENDING")}
-          className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-            filter === "PENDING"
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-foreground hover:bg-accent"
-          }`}
-        >
-          Pending
-        </button>
-        <button
-          onClick={() => setFilter("APPROVED")}
-          className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-            filter === "APPROVED"
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-foreground hover:bg-accent"
-          }`}
-        >
-          Approved
-        </button>
-        <button
-          onClick={() => setFilter("REJECTED")}
-          className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-            filter === "REJECTED"
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-foreground hover:bg-accent"
-          }`}
-        >
-          Rejected
-        </button>
-      </div>
-
-      {/* Table */}
-      <div className="glass-card rounded-xl border border-border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-muted/50">
-              <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
-                  User
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
-                  Status
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
-                  Submitted
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
-                  Documents
-                </th>
-                <th className="px-6 py-4 text-right text-sm font-semibold text-foreground">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {filteredSubmissions.map((submission) => (
-                <tr key={submission.id} className="hover:bg-accent/50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div>
-                      <p className="text-sm font-medium text-foreground">
-                        {submission.userName}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{submission.userEmail}</p>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <StatusBadge status={submission.status} />
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Calendar className="h-4 w-4" />
-                      {submission.submittedAt.toLocaleDateString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <p className="text-sm text-muted-foreground">
-                      {submission.documents.length} files
-                    </p>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => setSelectedSubmission(submission)}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all text-sm font-medium"
-                    >
-                      <Eye className="h-4 w-4" />
-                      Review
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <DataTable
+        columns={kycColumns}
+        data={initialSubmissions}
+        search_alias_name="KYC submissions"
+        filters={[
+          {
+            filtercolumn: "status",
+            filtervalue: "All",
+          },
+          {
+            filtercolumn: "status",
+            filtervalue: "PENDING",
+            classnames: "border border-amber-500/20 bg-amber-500/10 text-amber-600 hover:bg-amber-500/20",
+          },
+          {
+            filtercolumn: "status",
+            filtervalue: "NEEDS_MORE_INFO",
+            classnames: "border border-blue-500/20 bg-blue-500/10 text-blue-600 hover:bg-blue-500/20",
+          },
+          {
+            filtercolumn: "status",
+            filtervalue: "APPROVED",
+            classnames: "border border-green-500/20 bg-green-500/10 text-green-600 hover:bg-green-500/20",
+          },
+          {
+            filtercolumn: "status",
+            filtervalue: "REJECTED",
+            classnames: "border border-red-500/20 bg-red-500/10 text-red-600 hover:bg-red-500/20",
+          },
+        ]}
+        defaultfilter="All"
+      />
 
       {/* Review Modal */}
       {selectedSubmission && (
@@ -399,6 +503,8 @@ export default function KYCList() {
           onClose={() => setSelectedSubmission(null)}
           onApprove={handleApprove}
           onReject={handleReject}
+          onRequestMoreInfo={handleRequestMoreInfo}
+          onDelete={handleDelete}
         />
       )}
     </div>
