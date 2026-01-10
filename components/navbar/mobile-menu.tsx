@@ -99,7 +99,7 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
                             className="w-10 h-10 rounded-full border-2 border-primary/20"
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center">
+                          <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary to-orange-600 flex items-center justify-center">
                             <User className="h-5 w-5 text-white" />
                           </div>
                         )}
@@ -148,7 +148,7 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
                   </>
                 ) : (
                   <div className="border-t border-border pt-4 mt-4">
-                    <LoginLink className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gradient-to-r from-primary to-orange-600 text-white rounded-lg hover:from-primary/90 hover:to-orange-600/90 text-sm font-medium transition-all shadow-md">
+                    <LoginLink className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-linear-to-r from-primary to-orange-600 text-white rounded-lg hover:from-primary/90 hover:to-orange-600/90 text-sm font-medium transition-all shadow-md">
                       <User className="h-4 w-4" />
                       <span>Sign In</span>
                     </LoginLink>

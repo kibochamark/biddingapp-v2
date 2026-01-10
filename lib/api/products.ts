@@ -191,3 +191,25 @@ export async function fetchProductsByCategory(
     };
   }
 }
+
+
+
+interface ProductResponse {
+  data:Product[],
+  pagination:any
+}
+
+
+export async function getAllProducts(limit?: string): Promise<Product[]> {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL!}/products?${limit?`?limit=${limit}`:""}`, {
+      next:{tags:["adminproducts"]}
+    })
+    const products: ProductResponse = await response.json()
+    console.log(products, "pr")
+    return products.data;
+  } catch (error) {
+    console.warn("API failed, using mock data:", error);
+    return [];
+  }
+}

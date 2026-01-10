@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link";
 import { TrendingUp, Clock, Gavel, Package } from "lucide-react";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
@@ -6,11 +7,15 @@ import { SearchBar } from "./navbar/search-bar";
 import { UserMenu } from "./navbar/user-menu";
 import { MobileMenu } from "./navbar/mobile-menu";
 import { BidToolTip } from "./navbar/bidtooltip";
+import { usePathname } from "next/navigation";
+import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 
-export default async function Navbar() {
-  const { isAuthenticated, getUser } = getKindeServerSession();
-  const isUserAuthenticated = await isAuthenticated();
-  const user = isUserAuthenticated ? await getUser() : null;
+export default  function Navbar(user:any, isUserAuthenticated:boolean=false) {
+  const router = usePathname();
+
+  if (router.startsWith("/admin")) {
+    return null; // Do not render navbar on admin pages
+  }
 
   return (
     <nav className="sticky top-0 z-40 glass-navbar backdrop-blur-md border-b border-border">
@@ -18,7 +23,7 @@ export default async function Navbar() {
         <div className="flex items-center justify-between h-16 gap-2 sm:gap-3">
           {/* Logo - Responsive */}
           <Link href="/" className="flex items-center gap-2 group shrink-0">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-primary to-orange-600 rounded-lg flex items-center justify-center transform group-hover:scale-110 transition-transform shadow-md">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-linear-to-br from-primary to-orange-600 rounded-lg flex items-center justify-center transform group-hover:scale-110 transition-transform shadow-md">
               <Package className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
             <div className="hidden sm:block">
@@ -70,7 +75,7 @@ export default async function Navbar() {
               {isUserAuthenticated && user ? (
                 <UserMenu user={user} />
               ) : (
-                <LoginLink className="px-4 py-2 bg-gradient-to-r from-primary to-orange-600 text-white rounded-lg hover:from-primary/90 hover:to-orange-600/90 transition-all text-sm font-medium shadow-md hover:shadow-lg whitespace-nowrap">
+                <LoginLink className="px-4 py-2 bg-linear-to-r from-primary to-orange-600 text-white rounded-lg hover:from-primary/90 hover:to-orange-600/90 transition-all text-sm font-medium shadow-md hover:shadow-lg whitespace-nowrap">
                   Sign In
                 </LoginLink>
               )}
@@ -85,5 +90,5 @@ export default async function Navbar() {
         </div>
       </div>
     </nav>
-  );
+  )
 }

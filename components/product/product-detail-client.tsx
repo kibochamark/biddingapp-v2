@@ -112,7 +112,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 </span>
                 {product.endDate.getTime() - new Date().getTime() <
                   24 * 60 * 60 * 1000 && (
-                  <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-red-500 to-orange-500 text-white animate-pulse">
+                  <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-linear-to-r from-red-500 to-orange-500 text-white animate-pulse">
                     Ending Soon
                   </span>
                 )}
@@ -121,7 +121,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </div>
 
             {/* Time Remaining Card */}
-            <div className="p-4 bg-gradient-to-br from-primary/10 to-orange-600/10 border-2 border-primary/20 rounded-xl">
+            <div className="p-4 bg-linear-to-br from-primary/10 to-orange-600/10 border-2 border-primary/20 rounded-xl">
               <div className="flex items-center gap-2 mb-2">
                 <Clock className="h-5 w-5 text-primary" />
                 <span className="text-sm font-medium text-muted-foreground">Time Remaining</span>

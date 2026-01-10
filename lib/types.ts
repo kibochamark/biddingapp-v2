@@ -1,6 +1,6 @@
 // Type definitions based on API documentation
 
-export type ProductCondition = "NEW" | "LIKE_NEW" | "GOOD" | "FAIR" | "POOR";
+export type ProductCondition = "NEW" | "MINT" | "EXCELLENT" | "GOOD" | "FAIR" | "LIKE_NEW" | "POOR";
 export type KycStatus = "NOT_SUBMITTED" | "PENDING" | "APPROVED" | "REJECTED";
 export type ProductStatus = "DRAFT" | "ACTIVE" | "CLOSED" | "WINNER_SELECTED" | "COMPLETED" | "CANCELLED";
 export type BidStatus = "PENDING" | "CONFIRMED" | "FAILED" | "REFUNDED" | "WON" | "LOST";

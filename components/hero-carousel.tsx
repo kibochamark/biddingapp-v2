@@ -47,7 +47,7 @@ export default function HeroCarousel({ products }: HeroCarouselProps) {
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/50 to-transparent" />
       </div>
 
       {/* Content */}

@@ -94,9 +94,9 @@ export default function BidFormNew({
 
     if (needsVerification) {
       return (
-        <div className="p-6 border-2 border-amber-200 dark:border-amber-800 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl">
+        <div className="p-6 border-2 border-amber-200 dark:border-amber-800 bg-linear-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl">
           <div className="flex items-start gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/40 dark:to-orange-900/40 rounded-full shrink-0">
+            <div className="p-3 bg-linear-to-br from-amber-100 to-orange-100 dark:from-amber-900/40 dark:to-orange-900/40 rounded-full shrink-0">
               <AlertCircle className="h-6 w-6 text-amber-700 dark:text-amber-400" />
             </div>
             <div className="flex-1">
@@ -109,7 +109,7 @@ export default function BidFormNew({
               </p>
               <Link
                 href="/profile/verification"
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white rounded-lg font-medium transition-all shadow-md hover:shadow-lg transform hover:scale-105"
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-linear-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white rounded-lg font-medium transition-all shadow-md hover:shadow-lg transform hover:scale-105"
               >
                 <ShieldCheck className="h-4 w-4" />
                 Complete Verification
@@ -161,7 +161,7 @@ export default function BidFormNew({
               <button
                 onClick={() => setShowPaymentModal(true)}
                 disabled={!isActive}
-                className="w-full py-3.5 bg-gradient-to-r from-primary to-orange-600 text-white rounded-lg font-semibold hover:from-primary/90 hover:to-orange-600/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg transform hover:scale-105"
+                className="w-full py-3.5 bg-linear-to-r from-primary to-orange-600 text-white rounded-lg font-semibold hover:from-primary/90 hover:to-orange-600/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg transform hover:scale-105"
               >
                 <Gavel className="h-5 w-5" />
                 Place Bid Now
@@ -171,7 +171,7 @@ export default function BidFormNew({
             )
           ) : (
             <div className="space-y-3">
-              <LoginLink className="w-full py-3.5 bg-gradient-to-r from-primary to-orange-600 text-white rounded-lg font-semibold hover:from-primary/90 hover:to-orange-600/90 flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg transform hover:scale-105">
+              <LoginLink className="w-full py-3.5 bg-linear-to-r from-primary to-orange-600 text-white rounded-lg font-semibold hover:from-primary/90 hover:to-orange-600/90 flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg transform hover:scale-105">
                 <Gavel className="h-5 w-5" />
                 Sign In to Place Bid
               </LoginLink>
@@ -194,7 +194,7 @@ export default function BidFormNew({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <div className="glass-card bg-background border-2 border-border w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in duration-200">
             {/* Modal Header */}
-            <div className="p-6 border-b border-border bg-gradient-to-r from-primary/5 to-orange-600/5">
+            <div className="p-6 border-b border-border bg-linear-to-r from-primary/5 to-orange-600/5">
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-xl font-bold">Select Payment Method</h3>
@@ -219,7 +219,7 @@ export default function BidFormNew({
                 onClick={handlePlaceBid}
                 className="w-full group relative flex items-center justify-between p-5 border-2 border-border rounded-xl hover:border-primary hover:bg-primary/5 transition-all text-left disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute inset-0 bg-linear-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="flex items-center gap-4 relative z-10">
                   <div className="p-3 bg-primary/10 rounded-xl text-primary group-hover:scale-110 transition-transform">
                     <CreditCard className="h-6 w-6" />
@@ -241,7 +241,7 @@ export default function BidFormNew({
                 onClick={() => toast.info("PayPal integration coming soon!")}
                 className="w-full group relative flex items-center justify-between p-5 border-2 border-border rounded-xl hover:border-blue-500 hover:bg-blue-500/5 transition-all text-left disabled:opacity-50"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/5 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute inset-0 bg-linear-to-r from-blue-500/0 via-blue-500/5 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="flex items-center gap-4 relative z-10">
                   <div className="p-3 bg-blue-500/10 rounded-xl text-blue-500 group-hover:scale-110 transition-transform">
                     <Wallet className="h-6 w-6" />

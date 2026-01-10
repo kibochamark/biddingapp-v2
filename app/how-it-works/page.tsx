@@ -11,7 +11,7 @@ export default function HowItWorksPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <div className="bg-gradient-to-b from-primary/5 to-background border-b border-border">
+      <div className="bg-linear-to-b from-primary/5 to-background border-b border-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-6">
             <TrendingUp className="h-8 w-8 text-primary-foreground" />
@@ -114,7 +114,7 @@ export default function HowItWorksPage() {
         <section className="mb-20">
           <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Real-World Example</h2>
           <div className="max-w-4xl mx-auto">
-            <div className="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-8">
+            <div className="bg-linear-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-8">
               <div className="flex items-center gap-3 mb-6">
                 <Gift className="h-6 w-6 text-primary" />
                 <h3 className="text-xl font-semibold text-foreground">MacBook Pro 14" Auction</h3>
@@ -273,7 +273,7 @@ export default function HowItWorksPage() {
 
         {/* CTA Section */}
         <section className="text-center">
-          <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-2xl p-12 max-w-3xl mx-auto">
+          <div className="bg-linear-to-br from-primary to-primary/80 text-primary-foreground rounded-2xl p-12 max-w-3xl mx-auto">
             <Trophy className="h-16 w-16 mx-auto mb-6" />
             <h2 className="text-3xl font-bold mb-4">Ready to Win?</h2>
             <p className="text-lg mb-8 opacity-90">

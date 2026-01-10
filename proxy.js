@@ -17,22 +17,24 @@ export default function proxy(req) {
 
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isPublicRoute = publicroutes.includes(nextUrl.pathname ) || publicroutes.some((route) => nextUrl.pathname.startsWith(route + "/"));
 
-  
-
-
-
+  // Check if route is public - handle home page and other routes
+  const isPublicRoute =
+    nextUrl.pathname === "/" ||
+    publicroutes.some((route) => {
+      if (route === "/") return nextUrl.pathname === "/";
+      return nextUrl.pathname.startsWith(route);
+    });
 
   if (isApiAuthRoute) {
     if (isauthenticated){
         return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, req.url));
     }
-    return null;
+    return NextResponse.next();
   }
 
   if (isPublicRoute) {
-    return null;
+    return NextResponse.next();
   }
 
   return withAuth(req, {

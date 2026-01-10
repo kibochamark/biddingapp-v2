@@ -11,8 +11,19 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol:'https',
+        hostname:'res.cloudinary.com',
+        port:'',
+        pathname:'/**'
+      }
     ]
-  }  
+  } ,
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '5mb',
+    },
+  }, 
   
 };
 
