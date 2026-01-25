@@ -5,6 +5,7 @@ import ProductCard from "@/components/product-card";
 import { ProductsGridSkeleton } from "@/components/loading-skeleton";
 import { ChevronRight, TrendingUp, PackageX } from "lucide-react";
 import ProductDetailClient from "@/components/product/product-detail-client";
+import PaymentNotification from "@/components/bid/payment-notification";
 
 interface ProductPageProps {
 
@@ -108,6 +109,9 @@ export default async function ProductPage({ params }: {params:Promise<ProductPag
 
   return (
     <div className="min-h-screen bg-linear-to-b from-background to-muted/20">
+      {/* Payment Notification Handler */}
+      <PaymentNotification />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">

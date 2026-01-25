@@ -13,9 +13,7 @@ import {
 const tabs = [
   { href: "/profile", label: "Profile", icon: User },
   { href: "/profile/addresses", label: "Addresses", icon: MapPin },
-  { href: "/profile/verification", label: "Verification", icon: ShieldCheck },
   { href: "/profile/bids", label: "My Bids", icon: Gavel },
-  { href: "/profile/listings", label: "My Listings", icon: Package },
 ];
 
 export default function ProfileNav() {

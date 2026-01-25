@@ -6,7 +6,7 @@ import { KindeUser } from '@kinde-oss/kinde-auth-nextjs';
 const MainNavbar = async () => {
     const { isAuthenticated, getUser } = getKindeServerSession();
     const isUserAuthenticated = await isAuthenticated();
-    const user = isUserAuthenticated ? await getUser() : null;
+    const user = isUserAuthenticated ? await getUser() : {};
 
 
   return (

@@ -69,7 +69,7 @@ export default function CatalogPage(props: CatalogPageProps) {
       <Suspense
         fallback={
           <div className="flex gap-8">
-            <aside className="hidden lg:block w-64 flex-shrink-0">
+            <aside className="hidden lg:block w-64 shrink-0">
               <CategoryGridSkeleton />
             </aside>
             <div className="flex-1">

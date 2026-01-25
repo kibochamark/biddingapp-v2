@@ -26,7 +26,7 @@ export default function RootLayout({
       <body className={`${figtree.className} bg-background text-foreground min-h-screen flex flex-col`}>
         <StoreProvider>
           <Toaster />
-          <Navbar />
+          <Navbar user={{}}/>
           <main className="min-h-screen">{children}</main>
           <Footer />
           <CookieConsent />

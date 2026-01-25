@@ -14,7 +14,6 @@ interface ProfileInfoClientProps {
     contact: string;
     email: string;
   };
-  verification_status: "NOT_SUBMITTED" | "PENDING" | "VERIFIED" | "REJECTED" | "UNKNOWN";
 }
 
 const profileSchema = Yup.object({
@@ -25,7 +24,7 @@ const profileSchema = Yup.object({
     .required("Contact number is required"),
 });
 
-export default function ProfileInfoClient({ initialData, verification_status }: ProfileInfoClientProps) {
+export default function ProfileInfoClient({ initialData }: ProfileInfoClientProps) {
   const router = useRouter();
 
 
@@ -129,17 +128,6 @@ export default function ProfileInfoClient({ initialData, verification_status }: 
           <div className="flex justify-between">
             <span className="text-muted-foreground">Account Type</span>
             <span className="font-medium">Standard Member</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Verification status</span>
-            <span className={verification_status === 'VERIFIED' ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
-              {verification_status === 'VERIFIED' ? 'Verified' : verification_status === 'NOT_SUBMITTED' ? 'Not Submitted' : verification_status === 'PENDING' ? 'Pending' : 'Not Verified'}
-              {verification_status !== 'VERIFIED'  && (
-                <span className="ml-2 text-sm text-primary underline cursor-pointer" onClick={() => router.push('/profile/verification')}>
-                  {verification_status === 'NOT_SUBMITTED' ? 'Start Verification' : verification_status === 'PENDING' ? 'View Status' : 'Retry Verification'}
-                </span>
-              )}
-            </span>
           </div>
         </div>
       </div>

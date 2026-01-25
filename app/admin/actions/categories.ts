@@ -118,13 +118,7 @@ export async function getCategoryById(categoryId: string) {
 /**
  * Create a new category
  */
-export async function createCategory(categoryData: {
-  slug: string;
-  name: string;
-  description?: string;
-  icon?: string;
-  parentId?: string | null;
-}) {
+export async function createCategory(formData: FormData) {
   try {
     const { getPermission, getAccessTokenRaw } = getKindeServerSession();
 
@@ -140,9 +134,8 @@ export async function createCategory(categoryData: {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
       },
-      body: JSON.stringify(categoryData),
+      body: formData,
     });
 
     if (!response.ok) {
@@ -168,12 +161,7 @@ export async function createCategory(categoryData: {
  */
 export async function updateCategory(
   categoryId: string,
-  categoryData: {
-    name?: string;
-    description?: string;
-    icon?: string;
-    parentId?: string | null;
-  }
+  formData: FormData
 ) {
   try {
     const { getPermission, getAccessTokenRaw } = getKindeServerSession();
@@ -190,9 +178,8 @@ export async function updateCategory(
       method: "PATCH",
       headers: {
         "Authorization": `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
       },
-      body: JSON.stringify(categoryData),
+      body: formData,
     });
 
     if (!response.ok) {

@@ -18,8 +18,7 @@ interface ProductFormValues {
   title: string;
   description: string;
   condition: ProductCondition;
-  reservePrice: number;
-  buyNowPrice: number;
+  retailValue: number;
   endDate: string;
   sellerName: string;
   specifications: string;
@@ -59,8 +58,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
     title: product.title,
     description: product.description,
     condition: product.condition,
-    reservePrice: product.reservePrice || 0,
-    buyNowPrice: product.buyNowPrice || 0,
+    retailValue: product.retailValue|| 0,
     endDate: formatDateForInput(product.endDate),
     sellerName: product.sellerName,
     specifications: JSON.stringify(product.specifications, null, 2),
@@ -83,8 +81,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
         title: values.title,
         description: values.description,
         condition: values.condition,
-        reservePrice: values.reservePrice,
-        buyNowPrice: values.buyNowPrice,
+        retailValue: values.retailValue,
         endDate: values.endDate,
         sellerName: values.sellerName,
         specifications,
@@ -221,43 +218,24 @@ export default function EditProductForm({ product }: EditProductFormProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Reserve Price */}
                 <div>
-                  <label htmlFor="reservePrice" className="block text-sm font-medium mb-2">
+                  <label htmlFor="retailValue" className="block text-sm font-medium mb-2">
                     Reserve Price
                   </label>
                   <Field
                     type="number"
-                    id="reservePrice"
-                    name="reservePrice"
+                    id="retailValue"
+                    name="retailValue"
                     step="0.01"
                     className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
                     placeholder="0.00"
                   />
                   <ErrorMessage
-                    name="reservePrice"
+                    name="retailValue"
                     component="div"
                     className="text-destructive text-sm mt-1"
                   />
                 </div>
 
-                {/* Buy Now Price */}
-                <div>
-                  <label htmlFor="buyNowPrice" className="block text-sm font-medium mb-2">
-                    Buy Now Price
-                  </label>
-                  <Field
-                    type="number"
-                    id="buyNowPrice"
-                    name="buyNowPrice"
-                    step="0.01"
-                    className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-                    placeholder="0.00"
-                  />
-                  <ErrorMessage
-                    name="buyNowPrice"
-                    component="div"
-                    className="text-destructive text-sm mt-1"
-                  />
-                </div>
               </div>
 
               {/* End Date */}

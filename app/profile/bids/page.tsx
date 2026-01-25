@@ -16,8 +16,13 @@ export default async function BidsPage() {
     redirect("/api/auth/login");
   }
 
-  // Fetch user bids from server
-  const bids = await fetchUserBids(user.id).catch(() => []);
+  // Fetch user bids from server with error handling
+  const result = await fetchUserBids(user.id);
 
-  return <MyBidsSection bids={bids} />;
+  return (
+    <MyBidsSection
+      bids={result.success ? result.bids : []}
+      error={result.success ? undefined : result.error}
+    />
+  );
 }

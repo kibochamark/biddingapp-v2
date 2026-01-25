@@ -77,7 +77,7 @@ export default function HeroCarousel({ products }: HeroCarouselProps) {
               <div>
                 <p className="text-sm text-white/80 mb-1">Current Bid</p>
                 <p className="text-3xl font-bold text-white">
-                  {formatPrice(currentProduct.currentBid || currentProduct.startingPrice)}
+                  {formatPrice(currentProduct.retailValue)}
                 </p>
               </div>
               <div>
@@ -85,7 +85,7 @@ export default function HeroCarousel({ products }: HeroCarouselProps) {
                 <div className="flex items-center gap-2">
                   <Gavel className="h-5 w-5 text-white" />
                   <p className="text-2xl font-semibold text-white">
-                    {currentProduct.bidsCount || 0}
+                    {currentProduct.auctions?.length > 0 ? currentProduct.auctions[0]?.totalBidsCount : 0}
                   </p>
                 </div>
               </div>

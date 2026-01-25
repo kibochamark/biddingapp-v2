@@ -52,12 +52,12 @@ export default function CatalogClient({
     // Filter by price
     if (minPrice !== undefined) {
       products = products.filter(
-        (p) => (p.currentBid || p.startingPrice) >= minPrice
+        (p) => (p.retailValue ) >= minPrice
       );
     }
     if (maxPrice !== undefined) {
       products = products.filter(
-        (p) => (p.currentBid || p.startingPrice) <= maxPrice
+        (p) => (p.retailValue) <= maxPrice
       );
     }
 
@@ -80,13 +80,13 @@ export default function CatalogClient({
       case "highest_bid":
         products.sort(
           (a, b) =>
-            (b.currentBid || b.startingPrice) - (a.currentBid || a.startingPrice)
+            (b.retailValue) - (a.retailValue)
         );
         break;
       case "lowest_price":
         products.sort(
           (a, b) =>
-            (a.currentBid || a.startingPrice) - (b.currentBid || b.startingPrice)
+            (a.retailValue) - (b.retailValue)
         );
         break;
     }
@@ -103,9 +103,9 @@ export default function CatalogClient({
   };
 
   return (
-    <div className="flex gap-8">
+    <div className="flex gap-8 relative">
       {/* Filters Sidebar */}
-      <aside className="hidden lg:block w-64 flex-shrink-0">
+      <aside className="hidden lg:block w-64 shrink-0">
         <div className="sticky top-24 z-50">
           <CatalogFilters
             categories={categories}

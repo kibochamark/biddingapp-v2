@@ -60,12 +60,19 @@ export function formatDate(date: Date): string {
   }).format(date);
 }
 
-export function formatDateTime(date: Date): string {
+export function formatDateTime(date: Date | string): string {
+  const parsedDate = typeof date === "string" ? new Date(date) : date;
+
+  if (isNaN(parsedDate.getTime())) {
+    return "Invalid date";
+  }
+
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
     hour: "numeric",
     minute: "2-digit",
-  }).format(date);
+  }).format(parsedDate);
 }
+

@@ -71,22 +71,43 @@ const hoursFromNow = (hours: number) => {
   return date;
 };
 
-// Mock Products
+// Helper to create auction object
+const createAuction = (
+  id: string,
+  prizeValue: number,
+  entryFee: number,
+  startDate: Date,
+  endDate: Date,
+  totalBidsCount: number,
+  status: "ACTIVE" | "ENDED" = "ACTIVE"
+) => ({
+  id,
+  prizeValue: prizeValue.toString(),
+  entryFee: entryFee.toString(),
+  startDate: startDate.toISOString(),
+  endDate: endDate.toISOString(),
+  status,
+  winnerId: "",
+  winningBidAmount: "0",
+  totalBidsCount,
+});
+
+// Mock Products aligned with Product interface
 export const mockProducts: Product[] = [
   {
     id: "1",
     title: "iPhone 14 Pro Max 256GB",
-    description: "Brand new iPhone 14 Pro Max in Deep Purple. Features the A16 Bionic chip, 48MP camera system, and Dynamic Island. Factory sealed with full warranty.",
+    description:
+      "Brand new iPhone 14 Pro Max in Deep Purple. Features the A16 Bionic chip, 48MP camera system, and Dynamic Island. Factory sealed with full warranty.",
     categoryId: "1",
     condition: "NEW" as ProductCondition,
-    images: [
-      "/iphone-14-pro-max-purple.jpg",
-      "/iphone-box.jpg",
+    images: ["/iphone-14-pro-max-purple.jpg", "/iphone-box.jpg"],
+    retailValue: 1199,
+    entryFee: 5,
+    status: "ACTIVE",
+    auctions: [
+      createAuction("auction-1", 1199, 5, daysFromNow(-5), hoursFromNow(4), 42),
     ],
-    startingPrice: 899,
-    currentBid: 1049,
-    bidsCount: 23,
-    buyNowPrice: 1199,
     endDate: hoursFromNow(4),
     startDate: daysFromNow(-5),
     sellerId: "seller1",
@@ -106,18 +127,18 @@ export const mockProducts: Product[] = [
   },
   {
     id: "2",
-    title: "MacBook Pro 14\" M2 Pro",
-    description: "Excellent condition MacBook Pro 14-inch with M2 Pro chip, 16GB RAM, and 512GB SSD. Perfect for professionals and creators. Includes original box and charger.",
+    title: 'MacBook Pro 14" M2 Pro',
+    description:
+      "Excellent condition MacBook Pro 14-inch with M2 Pro chip, 16GB RAM, and 512GB SSD. Perfect for professionals and creators. Includes original box and charger.",
     categoryId: "2",
     condition: "LIKE_NEW" as ProductCondition,
-    images: [
-      "/macbook-pro-m2-on-desk.jpg",
-      "/macbook-keyboard.jpg",
+    images: ["/macbook-pro-m2-on-desk.jpg", "/macbook-keyboard.jpg"],
+    retailValue: 2499,
+    entryFee: 10,
+    status: "ACTIVE",
+    auctions: [
+      createAuction("auction-2", 2499, 10, daysFromNow(-3), hoursFromNow(8), 15),
     ],
-    startingPrice: 1699,
-    currentBid: 1899,
-    bidsCount: 15,
-    buyNowPrice: 2099,
     endDate: hoursFromNow(8),
     startDate: daysFromNow(-3),
     sellerId: "seller2",
@@ -138,17 +159,17 @@ export const mockProducts: Product[] = [
   {
     id: "3",
     title: "Samsung Galaxy S23 Ultra 512GB",
-    description: "Like new Samsung Galaxy S23 Ultra with S Pen. Phantom Black color with 512GB storage. Features 200MP camera and AI capabilities.",
+    description:
+      "Like new Samsung Galaxy S23 Ultra with S Pen. Phantom Black color with 512GB storage. Features 200MP camera and AI capabilities.",
     categoryId: "1",
     condition: "LIKE_NEW" as ProductCondition,
-    images: [
-      "/samsung-galaxy-s23-ultra.jpg",
-      "/samsung-galaxy-s23-ultra.png",
+    images: ["/samsung-galaxy-s23-ultra.jpg", "/samsung-galaxy-s23-ultra.png"],
+    retailValue: 1299,
+    entryFee: 5,
+    status: "ACTIVE",
+    auctions: [
+      createAuction("auction-3", 1299, 5, daysFromNow(-4), hoursFromNow(2), 31),
     ],
-    startingPrice: 899,
-    currentBid: 1049,
-    bidsCount: 31,
-    buyNowPrice: 1299,
     endDate: hoursFromNow(2),
     startDate: daysFromNow(-4),
     sellerId: "seller3",
@@ -169,17 +190,17 @@ export const mockProducts: Product[] = [
   {
     id: "4",
     title: "iPad Air M1 256GB",
-    description: "iPad Air with M1 chip, stunning Liquid Retina display. Excellent condition with Apple Pencil 2nd gen included.",
+    description:
+      "iPad Air with M1 chip, stunning Liquid Retina display. Excellent condition with Apple Pencil 2nd gen included.",
     categoryId: "3",
     condition: "GOOD" as ProductCondition,
-    images: [
-      "/ipad-air-m1.jpg",
-      "/ipad-air-m1.png",
+    images: ["/ipad-air-m1.jpg", "/ipad-air-m1.png"],
+    retailValue: 799,
+    entryFee: 5,
+    status: "ACTIVE",
+    auctions: [
+      createAuction("auction-4", 799, 5, daysFromNow(-2), hoursFromNow(12), 18),
     ],
-    startingPrice: 799,
-    currentBid: 899,
-    bidsCount: 18,
-    buyNowPrice: 1099,
     endDate: hoursFromNow(12),
     startDate: daysFromNow(-2),
     sellerId: "seller1",
@@ -199,17 +220,17 @@ export const mockProducts: Product[] = [
   {
     id: "5",
     title: "Sony WH-1000XM5 Wireless Headphones",
-    description: "Industry-leading noise canceling headphones. Like new condition with all original accessories and packaging.",
+    description:
+      "Industry-leading noise canceling headphones. Like new condition with all original accessories and packaging.",
     categoryId: "4",
     condition: "LIKE_NEW" as ProductCondition,
-    images: [
-      "/sony-wh1000xm5.jpg",
-      "/sony-wh1000xm5.jpg",
+    images: ["/sony-wh1000xm5.jpg", "/sony-wh1000xm5.jpg"],
+    retailValue: 399,
+    entryFee: 3,
+    status: "ACTIVE",
+    auctions: [
+      createAuction("auction-5", 399, 3, daysFromNow(-1), hoursFromNow(6), 27),
     ],
-    startingPrice: 249,
-    currentBid: 299,
-    bidsCount: 27,
-    buyNowPrice: 349,
     endDate: hoursFromNow(6),
     startDate: daysFromNow(-1),
     sellerId: "seller4",
@@ -229,17 +250,17 @@ export const mockProducts: Product[] = [
   {
     id: "6",
     title: "Apple Watch Ultra 2",
-    description: "Rugged and capable Apple Watch Ultra 2 with 49mm titanium case. GPS + Cellular with Ocean Band. Perfect for outdoor adventures.",
+    description:
+      "Rugged and capable Apple Watch Ultra 2 with 49mm titanium case. GPS + Cellular with Ocean Band. Perfect for outdoor adventures.",
     categoryId: "5",
     condition: "NEW" as ProductCondition,
-    images: [
-      "/placeholder.jpg",
-      "/placeholder.jpg",
+    images: ["/placeholder.jpg", "/placeholder.jpg"],
+    retailValue: 849,
+    entryFee: 5,
+    status: "ACTIVE",
+    auctions: [
+      createAuction("auction-6", 849, 5, daysFromNow(-1), hoursFromNow(18), 12),
     ],
-    startingPrice: 649,
-    currentBid: 749,
-    bidsCount: 12,
-    buyNowPrice: 849,
     endDate: hoursFromNow(18),
     startDate: daysFromNow(-1),
     sellerId: "seller2",
@@ -259,17 +280,17 @@ export const mockProducts: Product[] = [
   {
     id: "7",
     title: "Dell XPS 15 (2024) - i7, 32GB RAM",
-    description: "High-performance Dell XPS 15 with Intel Core i7, 32GB RAM, and 1TB SSD. Perfect for professionals and content creators.",
+    description:
+      "High-performance Dell XPS 15 with Intel Core i7, 32GB RAM, and 1TB SSD. Perfect for professionals and content creators.",
     categoryId: "2",
     condition: "GOOD" as ProductCondition,
-    images: [
-      "/macbook-pro-m2-on-desk.png",
-      "/macbook-keyboard.jpg",
+    images: ["/macbook-pro-m2-on-desk.png", "/macbook-keyboard.jpg"],
+    retailValue: 1899,
+    entryFee: 8,
+    status: "ACTIVE",
+    auctions: [
+      createAuction("auction-7", 1899, 8, daysFromNow(-2), daysFromNow(1), 9),
     ],
-    startingPrice: 1299,
-    currentBid: 1449,
-    bidsCount: 9,
-    buyNowPrice: 1699,
     endDate: daysFromNow(1),
     startDate: daysFromNow(-2),
     sellerId: "seller5",
@@ -289,17 +310,17 @@ export const mockProducts: Product[] = [
   {
     id: "8",
     title: "PlayStation 5 Digital Edition",
-    description: "Sony PlayStation 5 Digital Edition with extra DualSense controller. Excellent condition, comes with 5 digital games.",
+    description:
+      "Sony PlayStation 5 Digital Edition with extra DualSense controller. Excellent condition, comes with 5 digital games.",
     categoryId: "6",
     condition: "GOOD" as ProductCondition,
-    images: [
-      "/placeholder.jpg",
-      "/placeholder.jpg",
+    images: ["/placeholder.jpg", "/placeholder.jpg"],
+    retailValue: 499,
+    entryFee: 5,
+    status: "ACTIVE",
+    auctions: [
+      createAuction("auction-8", 499, 5, daysFromNow(-3), hoursFromNow(10), 34),
     ],
-    startingPrice: 349,
-    currentBid: 399,
-    bidsCount: 34,
-    buyNowPrice: 449,
     endDate: hoursFromNow(10),
     startDate: daysFromNow(-3),
     sellerId: "seller6",
@@ -319,17 +340,17 @@ export const mockProducts: Product[] = [
   {
     id: "9",
     title: "AirPods Pro 2nd Generation",
-    description: "Brand new AirPods Pro with USB-C charging case. Active noise cancellation and transparency mode.",
+    description:
+      "Brand new AirPods Pro with USB-C charging case. Active noise cancellation and transparency mode.",
     categoryId: "4",
     condition: "NEW" as ProductCondition,
-    images: [
-      "/airpods-pro-lifestyle.jpg",
-      "/airpods-pro-lifestyle.png",
+    images: ["/airpods-pro-lifestyle.jpg", "/airpods-pro-lifestyle.png"],
+    retailValue: 249,
+    entryFee: 3,
+    status: "ACTIVE",
+    auctions: [
+      createAuction("auction-9", 249, 3, daysFromNow(-2), hoursFromNow(3), 41),
     ],
-    startingPrice: 189,
-    currentBid: 219,
-    bidsCount: 41,
-    buyNowPrice: 249,
     endDate: hoursFromNow(3),
     startDate: daysFromNow(-2),
     sellerId: "seller1",
@@ -349,17 +370,17 @@ export const mockProducts: Product[] = [
   {
     id: "10",
     title: "Samsung Galaxy Tab S9 Ultra",
-    description: "Premium Android tablet with stunning 14.6-inch display, S Pen included. Perfect for productivity and entertainment.",
+    description:
+      "Premium Android tablet with stunning 14.6-inch display, S Pen included. Perfect for productivity and entertainment.",
     categoryId: "3",
     condition: "LIKE_NEW" as ProductCondition,
-    images: [
-      "/ipad-air-m1.png",
-      "/ipad-air-m1.jpg",
+    images: ["/ipad-air-m1.png", "/ipad-air-m1.jpg"],
+    retailValue: 1199,
+    entryFee: 8,
+    status: "ACTIVE",
+    auctions: [
+      createAuction("auction-10", 1199, 8, daysFromNow(-1), daysFromNow(2), 7),
     ],
-    startingPrice: 899,
-    currentBid: 999,
-    bidsCount: 7,
-    buyNowPrice: 1199,
     endDate: daysFromNow(2),
     startDate: daysFromNow(-1),
     sellerId: "seller3",

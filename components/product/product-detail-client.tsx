@@ -80,7 +80,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               <h3 className="text-lg font-bold mb-4">Technical Specifications</h3>
               <div className="glass-card rounded-lg overflow-hidden">
                 <div className="divide-y divide-border">
-                  {Object.entries(product.specifications).map(([key, value], index) => (
+                  {product.specifications && Object?.entries(product?.specifications).map(([key, value], index) => (
                     <div
                       key={key}
                       className={`grid grid-cols-2 gap-4 p-4 ${
@@ -159,12 +159,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               <div className="p-3 glass-card rounded-lg text-center border border-border">
                 <Users className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
                 <p className="text-xs text-muted-foreground">Total Entries</p>
-                <p className="text-lg font-bold">{product.totalBids}</p>
+                <p className="text-lg font-bold">{product.auctions?.length > 0 && product.auctions[0].totalBidsCount}</p>
               </div>
               <div className="p-3 glass-card rounded-lg text-center border border-border">
                 <TrendingUp className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
                 <p className="text-xs text-muted-foreground">Original Price</p>
-                <p className="text-lg font-bold">{formatPrice(product.originalPrice || 0)}</p>
+                <p className="text-lg font-bold">{formatPrice(product.retailValue || 0)}</p>
               </div>
             </div>
 
@@ -172,9 +172,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             <BidFormNew
               productId={product.id}
               productTitle={product.title}
-              biddingFee={product.biddingFee || 5}
-              totalBids={product.totalBids || product.bidsCount || 0}
+              biddingFee={product.auctions?.length > 0 && parseFloat(product.auctions[0].entryFee) || 5}
+              totalBids={product.auctions?.length > 0 &&  product.auctions[0].totalBidsCount  || 0}
               productStatus={product.status || "ACTIVE"}
+              auction_id={product.auctions?.length > 0 ? product.auctions[0].id : ""}
             />
           </div>
         </div>

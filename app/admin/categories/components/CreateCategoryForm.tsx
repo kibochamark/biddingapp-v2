@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { createCategory, fetchAdminCategories } from "../../actions/categories";
+import { createCategory } from "../../actions/categories";
 import { CategoryWithRelations } from "../../actions/categories";
-import { X, Save, Loader } from "lucide-react";
+import { X, Save, Loader, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 interface CreateCategoryFormProps {
@@ -18,17 +18,18 @@ interface CategoryFormValues {
   slug: string;
   name: string;
   description: string;
-  icon: string;
   parentId: string;
 }
 
 const createCategorySchema = Yup.object({
   slug: Yup.string()
     .required("Slug is required")
-    .matches(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens"),
+    .matches(
+      /^[a-z0-9-]+$/,
+      "Slug must contain only lowercase letters, numbers, and hyphens"
+    ),
   name: Yup.string().required("Name is required"),
   description: Yup.string(),
-  icon: Yup.string(),
   parentId: Yup.string().uuid("Invalid parent category"),
 });
 
@@ -38,27 +39,38 @@ export default function CreateCategoryForm({
 }: CreateCategoryFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [iconFile, setIconFile] = useState<File | null>(null);
 
   const initialValues: CategoryFormValues = {
     slug: "",
     name: "",
     description: "",
-    icon: "",
     parentId: "",
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.currentTarget.files) {
+      setIconFile(event.currentTarget.files[0]);
+    }
   };
 
   const handleSubmit = async (values: CategoryFormValues) => {
     setIsSubmitting(true);
     try {
-      const categoryData = {
-        slug: values.slug,
-        name: values.name,
-        description: values.description || undefined,
-        icon: values.icon || undefined,
-        parentId: values.parentId || null,
-      };
+      const formData = new FormData();
+      formData.append("slug", values.slug);
+      formData.append("name", values.name);
+      if (values.description) {
+        formData.append("description", values.description);
+      }
+      if (values.parentId) {
+        formData.append("parentId", values.parentId);
+      }
+      if (iconFile) {
+        formData.append("file", iconFile);
+      }
 
-      const result = await createCategory(categoryData);
+      const result = await createCategory(formData);
 
       if (result.success) {
         toast.success("Category created successfully!");
@@ -98,7 +110,10 @@ export default function CreateCategoryForm({
             <Form className="p-6 space-y-4">
               {/* Name */}
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
                   Category Name *
                 </label>
                 <Field
@@ -117,7 +132,10 @@ export default function CreateCategoryForm({
 
               {/* Slug */}
               <div>
-                <label htmlFor="slug" className="block text-sm font-medium text-foreground mb-2">
+                <label
+                  htmlFor="slug"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
                   Slug *
                 </label>
                 <Field
@@ -139,29 +157,42 @@ export default function CreateCategoryForm({
 
               {/* Icon */}
               <div>
-                <label htmlFor="icon" className="block text-sm font-medium text-foreground mb-2">
-                  Icon (Emoji)
+                <label
+                  htmlFor="icon"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
+                  Icon
                 </label>
-                <Field
-                  type="text"
-                  id="icon"
-                  name="icon"
-                  placeholder="e.g., 📱, 👕, 🏠"
-                  className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm"
-                />
-                <ErrorMessage
-                  name="icon"
-                  component="div"
-                  className="text-destructive text-sm mt-1"
-                />
+                <div className="flex items-center gap-4">
+                  <label
+                    htmlFor="icon-upload"
+                    className="cursor-pointer w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm flex items-center gap-2"
+                  >
+                    <Upload className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">
+                      {iconFile ? iconFile.name : "Upload an image"}
+                    </span>
+                  </label>
+                  <input
+                    type="file"
+                    id="icon-upload"
+                    name="icon"
+                    className="hidden"
+                    onChange={handleFileChange}
+                    accept="image/*"
+                  />
+                </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Optional emoji to represent this category
+                  Optional image to represent this category
                 </p>
               </div>
 
               {/* Description */}
               <div>
-                <label htmlFor="description" className="block text-sm font-medium text-foreground mb-2">
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
                   Description
                 </label>
                 <Field
@@ -181,7 +212,10 @@ export default function CreateCategoryForm({
 
               {/* Parent Category */}
               <div>
-                <label htmlFor="parentId" className="block text-sm font-medium text-foreground mb-2">
+                <label
+                  htmlFor="parentId"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
                   Parent Category
                 </label>
                 <Field

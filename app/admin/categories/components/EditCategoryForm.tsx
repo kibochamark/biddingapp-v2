@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { updateCategory, getCategoryById, CategoryWithRelations } from "../../actions/categories";
-import { X, Save, Loader } from "lucide-react";
+import { X, Save, Loader, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 interface EditCategoryFormProps {
@@ -17,14 +17,12 @@ interface EditCategoryFormProps {
 interface CategoryFormValues {
   name: string;
   description: string;
-  icon: string;
   parentId: string;
 }
 
 const updateCategorySchema = Yup.object({
   name: Yup.string(),
   description: Yup.string(),
-  icon: Yup.string(),
   parentId: Yup.string().uuid("Invalid parent category"),
 });
 
@@ -37,6 +35,7 @@ export default function EditCategoryForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [category, setCategory] = useState<CategoryWithRelations | null>(null);
+  const [iconFile, setIconFile] = useState<File | null>(null);
 
   useEffect(() => {
     const fetchCategory = async () => {
@@ -54,31 +53,32 @@ export default function EditCategoryForm({
     fetchCategory();
   }, [categoryId, onClose]);
 
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.currentTarget.files) {
+      setIconFile(event.currentTarget.files[0]);
+    }
+  };
+
   const handleSubmit = async (values: CategoryFormValues) => {
     setIsSubmitting(true);
     try {
-      const categoryData: {
-        name?: string;
-        description?: string;
-        icon?: string;
-        parentId?: string | null;
-      } = {};
+      const formData = new FormData();
 
       // Only include changed fields
       if (values.name && values.name !== category?.name) {
-        categoryData.name = values.name;
+        formData.append("name", values.name);
       }
       if (values.description !== category?.description) {
-        categoryData.description = values.description || undefined;
-      }
-      if (values.icon !== category?.icon) {
-        categoryData.icon = values.icon || undefined;
+        formData.append("description", values.description || "");
       }
       if (values.parentId !== (category?.parentId || "")) {
-        categoryData.parentId = values.parentId || null;
+        formData.append("parentId", values.parentId || "");
+      }
+      if (iconFile) {
+        formData.append("file", iconFile);
       }
 
-      const result = await updateCategory(categoryId, categoryData);
+      const result = await updateCategory(categoryId, formData);
 
       if (result.success) {
         toast.success("Category updated successfully!");
@@ -112,7 +112,6 @@ export default function EditCategoryForm({
   const initialValues: CategoryFormValues = {
     name: category.name,
     description: category.description || "",
-    icon: category.icon || "",
     parentId: category.parentId || "",
   };
 
@@ -163,22 +162,34 @@ export default function EditCategoryForm({
               {/* Icon */}
               <div>
                 <label htmlFor="icon" className="block text-sm font-medium text-foreground mb-2">
-                  Icon (Emoji)
+                  Icon
                 </label>
-                <Field
-                  type="text"
-                  id="icon"
-                  name="icon"
-                  placeholder="e.g., 📱, 👕, 🏠"
-                  className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm"
-                />
-                <ErrorMessage
-                  name="icon"
-                  component="div"
-                  className="text-destructive text-sm mt-1"
-                />
+                <div className="flex items-center gap-4">
+                  <label
+                    htmlFor="icon-upload"
+                    className="cursor-pointer w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm flex items-center gap-2"
+                  >
+                    <Upload className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">
+                      {iconFile ? iconFile.name : (category.icon ? "Replace image" : "Upload an image")}
+                    </span>
+                  </label>
+                  <input
+                    type="file"
+                    id="icon-upload"
+                    name="icon"
+                    className="hidden"
+                    onChange={handleFileChange}
+                    accept="image/*"
+                  />
+                </div>
+                {category.icon && !iconFile && (
+                  <div className="mt-2">
+                    <img src={category.icon} alt={category.name} className="h-16 w-16 object-cover rounded-md" />
+                  </div>
+                )}
                 <p className="text-xs text-muted-foreground mt-1">
-                  Optional emoji to represent this category
+                  Optional image to represent this category
                 </p>
               </div>
 

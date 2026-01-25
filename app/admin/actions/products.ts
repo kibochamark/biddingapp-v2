@@ -167,8 +167,7 @@ interface UpdateProductData {
   description?: string;
   condition?: ProductCondition;
   images?: string[];
-  reservePrice?: number;
-  buyNowPrice?: number;
+  retailValue?: number;
   endDate?: string;
   sellerName?: string;
   specifications?: Record<string, any>;

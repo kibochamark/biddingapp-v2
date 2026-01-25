@@ -25,19 +25,30 @@ export interface Product {
   images: string[];
 
   // Pricing (legacy fields for compatibility)
-  startingPrice: number;
-  reservePrice?: number;
-  buyNowPrice?: number;
-  currentBid?: number;
+  // Pricing / Bidding
+  retailValue: number;   // Decimal(10,2) → number on frontend
+  entryFee: number;      // Decimal(10,2)
 
-  // Bidding System Fields
-  biddingFee?: number;  // Fixed fee per bid entry
-  originalPrice?: number;  // Actual product value
-  totalBids?: number;  // Count of confirmed bids
-  totalRevenue?: number;  // Sum of all bidding fees
+
+  
+
   status?: ProductStatus;  // Product status in bidding system
-  winnerId?: string;  // Winner's account ID
-  winnerBidId?: string;  // Winning bid ID
+
+  auctions:{
+    id: string,
+   
+    prizeValue: string
+    entryFee: string
+    startDate: string
+    endDate: string
+    status: 'ACTIVE' | 'ENDED'
+    winnerId: string
+    winningBidAmount: string,
+    totalBidsCount: number,
+    
+
+  }[];
+
 
   // Dates
   endDate: Date;
@@ -53,9 +64,6 @@ export interface Product {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-
-  // Backwards compatibility
-  bidsCount?: number;  // Alias for totalBids
 }
 
 export interface Account {
@@ -136,4 +144,31 @@ export interface Bid {
   isWinner: boolean;
   createdAt: Date;
   updatedAt: Date;
+}
+
+// User bid from /bids/my-bids API endpoint
+export type AuctionStatus = "ACTIVE" | "ENDED" | "CANCELLED";
+export type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "REFUNDED";
+
+export interface UserBidAuction {
+  id: string;
+  title: string;
+  status: AuctionStatus;
+  endDate: string;
+}
+
+export interface UserBid {
+  id: string;
+  auctionId: string;
+  bidderId: string;
+  bidderName: string;
+  bidAmount: string;
+  entryFeePaid: string;
+  totalPaid: string;
+  paymentIntentId: string;
+  paymentStatus: PaymentStatus;
+  isUnique: boolean;
+  isWinning: boolean;
+  placedAt: string;
+  auction: UserBidAuction;
 }

@@ -17,7 +17,7 @@ export function BidToolTip() {
                 <Gavel className="h-4 w-4 group-hover:scale-110 transition-transform" />
               </Link>
             </TooltipTrigger>
-            <TooltipContent>
+            <TooltipContent className="z-120">
                 <span className="xl:inline">My Bids</span>
             </TooltipContent>
         </Tooltip>

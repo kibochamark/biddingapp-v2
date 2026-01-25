@@ -131,10 +131,10 @@ export function SearchBar() {
                         </p>
                         <div className="flex items-center gap-3 mt-1.5">
                           <span className="text-sm font-semibold text-primary">
-                            ${product.biddingFee} entry
+                            ${product.entryFee} entry
                           </span>
                           <span className="text-xs text-muted-foreground">
-                            {product.totalBids} bids
+                            {product.auctions?.length > 0 ? product.auctions[0].totalBidsCount : "N/A"} bids
                           </span>
                           {product.status === "ACTIVE" && (
                             <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full font-medium">

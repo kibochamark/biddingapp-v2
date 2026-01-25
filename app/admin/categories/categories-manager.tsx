@@ -6,7 +6,8 @@ import { deleteCategory, CategoryWithRelations } from "../actions/categories";
 import { useRouter } from "next/navigation";
 import CreateCategoryForm from "./components/CreateCategoryForm";
 import EditCategoryForm from "./components/EditCategoryForm";
-import { toast } from "sonner";
+import Image from "next/image";
+import { toast } from "@/lib/toast";
 
 interface CategoriesManagerProps {
   initialCategories: CategoryWithRelations[];
@@ -156,7 +157,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
                         <div className="w-1 h-8 bg-primary/30 rounded-full"></div>
                         <div>
                           <div className="flex items-center gap-2">
-                            {subcat.icon && <span className="text-lg">{subcat.icon}</span>}
+                            {subcat.icon && <Image alt={`${subcat.name}`}width={100} height={100} className="text-lg" src={subcat.icon as string}></Image>}
                             <p className="text-sm font-medium text-foreground">{subcat.name}</p>
                           </div>
                           <div className="flex items-center gap-3 mt-1">

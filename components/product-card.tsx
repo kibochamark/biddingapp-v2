@@ -9,6 +9,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  console.log(product,"prod")
   // convert the date strings to Date objects
   let product_endDate= new Date(product.endDate);
   const timeRemaining = formatTimeRemaining(product_endDate);
@@ -62,11 +63,11 @@ export default function ProductCard({ product }: ProductCardProps) {
               <span className="text-xs text-muted-foreground">Current bid</span>
               <div className="flex items-center gap-1 text-muted-foreground">
                 <Gavel className="h-3 w-3" />
-                <span className="text-xs">{product.bidsCount || 0} bids</span>
+                <span className="text-xs">{product.auctions?.length > 0 && product.auctions[0].totalBidsCount || 0} bids</span>
               </div>
             </div>
             <div className="text-xl font-bold">
-              {formatPrice(product.currentBid || product.startingPrice)}
+              {formatPrice(product.retailValue)}
             </div>
           </div>
 

@@ -3,6 +3,7 @@
 import { Category, ProductCondition } from "@/lib/types";
 import { SlidersHorizontal, X } from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
 
 interface CatalogFiltersProps {
   categories: Category[];
@@ -57,6 +58,8 @@ export default function CatalogFilters({
     GOOD: "Good",
     FAIR: "Fair",
     POOR: "Poor",
+    MINT:"Mint",
+    "EXCELLENT":"Excellent"
   };
 
   return (
@@ -73,7 +76,7 @@ export default function CatalogFilters({
       {/* Filters Sidebar */}
       <div
         className={`
-        fixed lg:static inset-0 z-50 bg-background lg:bg-transparent
+        fixed lg:static inset-0 z-40 bg-background lg:bg-transparent
         transform transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         lg:w-64 overflow-y-auto
@@ -129,13 +132,20 @@ export default function CatalogFilters({
                 <button
                   key={category.id}
                   onClick={() => onCategoryChange(category.id)}
-                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                  className={`w-full text-left flex flex-row items-center px-3 py-2 rounded-lg transition-colors ${
                     selectedCategory === category.id
                       ? "bg-primary text-primary-foreground"
                       : "hover:bg-accent"
                   }`}
                 >
-                  <span className="mr-2">{category.icon}</span>
+                  <div className="relative h-4 w-4 rounded-full  p-3 flex items-center justify-center transition-colors duration-300">
+                                <Image
+                                  src={category.icon as string}
+                                  alt={category.name}
+                                  fill
+                                  className="object-contain"
+                                />
+                              </div>
                   {category.name}
                 </button>
               ))}

@@ -54,10 +54,10 @@ export async function searchProducts(params?: {
       products = products.filter(p => p.condition === params.condition);
     }
     if (params?.minPrice) {
-      products = products.filter(p => (p.currentBid || p.startingPrice) >= params.minPrice!);
+      products = products.filter(p => (p.retailValue) >= params.minPrice!);
     }
     if (params?.maxPrice) {
-      products = products.filter(p => (p.currentBid || p.startingPrice) <= params.maxPrice!);
+      products = products.filter(p => (p.retailValue) <= params.maxPrice!);
     }
 
     // Sort
@@ -69,10 +69,10 @@ export async function searchProducts(params?: {
         products.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
         break;
       case "highest_bid":
-        products.sort((a, b) => (b.currentBid || b.startingPrice) - (a.currentBid || a.startingPrice));
+        products.sort((a, b) => (b.retailValue) - (a.retailValue));
         break;
       case "lowest_price":
-        products.sort((a, b) => (a.currentBid || a.startingPrice) - (b.currentBid || b.startingPrice));
+        products.sort((a, b) => (a.retailValue) - (b.retailValue));
         break;
     }
 

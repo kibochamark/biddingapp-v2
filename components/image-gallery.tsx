@@ -16,7 +16,7 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
       {/* Main Image */}
       <div className="relative aspect-square bg-muted rounded-lg overflow-hidden">
         <Image
-          src={images[selectedImage]}
+          src={ images?.length > 0 && images[selectedImage] || ""}
           alt={`${title} - Image ${selectedImage + 1}`}
           fill
           className="object-cover"
@@ -25,7 +25,7 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
       </div>
 
       {/* Thumbnails */}
-      {images.length > 1 && (
+      {images?.length > 1 && (
         <div className="grid grid-cols-4 gap-4">
           {images.map((image, index) => (
             <button

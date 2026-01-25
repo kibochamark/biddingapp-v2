@@ -70,14 +70,6 @@ export function UserMenu({ user }: UserMenuProps) {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
               My Bids
             </Link>
-            <Link
-              href="/profile?tab=listings"
-              className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-accent transition-colors text-foreground"
-              onClick={() => setShowUserMenu(false)}
-            >
-              <Package className="h-4 w-4 text-muted-foreground" />
-              My Listings
-            </Link>
             <hr className="my-2 border-border" />
             <LogoutLink className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-destructive/10 transition-colors text-destructive">
               <LogOut className="h-4 w-4" />

@@ -10,10 +10,15 @@ import { BidToolTip } from "./navbar/bidtooltip";
 import { usePathname } from "next/navigation";
 import { KindeUser, useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
-export default  function Navbar() {
+interface MainNavbarProps {
+  user?: {} | null; // or a proper User type
+  isUserAuthenticated?: boolean | null;
+}
+
+export default  function Navbar({user}:MainNavbarProps) {
   const {isAuthenticated, getUser} = useKindeBrowserClient()
 
-  let user:any ={}
+
   if(isAuthenticated){
     user = getUser()
   }
@@ -25,7 +30,7 @@ export default  function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-40 glass-navbar backdrop-blur-md border-b border-border">
+    <nav className="sticky top-0 z-100 glass-navbar backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-2 sm:gap-3">
           {/* Logo - Responsive */}
