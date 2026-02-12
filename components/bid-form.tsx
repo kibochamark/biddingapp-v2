@@ -20,6 +20,7 @@ interface BidFormProps {
   productStatus?: string;
   userBidInfo?: UserBidInfo | null;
   auction_id:string;
+  bidended:boolean
 }
 
 export default function BidFormNew({
@@ -29,7 +30,8 @@ export default function BidFormNew({
   totalBids = 0,
   productStatus = "ACTIVE",
   userBidInfo,
-  auction_id
+  auction_id,
+  bidended
 }: BidFormProps) {
   const { isAuthenticated, isLoading, user } = useKindeBrowserClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,6 +46,7 @@ export default function BidFormNew({
 
   const isActive = productStatus === "ACTIVE";
   const hasActiveBid = userBidInfo && userBidInfo.totalEntries > 0;
+
 
   return (
     <div className="space-y-4">
@@ -105,7 +108,7 @@ export default function BidFormNew({
       )}
 
       {/* Main Action Button */}
-      {!isLoading && (
+      {!isLoading && !bidended && (
         <>
           {isAuthenticated ? (
             <button

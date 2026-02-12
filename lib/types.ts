@@ -41,7 +41,7 @@ export interface Product {
     entryFee: string
     startDate: string
     endDate: string
-    status: 'ACTIVE' | 'ENDED'
+    status: 'ACTIVE' | 'ENDED' | 'WINNER_DETERMINED'
     winnerId: string
     winningBidAmount: string,
     totalBidsCount: number,

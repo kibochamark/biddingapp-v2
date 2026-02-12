@@ -52,9 +52,11 @@ const hoursFromNow = (hours: number) => {
 
 export default async function ProductPage({ params }: {params:Promise<ProductPageProps>}) {
   const product_id = (await params).id;
-  console.log(product_id)
+  
 
   const product = await fetchProductById(product_id);
+
+  console.log(product, "perk")
 
   if (!product) {
     return (

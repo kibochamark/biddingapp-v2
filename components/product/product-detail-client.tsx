@@ -12,6 +12,7 @@ interface ProductDetailClientProps {
 }
 
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
+  const bidended = product.auctions?.[0]?.status === "ENDED" || product.auctions?.[0]?.status === "WINNER_DETERMINED" || false
   return (
     <>
       {/* Main Content */}
@@ -176,6 +177,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               totalBids={product.auctions?.length > 0 &&  product.auctions[0].totalBidsCount  || 0}
               productStatus={product.status || "ACTIVE"}
               auction_id={product.auctions?.length > 0 ? product.auctions[0].id : ""}
+              bidended={bidended}
             />
           </div>
         </div>
