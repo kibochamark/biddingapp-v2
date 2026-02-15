@@ -44,18 +44,6 @@ export async function POST(request: NextRequest) {
         revalidatePath(`/product/${productId}`);
       }
 
-      // Publish real-time notification to the bidder via Redis
-      if (bidderId) {
-        const publisher = getPublisher();
-        await publisher.publish(
-          `payment:${bidderId}`,
-          JSON.stringify({
-            type: "payment_success",
-            productId,
-            productTitle: paymentIntent.metadata?.productTitle || "Auction item",
-          })
-        );
-      }
       break;
 
     case "payment_intent.payment_failed":
@@ -69,20 +57,6 @@ export async function POST(request: NextRequest) {
 
       if (productId) {
         revalidatePath(`/product/${productId}`);
-      }
-
-      // Publish failure notification to the bidder via Redis
-      if (bidderId) {
-        const publisher = getPublisher();
-        await publisher.publish(
-          `payment:${bidderId}`,
-          JSON.stringify({
-            type: "payment_failed",
-            productId,
-            productTitle: paymentIntent.metadata?.productTitle || "Auction item",
-            message: failureMessage,
-          })
-        );
       }
       break;
 
