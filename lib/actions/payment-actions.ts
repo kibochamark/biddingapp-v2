@@ -49,7 +49,7 @@ export async function createPaymentIntent(
         bidAmount: params.bidAmount.toString(),
         numberOfBids: params.numberOfBids.toString(),
         entryFee: params.biddingFee.toString(),
-        totalPaid: Math.round(totalAmount * 100),
+        totalPaid: Math.round(totalAmount),
         auctionId:params.auctionId
       },
       receipt_email: params.bidderEmail,
