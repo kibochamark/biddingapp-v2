@@ -4,9 +4,18 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: https://api.outbid.cc
-        NEXT_PUBLIC_BASE_URL: https://outbid.cc
-        NEXT_PUBLIC_STRIPE_PUBLIC_KEY: pk_test_51Qvbo3FsYtjdKrHy3UN19W1CbnEakyhMTg2z5bfDtqTNjvcj1qKlHVDquIinRBGZerLTcCS0kIBTULZoTYw8khQG00mtjwHZrB
+        # Public variables (needed at build time)
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-https://api.outbid.cc}
+        - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL:-https://outbid.cc}
+        - NEXT_PUBLIC_STRIPE_PUBLIC_KEY=${NEXT_PUBLIC_STRIPE_PUBLIC_KEY:-pk_test_51Qvbo3FsYtjdKrHy3UN19W1CbnEakyhMTg2z5bfDtqTNjvcj1qKlHVDquIinRBGZerLTcCS0kIBTULZoTYw8khQG00mtjwHZrB}
+        
+        # Kinde variables (NEEDED AT BUILD TIME)
+        - KINDE_ISSUER_URL=${KINDE_ISSUER_URL}
+        - KINDE_CLIENT_ID=${KINDE_CLIENT_ID}
+        - KINDE_CLIENT_SECRET=${KINDE_CLIENT_SECRET}
+        - KINDE_SITE_URL=${KINDE_SITE_URL:-https://outbid.cc}
+        - KINDE_POST_LOGOUT_REDIRECT_URL=${KINDE_POST_LOGOUT_REDIRECT_URL:-https://outbid.cc}
+        - KINDE_POST_LOGIN_REDIRECT_URL=${KINDE_POST_LOGIN_REDIRECT_URL:-https://outbid.cc}
     container_name: outbid-frontend
     restart: unless-stopped
     ports:
@@ -16,7 +25,6 @@ services:
     environment:
       - NODE_ENV=production
       - HOSTNAME=0.0.0.0
-
   nginx:
     image: nginx:alpine
     container_name: outbid-nginx
