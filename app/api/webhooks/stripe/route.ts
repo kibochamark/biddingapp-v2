@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import Stripe from "stripe";
+import { getPublisher } from "@/lib/redis";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -30,6 +31,7 @@ export async function POST(request: NextRequest) {
 
   const paymentIntent = event.data.object as Stripe.PaymentIntent;
   const productId = paymentIntent.metadata?.productId;
+  const bidderId = paymentIntent.metadata?.bidderId;
 
   switch (event.type) {
     case "payment_intent.succeeded":
@@ -40,7 +42,19 @@ export async function POST(request: NextRequest) {
 
       if (productId) {
         revalidatePath(`/product/${productId}`);
-        console.log(`Revalidated /product/${productId}`);
+      }
+
+      // Publish real-time notification to the bidder via Redis
+      if (bidderId) {
+        const publisher = getPublisher();
+        await publisher.publish(
+          `payment:${bidderId}`,
+          JSON.stringify({
+            type: "payment_success",
+            productId,
+            productTitle: paymentIntent.metadata?.productTitle || "Auction item",
+          })
+        );
       }
       break;
 
@@ -55,6 +69,20 @@ export async function POST(request: NextRequest) {
 
       if (productId) {
         revalidatePath(`/product/${productId}`);
+      }
+
+      // Publish failure notification to the bidder via Redis
+      if (bidderId) {
+        const publisher = getPublisher();
+        await publisher.publish(
+          `payment:${bidderId}`,
+          JSON.stringify({
+            type: "payment_failed",
+            productId,
+            productTitle: paymentIntent.metadata?.productTitle || "Auction item",
+            message: failureMessage,
+          })
+        );
       }
       break;
 

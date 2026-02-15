@@ -6,6 +6,7 @@ import { CookieConsent } from "@/components/cookie-consent";
 import StoreProvider from "@/lib/redux/StoreProvider";
 import { Figtree } from 'next/font/google'
 import { Toaster } from "@/components/ui/sonner";
+import RealtimeNotifications from "@/components/realtime-notifications";
 
 const figtree = Figtree({ subsets: ['latin'], weight: ['500', '700'] })
 
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body className={`${figtree.className} bg-background text-foreground min-h-screen flex flex-col`}>
         <StoreProvider>
           <Toaster />
+          <RealtimeNotifications />
           <Navbar user={{}}/>
           <main className="min-h-screen">{children}</main>
           <Footer />
