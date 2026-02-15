@@ -63,7 +63,7 @@ export function UserMenu({ user }: UserMenuProps) {
               My Profile
             </Link>
             <Link
-              href="/profile?tab=bids"
+              href="/profile/bids"
               className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-accent transition-colors text-foreground"
               onClick={() => setShowUserMenu(false)}
             >
