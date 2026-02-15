@@ -12,6 +12,7 @@ export default async function BidsPage() {
   }
 
   const user = await getUser();
+  console.log(user)
   if (!user?.id) {
     redirect("/api/auth/login");
   }

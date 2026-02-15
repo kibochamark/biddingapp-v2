@@ -14,7 +14,7 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
   return (
     <div className="space-y-4">
       {/* Main Image */}
-      <div className="relative aspect-square bg-muted rounded-lg overflow-hidden">
+      <div className="relative aspect-square bg-muted rounded-2xl overflow-hidden">
         <Image
           src={ images?.length > 0 && images[selectedImage] || ""}
           alt={`${title} - Image ${selectedImage + 1}`}
@@ -31,7 +31,7 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
             <button
               key={index}
               onClick={() => setSelectedImage(index)}
-              className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+              className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all ${
                 selectedImage === index
                   ? "border-primary"
                   : "border-border hover:border-muted-foreground"

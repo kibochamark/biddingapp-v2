@@ -52,7 +52,7 @@ export default function BidFormNew({
     <div className="space-y-4">
       {/* User's Active Bid Status */}
       {hasActiveBid && isAuthenticated && (
-        <div className="p-4 bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 rounded-lg">
+        <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl">
           <div className="flex items-center gap-2 mb-2">
             <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
             <p className="font-semibold text-green-800 dark:text-green-200">
@@ -83,26 +83,31 @@ export default function BidFormNew({
       )}
 
       {/* Bidding Info */}
-      <div className="p-4 glass-card rounded-lg border-2 border-primary/20">
-        <p className="text-sm text-muted-foreground mb-1">Entry Fee per Bid</p>
-        <p className="text-3xl font-bold text-primary">{formatPrice(biddingFee)}</p>
-        <div className="flex items-center gap-2 mt-2">
-          <div className="flex items-center gap-1">
-            <Gavel className="h-4 w-4 text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">
-              {totalBids} {totalBids === 1 ? 'Entry' : 'Entries'}
-            </p>
-          </div>
+      <div className="p-5 rounded-2xl border border-primary/20 bg-primary/5">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+          Entry Fee per Bid
+        </p>
+        <p className="text-3xl font-extrabold text-primary">
+          {formatPrice(biddingFee)}
+        </p>
+        <div className="flex items-center gap-1 mt-2">
+          <Gavel className="h-4 w-4 text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">
+            {totalBids} {totalBids === 1 ? "Entry" : "Entries"}
+          </p>
         </div>
       </div>
 
       {/* Status Messages */}
       {!isActive && (
-        <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-200 dark:border-yellow-800 rounded-lg">
-          <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-            {productStatus === "CLOSED" && "Bidding has ended. Winner selection in progress."}
-            {productStatus === "WINNER_SELECTED" && "Winner has been selected!"}
-            {productStatus === "COMPLETED" && "This auction has been completed."}
+        <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-2xl">
+          <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">
+            {productStatus === "CLOSED" &&
+              "Bidding has ended. Winner selection in progress."}
+            {productStatus === "WINNER_SELECTED" &&
+              "Winner has been selected!"}
+            {productStatus === "COMPLETED" &&
+              "This auction has been completed."}
           </p>
         </div>
       )}
@@ -114,7 +119,7 @@ export default function BidFormNew({
             <button
               onClick={handlePlaceBid}
               disabled={!isActive}
-              className="w-full py-3.5 bg-linear-to-r from-primary to-orange-600 text-white rounded-lg font-semibold hover:from-primary/90 hover:to-orange-600/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg transform hover:scale-105"
+              className="w-full py-3.5 bg-primary text-primary-foreground rounded-xl font-bold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors shadow-sm"
             >
               {hasActiveBid ? (
                 <>
@@ -130,7 +135,7 @@ export default function BidFormNew({
             </button>
           ) : (
             <div className="space-y-3">
-              <LoginLink className="w-full py-3.5 bg-linear-to-r from-primary to-orange-600 text-white rounded-lg font-semibold hover:from-primary/90 hover:to-orange-600/90 flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg transform hover:scale-105">
+              <LoginLink className="w-full py-3.5 bg-primary text-primary-foreground rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors shadow-sm">
                 <Gavel className="h-5 w-5" />
                 Sign In to Place Bid
               </LoginLink>
@@ -143,7 +148,7 @@ export default function BidFormNew({
       )}
 
       {isLoading && (
-        <div className="w-full py-3.5 bg-muted rounded-lg flex items-center justify-center">
+        <div className="w-full py-3.5 bg-muted rounded-xl flex items-center justify-center">
           <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
         </div>
       )}

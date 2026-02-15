@@ -34,7 +34,7 @@ export type UserBidsResponse =
 export async function fetchUserBids(kindeId: string): Promise<UserBidsResponse> {
   try {
     const data = await apiFetch<UserBid[]>(
-      `/bids/my-bids?kinde_id=${kindeId}`,
+      `/bids/my-bids/${kindeId}`,
       { tags: [BID_TAGS.all, BID_TAGS.user(kindeId)] }
     );
     return { success: true, bids: data };
