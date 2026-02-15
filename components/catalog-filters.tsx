@@ -1,7 +1,7 @@
 "use client";
 
 import { Category, ProductCondition } from "@/lib/types";
-import { SlidersHorizontal, X } from "lucide-react";
+import { SlidersHorizontal, X, LayoutGrid } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
 
@@ -117,36 +117,45 @@ export default function CatalogFilters({
           {/* Categories */}
           <div className="space-y-3">
             <h3 className="font-semibold">Category</h3>
-            <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => onCategoryChange("")}
-                className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all text-center ${
                   !selectedCategory
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-accent"
+                    ? "border-primary bg-primary/10 text-primary shadow-sm"
+                    : "border-border hover:border-primary/40 hover:bg-accent"
                 }`}
               >
-                All Categories
+                <div className="relative h-6 w-6 flex items-center justify-center">
+                  <LayoutGrid className="h-5 w-5" />
+                </div>
+                <span className="text-xs font-medium leading-tight">All</span>
               </button>
               {categories.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => onCategoryChange(category.id)}
-                  className={`w-full text-left flex flex-row items-center px-3 py-2 rounded-lg transition-colors ${
+                  className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all text-center ${
                     selectedCategory === category.id
-                      ? "bg-primary text-primary-foreground"
-                      : "hover:bg-accent"
+                      ? "border-primary bg-primary/10 text-primary shadow-sm"
+                      : "border-border hover:border-primary/40 hover:bg-accent"
                   }`}
                 >
-                  <div className="relative h-4 w-4 rounded-full  p-3 flex items-center justify-center transition-colors duration-300">
-                                <Image
-                                  src={category.icon as string}
-                                  alt={category.name}
-                                  fill
-                                  className="object-contain"
-                                />
-                              </div>
-                  {category.name}
+                  {category.icon ? (
+                    <div className="relative h-6 w-6">
+                      <Image
+                        src={category.icon}
+                        alt={category.name}
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-6 w-6 rounded-full bg-muted" />
+                  )}
+                  <span className="text-xs font-medium leading-tight line-clamp-1">
+                    {category.name}
+                  </span>
                 </button>
               ))}
             </div>

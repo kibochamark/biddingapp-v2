@@ -18,6 +18,7 @@ import {
   CheckCircle2,
   X,
 } from "lucide-react";
+import { toast } from "sonner";
 import StripeProvider from "./stripe-provider";
 import CheckoutForm from "./checkout-form";
 import { createPaymentIntent } from "@/lib/actions/payment-actions";
@@ -145,6 +146,10 @@ export default function BidPaymentModal({
 
   const handlePaymentSuccess = () => {
     setStep("success");
+    toast.success("Payment successful! Your bid entry has been recorded.", {
+      duration: 5000,
+      description: "You will receive a confirmation email shortly.",
+    });
   };
 
   const handlePaymentError = (errorMsg: string) => {
@@ -187,8 +192,8 @@ export default function BidPaymentModal({
                         Your Bid Amount <span className="text-red-500">*</span>
                       </label>
                       <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold text-muted-foreground">
-                          $
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">
+                          USD
                         </span>
                         <Field
                           type="text"
@@ -386,7 +391,7 @@ export default function BidPaymentModal({
               <DialogDescription>
                 {bidData.numberOfBids} {bidData.numberOfBids === 1 ? "entry" : "entries"} for{" "}
                 <span className="font-semibold text-foreground">
-                  ${bidData.bidAmount.toFixed(2)}
+                  {formatPrice(bidData.bidAmount)}
                 </span>{" "}
                 bid
               </DialogDescription>

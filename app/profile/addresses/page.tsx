@@ -19,5 +19,5 @@ export default async function AddressesPage() {
   // Fetch addresses from server
   const addresses = await fetchUserAddresses(user.id).catch(() => []);
 
-  return <AddressesSection initialAddresses={addresses} userId={user.id} />;
+  return <AddressesSection initialAddresses={addresses} />;
 }

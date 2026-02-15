@@ -2,10 +2,7 @@
 "use server"
 import { Product } from "../types";
 import { apiFetch } from "../api";
-import { mockProducts, getFeaturedProducts, getNewestProducts, getEndingSoonProducts, getProductById } from "../mock-data";
 import { PRODUCT_TAGS } from "../revalidatetags";
-
-
 
 // Fetch all products with search and filters
 export async function searchProducts(params?: {
@@ -31,59 +28,17 @@ export async function searchProducts(params?: {
 
     const endpoint = `/products/search${queryParams.toString() ? `?${queryParams}` : ""}`;
 
-    console.log("Fetching products from endpoint:", endpoint);
-
     const data = await apiFetch<{ data: Product[]; pagination: any }>(
       endpoint,
       { tags: [PRODUCT_TAGS.all, PRODUCT_TAGS.search] }
     );
 
-    console.log("Fetched products:", data);
-
     return data;
   } catch (error) {
-    console.warn("API failed, using mock data:", error);
-    // Fallback to mock data with client-side filtering
-    let products = [...mockProducts].filter(p => p.isActive);
-
-    // Apply filters
-    if (params?.categoryId) {
-      products = products.filter(p => p.categoryId === params.categoryId);
-    }
-    if (params?.condition) {
-      products = products.filter(p => p.condition === params.condition);
-    }
-    if (params?.minPrice) {
-      products = products.filter(p => (p.retailValue) >= params.minPrice!);
-    }
-    if (params?.maxPrice) {
-      products = products.filter(p => (p.retailValue) <= params.maxPrice!);
-    }
-
-    // Sort
-    switch (params?.sortBy) {
-      case "ending_soon":
-        products.sort((a, b) => a.endDate.getTime() - b.endDate.getTime());
-        break;
-      case "newest":
-        products.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-        break;
-      case "highest_bid":
-        products.sort((a, b) => (b.retailValue) - (a.retailValue));
-        break;
-      case "lowest_price":
-        products.sort((a, b) => (a.retailValue) - (b.retailValue));
-        break;
-    }
-
+    console.error("Failed to fetch products:", error);
     return {
-      data:products,
-      pagination: {
-        page: 1,
-        limit: products.length,
-        total: products.length,
-        totalPages: 1,
-      },
+      data: [],
+      pagination: { page: 1, limit: 0, total: 0, totalPages: 0 },
     };
   }
 }
@@ -95,17 +50,10 @@ export async function fetchEndingSoonProducts(limit: number = 8): Promise<Produc
       `/products/ending-soon?limit=${limit}`,
       { tags: [PRODUCT_TAGS.all, PRODUCT_TAGS.endingSoon] }
     );
-
-    // If API returns no ending soon products, fallback to mock data
-    if (!data || data.length === 0) {
-      console.log("No ending soon products from API, using mock data");
-      return getEndingSoonProducts(limit);
-    }
-
-    return data;
+    return data ?? [];
   } catch (error) {
-    console.warn("API failed, using mock data:", error);
-    return getEndingSoonProducts(limit);
+    console.error("Failed to fetch ending soon products:", error);
+    return [];
   }
 }
 
@@ -116,17 +64,10 @@ export async function fetchNewestProducts(limit: number = 8): Promise<Product[]>
       `/products/newest?limit=${limit}`,
       { tags: [PRODUCT_TAGS.all, PRODUCT_TAGS.newest] }
     );
-
-    // If API returns no newest products, fallback to mock data
-    if (!data || data.length === 0) {
-      console.log("No newest products from API, using mock data");
-      return getNewestProducts(limit);
-    }
-
-    return data;
+    return data ?? [];
   } catch (error) {
-    console.warn("API failed, using mock data:", error);
-    return getNewestProducts(limit);
+    console.error("Failed to fetch newest products:", error);
+    return [];
   }
 }
 
@@ -137,37 +78,29 @@ export async function fetchFeaturedProducts(): Promise<Product[]> {
       `/products/ending-soon?limit=6`,
       { tags: [PRODUCT_TAGS.all, PRODUCT_TAGS.endingSoon] }
     );
-
-    // If API returns no ending soon products, fallback to featured/newest products
-    if (!data || data.length === 0) {
-      console.log("No ending soon products from API, using featured mock data");
-      return getFeaturedProducts();
-    }
-
-    return data;
+    return data ?? [];
   } catch (error) {
-    console.warn("API failed, using mock data:", error);
-    return getFeaturedProducts();
+    console.error("Failed to fetch featured products:", error);
+    return [];
   }
 }
 
 // Fetch single product by ID
 export async function fetchProductById(id: string): Promise<Product | null> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`, 
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`,
       {
-        next:{tags:[`product/${id}`]}
+        next: { tags: [`product/${id}`] }
       }
-    )
+    );
 
-    console.log(response)
+    if (!response.ok) return null;
 
-    const data = await response.json()
-    
+    const data = await response.json();
     return data;
   } catch (error) {
-    console.warn("API failed, using mock data:", error);
-    return getProductById(id) || null;
+    console.error("Failed to fetch product:", error);
+    return null;
   }
 }
 
@@ -184,38 +117,28 @@ export async function fetchProductsByCategory(
     );
     return data;
   } catch (error) {
-    console.warn("API failed, using mock data:", error);
-    const products = mockProducts.filter(p => p.categoryId === categoryId && p.isActive);
+    console.error("Failed to fetch products by category:", error);
     return {
-      products,
-      pagination: {
-        page: 1,
-        limit: products.length,
-        total: products.length,
-        totalPages: 1,
-      },
+      products: [],
+      pagination: { page: 1, limit: 0, total: 0, totalPages: 0 },
     };
   }
 }
 
-
-
 interface ProductResponse {
-  data:Product[],
-  pagination:any
+  data: Product[];
+  pagination: any;
 }
-
 
 export async function getAllProducts(limit?: string): Promise<Product[]> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL!}/products?${limit?`?limit=${limit}`:""}`, {
-      next:{tags:["adminproducts"]}
-    })
-    const products: ProductResponse = await response.json()
-    console.log(products, "pr")
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL!}/products${limit ? `?limit=${limit}` : ""}`, {
+      next: { tags: ["adminproducts"] }
+    });
+    const products: ProductResponse = await response.json();
     return products.data;
   } catch (error) {
-    console.warn("API failed, using mock data:", error);
+    console.error("Failed to fetch all products:", error);
     return [];
   }
 }

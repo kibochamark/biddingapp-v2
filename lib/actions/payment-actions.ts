@@ -53,7 +53,7 @@ export async function createPaymentIntent(
         auctionId:params.auctionId
       },
       receipt_email: params.bidderEmail,
-      description: `Bid entry for ${params.productTitle} - ${params.numberOfBids} entries @ $${params.biddingFee} each`,
+      description: `Bid entry for ${params.productTitle} - ${params.numberOfBids} entries @ ${params.biddingFee.toFixed(2)} USD each`,
     });
 
     return { clientSecret: paymentIntent.client_secret! };

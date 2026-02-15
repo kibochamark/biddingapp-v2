@@ -121,8 +121,8 @@ export default function BidPlacementForm({
                 Your Bid Amount <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-bold text-muted-foreground">
-                  $
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">
+                  USD
                 </span>
                 <Field
                   type="text"
@@ -240,7 +240,7 @@ export default function BidPlacementForm({
                       Your Bid Amount
                     </span>
                     <span className="font-bold text-lg text-foreground">
-                      ${values.bidAmount}
+                      {values.bidAmount ? formatPrice(parseFloat(values.bidAmount)) : formatPrice(0)}
                     </span>
                   </div>
                 )}
@@ -262,7 +262,7 @@ export default function BidPlacementForm({
               </div>
               {values.bidAmount && (
                 <p className="text-xs text-muted-foreground mt-2">
-                  You&apos;ll pay ${values.bidAmount} only if you win
+                  You&apos;ll pay {formatPrice(parseFloat(values.bidAmount))} only if you win
                 </p>
               )}
             </div>

@@ -18,7 +18,7 @@ set -e
 
 DOMAIN="outbid.cc"
 APP_DIR="/root/outbid"
-REPO_URL="<YOUR_GIT_REPO_URL>"   # <-- Replace with your repo URL
+REPO_URL="https://github.com/kibochamark/biddingapp-v2"   # <-- Replace with your repo URL
 
 echo ""
 echo "========================================="

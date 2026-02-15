@@ -21,7 +21,14 @@ async function CatalogContent({ searchParams }: CatalogPageProps) {
   const params = await searchParams || {};
 
   // Parse search params
-  const categoryId = params?.category;
+  // The URL contains a category slug (e.g. "smartphones"), but the client
+  // filters products by category ID. Resolve slug → ID here so both the
+  // server fetch and client-side filtering use the same value.
+  const categorySlug = params?.category;
+  const matchedCategory = categorySlug
+    ? categories.find((c) => c.slug === categorySlug)
+    : undefined;
+  const categoryId = matchedCategory?.id ?? categorySlug;
   const condition = params?.condition;
   const minPrice = params?.minPrice ? parseFloat(params.minPrice) : undefined;
   const maxPrice = params?.maxPrice ? parseFloat(params.maxPrice) : undefined;

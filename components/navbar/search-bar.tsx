@@ -4,8 +4,9 @@ import { Search, X, Loader2, TrendingUp } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { searchProducts } from "@/lib/api/products";
-import { popularSearches } from "@/lib/mock-search-data";
 import { Product } from "@/lib/types";
+
+const popularSearches = ["iPhone", "MacBook", "PlayStation", "Camera", "AirPods", "Watch"];
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import Image from "next/image";
 import Link from "next/link";
@@ -131,7 +132,7 @@ export function SearchBar() {
                         </p>
                         <div className="flex items-center gap-3 mt-1.5">
                           <span className="text-sm font-semibold text-primary">
-                            ${product.entryFee} entry
+                            {product.entryFee} USD entry
                           </span>
                           <span className="text-xs text-muted-foreground">
                             {product.auctions?.length > 0 ? product.auctions[0].totalBidsCount : "N/A"} bids

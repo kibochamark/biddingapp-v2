@@ -2,7 +2,6 @@
 
 import { Category } from "../types";
 import { apiFetch } from "../api";
-import { mockCategories } from "../mock-data";
 
 export const CATEGORY_TAGS = {
   all: "categories",
@@ -17,10 +16,10 @@ export async function fetchCategories(): Promise<Category[]> {
       "/categories",
       { tags: [CATEGORY_TAGS.all] }
     );
-    return data;
+    return data ?? [];
   } catch (error) {
-    console.warn("API failed, using mock data:", error);
-    return mockCategories;
+    console.error("Failed to fetch categories:", error);
+    return [];
   }
 }
 
@@ -31,10 +30,10 @@ export async function fetchRootCategories(): Promise<Category[]> {
       "/categories/root",
       { tags: [CATEGORY_TAGS.all, CATEGORY_TAGS.root] }
     );
-    return data;
+    return data ?? [];
   } catch (error) {
-    console.warn("API failed, using mock data:", error);
-    return mockCategories.filter(c => !c.parentId);
+    console.error("Failed to fetch root categories:", error);
+    return [];
   }
 }
 
@@ -47,8 +46,8 @@ export async function fetchCategoryById(id: string): Promise<Category | null> {
     );
     return data;
   } catch (error) {
-    console.warn("API failed, using mock data:", error);
-    return mockCategories.find(c => c.id === id) || null;
+    console.error("Failed to fetch category:", error);
+    return null;
   }
 }
 
@@ -61,7 +60,7 @@ export async function fetchCategoryBySlug(slug: string): Promise<Category | null
     );
     return data;
   } catch (error) {
-    console.warn("API failed, using mock data:", error);
-    return mockCategories.find(c => c.slug === slug) || null;
+    console.error("Failed to fetch category by slug:", error);
+    return null;
   }
 }

@@ -7,71 +7,6 @@ import { DataTable } from "@/Globalcomponents/ReusableTable";
 import { productcolumns } from "./columns";
 import { Product } from "@/lib/types";
 
-// Mock data - replace with real data from server
-const mockProducts = [
-  {
-    id: "1",
-    title: "iPhone 15 Pro Max 256GB",
-    category: "Electronics",
-    condition: "NEW",
-    currentBid: 899,
-    totalBids: 45,
-    status: "ACTIVE",
-    endDate: new Date("2024-02-15"),
-    images: ["/placeholder.png"],
-  },
-  {
-    id: "2",
-    title: "MacBook Pro 16-inch M3",
-    category: "Electronics",
-    condition: "NEW",
-    currentBid: 2299,
-    totalBids: 78,
-    status: "ACTIVE",
-    endDate: new Date("2024-02-20"),
-    images: ["/placeholder.png"],
-  },
-];
-
-function StatusBadge({ status }: { status: string }) {
-  const styles = {
-    ACTIVE: "bg-green-500/10 text-green-600 border-green-500/20",
-    ENDED: "bg-gray-500/10 text-gray-600 border-gray-500/20",
-    CANCELLED: "bg-red-500/10 text-red-600 border-red-500/20",
-    DRAFT: "bg-blue-500/10 text-blue-600 border-blue-500/20",
-  };
-
-  return (
-    <span
-      className={`px-2 py-1 text-xs font-medium rounded-full border ${
-        styles[status as keyof typeof styles]
-      }`}
-    >
-      {status}
-    </span>
-  );
-}
-
-function ConditionBadge({ condition }: { condition: string }) {
-  const styles = {
-    NEW: "bg-green-500/10 text-green-600",
-    LIKE_NEW: "bg-blue-500/10 text-blue-600",
-    GOOD: "bg-yellow-500/10 text-yellow-600",
-    FAIR: "bg-orange-500/10 text-orange-600",
-    POOR: "bg-red-500/10 text-red-600",
-  };
-
-  return (
-    <span
-      className={`px-2 py-1 text-xs font-medium rounded-full ${
-        styles[condition as keyof typeof styles]
-      }`}
-    >
-      {condition.replace("_", " ")}
-    </span>
-  );
-}
-
 function DeleteConfirmModal({
   productTitle,
   onConfirm,
@@ -114,16 +49,8 @@ function DeleteConfirmModal({
 
 export default function ProductsTable({products}:{products:Product[] | []}) {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState<string>("ALL");
   const [productToDelete, setProductToDelete] = useState<any>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  const filteredProducts = mockProducts.filter((product) => {
-    const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = filterStatus === "ALL" || product.status === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
 
   const handleDelete = async () => {
     if (!productToDelete) return;
