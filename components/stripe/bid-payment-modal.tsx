@@ -387,7 +387,7 @@ export default function BidPaymentModal({
             <DialogHeader>
               <DialogTitle className="text-xl font-bold">
                 Complete Payment
-              </DialogTitle>
+              </DialogTitle>xx
               <DialogDescription>
                 {bidData.numberOfBids} {bidData.numberOfBids === 1 ? "entry" : "entries"} for{" "}
                 <span className="font-semibold text-foreground">
