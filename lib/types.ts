@@ -155,6 +155,7 @@ export interface UserBidAuction {
   title: string;
   status: AuctionStatus;
   endDate: string;
+  prizeValue?: string;
 }
 
 export interface UserBid {
