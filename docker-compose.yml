@@ -9,7 +9,6 @@ services:
         - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL:-https://outbid.cc}
         - NEXT_PUBLIC_STRIPE_PUBLIC_KEY=${NEXT_PUBLIC_STRIPE_PUBLIC_KEY:-pk_test_51Qvbo3FsYtjdKrHy3UN19W1CbnEakyhMTg2z5bfDtqTNjvcj1qKlHVDquIinRBGZerLTcCS0kIBTULZoTYw8khQG00mtjwHZrB}
         
-                
         # Add Stripe secret key for build time
         - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
 
@@ -29,6 +28,12 @@ services:
     environment:
       - NODE_ENV=production
       - HOSTNAME=0.0.0.0
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   nginx:
     image: nginx:alpine
     container_name: outbid-nginx
@@ -42,6 +47,11 @@ services:
       - ./certbot/www:/var/www/certbot
     depends_on:
       - frontend
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   certbot:
     image: certbot/certbot
@@ -50,3 +60,8 @@ services:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
