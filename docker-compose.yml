@@ -19,6 +19,8 @@ services:
         - KINDE_SITE_URL=${KINDE_SITE_URL:-https://outbid.cc}
         - KINDE_POST_LOGOUT_REDIRECT_URL=${KINDE_POST_LOGOUT_REDIRECT_URL:-https://outbid.cc}
         - KINDE_POST_LOGIN_REDIRECT_URL=${KINDE_POST_LOGIN_REDIRECT_URL:-https://outbid.cc}
+        - REDIS_HOST=redis-service
+        - REDIS_URL=redis://redis-service:6379
     container_name: outbid-frontend
     restart: unless-stopped
     ports:
@@ -28,6 +30,9 @@ services:
     environment:
       - NODE_ENV=production
       - HOSTNAME=0.0.0.0
+    networks:
+      - bidding-network  # <--- Join the backend network
+      - default          # <-
     logging:
       driver: json-file
       options:
@@ -65,3 +70,8 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+networks:
+  bidding-network:
+    external: true
+    name: bidding-service_bidding-network
