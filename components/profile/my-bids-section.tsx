@@ -33,6 +33,11 @@ function parseAmount(amount: string): number {
   return parseFloat(amount) || 0;
 }
 
+// Helper to check if an auction has concluded (ended or winner determined)
+function isAuctionEnded(status: string): boolean {
+  return status === "ENDED" || status === "WINNER_DETERMINED";
+}
+
 // Status badge component
 function StatusBadge({
   isWinning,
@@ -43,7 +48,7 @@ function StatusBadge({
   isUnique: boolean;
   auctionStatus: string;
 }) {
-  if (auctionStatus === "ENDED") {
+  if (isAuctionEnded(auctionStatus)) {
     return isWinning ? (
       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
         <Trophy className="h-3 w-3" />
@@ -292,7 +297,7 @@ export default function MyBidsSection({ bids, error }: MyBidsSectionProps) {
   const stats = useMemo(() => {
     const activeBids = bids.filter((b) => b.auction.status === "ACTIVE");
     const winningBids = bids.filter((b) => b.isWinning);
-    const endedBids = bids.filter((b) => b.auction.status === "ENDED");
+    const endedBids = bids.filter((b) => isAuctionEnded(b.auction.status));
     const uniqueBids = bids.filter((b) => b.isUnique);
 
     const totalSpent = bids.reduce((sum, b) => sum + parseAmount(b.entryFeePaid), 0);

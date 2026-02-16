@@ -147,7 +147,7 @@ export interface Bid {
 }
 
 // User bid from /bids/my-bids API endpoint
-export type AuctionStatus = "ACTIVE" | "ENDED" | "CANCELLED";
+export type AuctionStatus = "ACTIVE" | "ENDED" | "CANCELLED" | "WINNER_DETERMINED";
 export type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "REFUNDED";
 
 export interface UserBidAuction {
