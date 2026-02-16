@@ -21,7 +21,6 @@ import {
 import { formatPrice, formatDateTime, formatTimeRemaining } from "@/lib/format";
 import { toast } from "@/lib/toast";
 import Link from "next/link";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface MyBidsSectionProps {
   bids: UserBid[];
@@ -396,8 +395,8 @@ export default function MyBidsSection({ bids, error }: MyBidsSectionProps) {
       </div>
 
       {/* Scrollable Content */}
-      <ScrollArea className="max-h-[600px]">
-        <div className="space-y-6 pr-4">
+      <div className="max-h-[600px] overflow-y-auto pr-1">
+        <div className="space-y-6">
           {/* Quick Stats Row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="rounded-xl bg-linear-to-br from-green-500 to-emerald-600 p-4 text-white">
@@ -486,7 +485,7 @@ export default function MyBidsSection({ bids, error }: MyBidsSectionProps) {
             </section>
           )}
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 }

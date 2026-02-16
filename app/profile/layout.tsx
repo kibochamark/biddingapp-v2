@@ -32,7 +32,7 @@ export default async function ProfileLayout({
       : user?.email ?? "User";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background">
       {/* Profile Header */}
       <div className="border-b border-border bg-linear-to-br from-primary/5 via-background to-primary/5">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
