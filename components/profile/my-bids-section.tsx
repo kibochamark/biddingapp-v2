@@ -396,7 +396,7 @@ export default function MyBidsSection({ bids, error }: MyBidsSectionProps) {
       </div>
 
       {/* Scrollable Content */}
-      <ScrollArea className="max-h-[70vh]">
+      <ScrollArea className="max-h-[600px]">
         <div className="space-y-6 pr-4">
           {/* Quick Stats Row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
