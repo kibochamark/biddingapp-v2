@@ -375,9 +375,9 @@ export default function MyBidsSection({ bids, error }: MyBidsSectionProps) {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-280px)] min-h-[500px]">
-      {/* Fixed Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 shrink-0">
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">My Bids</h1>
           <p className="text-muted-foreground mt-1">
@@ -396,7 +396,7 @@ export default function MyBidsSection({ bids, error }: MyBidsSectionProps) {
       </div>
 
       {/* Scrollable Content */}
-      <ScrollArea className="flex-1">
+      <ScrollArea className="max-h-[70vh]">
         <div className="space-y-6 pr-4">
           {/* Quick Stats Row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
