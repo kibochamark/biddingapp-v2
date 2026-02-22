@@ -175,3 +175,47 @@
 .animate-shimmer {
   animation: shimmer 3s infinite;
 }
+
+/* Sonner toast type colors — light mode */
+[data-sonner-toast][data-type="success"] {
+  background: oklch(0.95 0.05 145) !important;
+  color: oklch(0.25 0.1 145) !important;
+  border-color: oklch(0.78 0.1 145) !important;
+}
+[data-sonner-toast][data-type="error"] {
+  background: oklch(0.96 0.04 25) !important;
+  color: oklch(0.3 0.15 25) !important;
+  border-color: oklch(0.78 0.1 25) !important;
+}
+[data-sonner-toast][data-type="warning"] {
+  background: oklch(0.97 0.05 80) !important;
+  color: oklch(0.35 0.12 75) !important;
+  border-color: oklch(0.83 0.1 80) !important;
+}
+[data-sonner-toast][data-type="info"] {
+  background: oklch(0.95 0.04 250) !important;
+  color: oklch(0.28 0.12 250) !important;
+  border-color: oklch(0.78 0.1 250) !important;
+}
+
+/* Sonner toast type colors — dark mode */
+.dark [data-sonner-toast][data-type="success"] {
+  background: oklch(0.2 0.05 145) !important;
+  color: oklch(0.85 0.1 145) !important;
+  border-color: oklch(0.35 0.08 145) !important;
+}
+.dark [data-sonner-toast][data-type="error"] {
+  background: oklch(0.22 0.05 25) !important;
+  color: oklch(0.85 0.12 25) !important;
+  border-color: oklch(0.38 0.1 25) !important;
+}
+.dark [data-sonner-toast][data-type="warning"] {
+  background: oklch(0.22 0.06 75) !important;
+  color: oklch(0.85 0.12 75) !important;
+  border-color: oklch(0.4 0.1 75) !important;
+}
+.dark [data-sonner-toast][data-type="info"] {
+  background: oklch(0.2 0.05 250) !important;
+  color: oklch(0.85 0.1 250) !important;
+  border-color: oklch(0.35 0.08 250) !important;
+}

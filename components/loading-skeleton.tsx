@@ -29,12 +29,15 @@ export function ProductCardSkeleton() {
   );
 }
 
-export function ProductsGridSkeleton({ count = 6 }: { count?: number }) {
+export function ProductsGridSkeleton({ count = 8 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {Array.from({ length: count }).map((_, i) => (
-        <ProductCardSkeleton key={i} />
-      ))}
+    <div className="space-y-5">
+      <div className="h-7 bg-muted rounded w-40 animate-pulse" />
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        {Array.from({ length: count }).map((_, i) => (
+          <ProductCardSkeleton key={i} />
+        ))}
+      </div>
     </div>
   );
 }

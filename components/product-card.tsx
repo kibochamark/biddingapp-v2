@@ -15,6 +15,20 @@ export default function ProductCard({ product }: ProductCardProps) {
   const timeRemaining = formatTimeRemaining(product_endDate);
   const isEndingSoon = product_endDate.getTime() - new Date().getTime() < 24 * 60 * 60 * 1000;
 
+  // Single badge — priority: ENDING_SOON > HIGH_DEMAND > condition
+  const bidsCount = product.auctions?.length > 0 ? product.auctions[0].totalBidsCount : 0;
+  const isHighDemand = bidsCount > 10;
+  const badgeLabel = isEndingSoon
+    ? "Ending Soon"
+    : isHighDemand
+    ? "High Demand"
+    : formatCondition(product.condition);
+  const badgeClass = isEndingSoon
+    ? "bg-destructive text-white"
+    : isHighDemand
+    ? "bg-purple-500 text-white"
+    : getConditionColor(product.condition);
+
   console.log("Rendering ProductCard for:", product.images[0]);
   const imageSrc =
     Array.isArray(product.images) &&
@@ -34,20 +48,12 @@ export default function ProductCard({ product }: ProductCardProps) {
             fill
             className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
           />
-          {/* Condition Badge */}
+          {/* Single badge — priority: Ending Soon > High Demand > Condition */}
           <div className="absolute top-2 left-2">
-            <span className={`px-2 py-1 rounded-md text-xs font-medium ${getConditionColor(product.condition)}`}>
-              {formatCondition(product.condition)}
+            <span className={`px-2 py-1 rounded-md text-xs font-medium ${badgeClass}`}>
+              {badgeLabel}
             </span>
           </div>
-          {/* Ending Soon Badge */}
-          {isEndingSoon && (
-            <div className="absolute top-2 right-2">
-              <span className="px-2 py-1 rounded-md text-xs font-medium bg-destructive text-white">
-                Ending Soon
-              </span>
-            </div>
-          )}
         </div>
 
         {/* Content */}

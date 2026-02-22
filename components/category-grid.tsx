@@ -18,7 +18,7 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
           <div className="relative glass-card flex flex-col items-center gap-4 rounded-2xl border border-white/10 bg-primary/5 backdrop-blur-md p-5 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10">
 
             {/* Icon */}
-            <div className="relative h-14 w-14 rounded-xl  p-3 flex items-center justify-center transition-colors duration-300">
+            <div className="relative h-20 w-20 rounded-2xl overflow-hidden">
               <Image
                 src={category.icon as string}
                 alt={category.name}
