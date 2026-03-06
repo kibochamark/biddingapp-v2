@@ -1,6 +1,17 @@
 "use client";
 
-import { Menu, Clock, TrendingUp, User, X, Package, Gavel, UserCircle, ShoppingBag, LogOut } from "lucide-react";
+import {
+  Menu,
+  Clock,
+  TrendingUp,
+  User,
+  X,
+  Package,
+  Gavel,
+  UserCircle,
+  ShoppingBag,
+  LogOut,
+} from "lucide-react";
 import { useState } from "react";
 import { LoginLink, LogoutLink } from "@kinde-oss/kinde-auth-nextjs";
 import Link from "next/link";
@@ -16,28 +27,23 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const closeMenu = () => setIsMobileMenuOpen(false);
+  const close = () => setIsOpen(false);
 
   return (
     <>
-      {/* Mobile Menu Button */}
+      {/* Hamburger button */}
       <button
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        onClick={() => setIsOpen((prev) => !prev)}
         className="lg:hidden p-2 hover:bg-accent rounded-lg transition-colors"
         aria-label="Toggle menu"
       >
-        {isMobileMenuOpen ? (
-          <X className="h-5 w-5 text-foreground" />
-        ) : (
-          <Menu className="h-5 w-5 text-foreground" />
-        )}
+        <Menu className="h-5 w-5 text-foreground" />
       </button>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
-        {isMobileMenuOpen && (
+        {isOpen && (
           <>
             {/* Backdrop */}
             <motion.div
@@ -45,61 +51,87 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden"
-              onClick={closeMenu}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] lg:hidden"
+              onClick={close}
             />
 
-            {/* Menu Panel - Dropdown style below navbar */}
+            {/* Drawer — slides in from the right, full height */}
             <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="fixed top-16 left-0 right-0 bg-card border-b border-border shadow-xl z-40 max-h-[calc(100vh-4rem)] overflow-y-auto lg:hidden"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: 0.28, ease: "easeOut" }}
+              className="fixed top-0 right-0 h-full w-72 sm:w-80 bg-card border-l border-border shadow-2xl z-[160] flex flex-col lg:hidden"
             >
-              <div className="p-4 space-y-1">
-                {/* Navigation Links */}
-                <div className="space-y-1 mb-4">
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 bg-linear-to-br from-primary to-orange-600 rounded-lg flex items-center justify-center">
+                    <Package className="h-4 w-4 text-white" />
+                  </div>
+                  <span className="font-bold text-base text-foreground">BidMarket</span>
+                </div>
+                <button
+                  onClick={close}
+                  className="p-2 hover:bg-accent rounded-lg transition-colors"
+                  aria-label="Close menu"
+                >
+                  <X className="h-5 w-5 text-foreground" />
+                </button>
+              </div>
+
+              {/* Scrollable body */}
+              <div className="flex-1 overflow-y-auto p-4">
+
+                {/* Explore section */}
+                <p className="px-1 pb-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  Explore
+                </p>
+                <div className="space-y-1 mb-5">
                   <Link
                     href="/catalog"
                     className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
-                    onClick={closeMenu}
+                    onClick={close}
                   >
-                    <Package className="h-5 w-5" />
+                    <Package className="h-5 w-5 shrink-0" />
                     <span>Browse Auctions</span>
                   </Link>
                   <Link
                     href="/catalog?filter=ending-soon"
                     className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
-                    onClick={closeMenu}
+                    onClick={close}
                   >
-                    <Clock className="h-5 w-5" />
+                    <Clock className="h-5 w-5 shrink-0" />
                     <span>Ending Soon</span>
                   </Link>
                   <Link
                     href="/catalog?filter=trending"
                     className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
-                    onClick={closeMenu}
+                    onClick={close}
                   >
-                    <TrendingUp className="h-5 w-5" />
+                    <TrendingUp className="h-5 w-5 shrink-0" />
                     <span>Trending</span>
                   </Link>
                 </div>
 
-                {/* User Section */}
-                {isAuthenticated ? (
-                  <>
-                    <div className="border-t border-border pt-4 mt-4">
-                      {/* User Info Card */}
+                {/* Account section */}
+                <div className="border-t border-border pt-4">
+                  {isAuthenticated ? (
+                    <>
+                      <p className="px-1 pb-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                        Account
+                      </p>
+
+                      {/* User info card */}
                       <div className="flex items-center gap-3 px-4 py-3 bg-primary/5 rounded-lg mb-3">
                         {user?.picture ? (
                           <img
                             src={user.picture}
                             alt={user.given_name || "User"}
-                            className="w-10 h-10 rounded-full border-2 border-primary/20"
+                            className="w-10 h-10 rounded-full border-2 border-primary/20 shrink-0"
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary to-orange-600 flex items-center justify-center">
+                          <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary to-orange-600 flex items-center justify-center shrink-0">
                             <User className="h-5 w-5 text-white" />
                           </div>
                         )}
@@ -111,53 +143,56 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
                         </div>
                       </div>
 
-                      {/* User Menu Links */}
                       <div className="space-y-1">
                         <Link
                           href="/profile"
                           className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
-                          onClick={closeMenu}
+                          onClick={close}
                         >
-                          <UserCircle className="h-5 w-5" />
+                          <UserCircle className="h-5 w-5 shrink-0" />
                           <span>My Profile</span>
                         </Link>
                         <Link
                           href="/profile/bids"
                           className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
-                          onClick={closeMenu}
+                          onClick={close}
                         >
-                          <Gavel className="h-5 w-5" />
+                          <Gavel className="h-5 w-5 shrink-0" />
                           <span>My Bids</span>
                         </Link>
                         <Link
                           href="/profile/listings"
                           className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
-                          onClick={closeMenu}
+                          onClick={close}
                         >
-                          <ShoppingBag className="h-5 w-5" />
+                          <ShoppingBag className="h-5 w-5 shrink-0" />
                           <span>My Listings</span>
                         </Link>
                       </div>
-
-                      {/* Sign Out Button */}
-                      <LogoutLink className="flex items-center justify-center gap-2 w-full px-4 py-3 mt-4 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 text-sm font-medium transition-all shadow-md">
-                        <LogOut className="h-4 w-4" />
-                        <span>Sign Out</span>
-                      </LogoutLink>
+                    </>
+                  ) : (
+                    <div className="space-y-3">
+                      <LoginLink className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-linear-to-r from-primary to-orange-600 text-white rounded-lg hover:from-primary/90 hover:to-orange-600/90 text-sm font-medium transition-all shadow-md">
+                        <User className="h-4 w-4" />
+                        <span>Sign In</span>
+                      </LoginLink>
+                      <p className="text-xs text-center text-muted-foreground">
+                        Sign in to place bids and manage your account
+                      </p>
                     </div>
-                  </>
-                ) : (
-                  <div className="border-t border-border pt-4 mt-4">
-                    <LoginLink className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-linear-to-r from-primary to-orange-600 text-white rounded-lg hover:from-primary/90 hover:to-orange-600/90 text-sm font-medium transition-all shadow-md">
-                      <User className="h-4 w-4" />
-                      <span>Sign In</span>
-                    </LoginLink>
-                    <p className="text-xs text-center text-muted-foreground mt-3">
-                      Sign in to place bids and manage your account
-                    </p>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
+
+              {/* Sign Out — pinned to the bottom */}
+              {isAuthenticated && (
+                <div className="px-4 py-4 border-t border-border shrink-0">
+                  <LogoutLink className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 text-sm font-medium transition-all">
+                    <LogOut className="h-4 w-4" />
+                    <span>Sign Out</span>
+                  </LogoutLink>
+                </div>
+              )}
             </motion.div>
           </>
         )}
