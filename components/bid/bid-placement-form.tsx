@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { createBidCheckoutAction } from "@/lib/actions/bid-actions";
+import { revalidateBidsAction } from "@/lib/actions/revalidateBidAction";
 
 interface BidPlacementFormProps {
   productId: string;
@@ -72,6 +73,36 @@ export default function BidPlacementForm({
     acceptTerms: false,
     paymentMethod: "stripe",
   };
+
+
+  useEffect(() => {
+    // Connect to the SSE endpoint
+    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/notifications/payment/${user.id}`);
+
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === 'payment_success') {
+        toast.success(`Success! ${data.message}`);
+
+        // Call the server action to revalidate the page/path
+        revalidateBidsAction(`/product/${productId}`);
+
+        // Optional: reset form or redirect
+        setIsProcessing(false);
+
+        toast.success(data.message || "Bid placed.");
+      }
+    };
+
+    eventSource.onerror = (err) => {
+      console.error("SSE Error:", err);
+      eventSource.close();
+    };
+
+    // Cleanup on unmount
+    return () => eventSource.close();
+  }, [user.id, productId]);
 
   const handleSubmit = async (values: BidFormValues) => {
     if (values.paymentMethod === "paypal") {

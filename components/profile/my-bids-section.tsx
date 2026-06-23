@@ -227,7 +227,7 @@ function BidCard({ bid }: { bid: UserBid }) {
 
   return (
     <Link
-      href={`/product/${bid.auctionId}`}
+      href={`/product/${bid.auction.productId}`}
       className={`group relative flex flex-col rounded-2xl border transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 overflow-hidden ${
         bid.isWinning && isActive
           ? "border-green-300 dark:border-green-700 bg-linear-to-br from-green-50 to-white dark:from-green-950/20 dark:to-gray-900"
