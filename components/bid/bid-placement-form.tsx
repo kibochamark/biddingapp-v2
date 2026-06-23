@@ -77,7 +77,7 @@ export default function BidPlacementForm({
 
   useEffect(() => {
     // Connect to the SSE endpoint
-    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/notifications/payment/${user.id}`);
+    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_BASE_URL}/notifications/payment/${user.id}`);
 
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
