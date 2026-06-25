@@ -209,7 +209,7 @@ function WonAuctionCard({ bid }: { bid: UserBid }) {
 
       {/* Footer CTA */}
       <Link
-        href={`/product/${bid.auctionId}`}
+        href={`/product/${bid.auction.productId}`}
         className="flex items-center justify-center gap-2 px-5 py-3.5 bg-green-500 hover:bg-green-600 text-white font-medium text-sm transition-colors"
       >
         Claim Your Prize
