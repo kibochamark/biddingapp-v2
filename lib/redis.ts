@@ -1,6 +1,7 @@
 import Redis from "ioredis";
 
-const redisUrl = process.env.REDIS_URL || "redis-service:6379";
+// Change this line:
+const redisUrl = process.env.REDIS_URL || "redis://bidding-redis:6379";
 
 /**
  * Singleton publisher instance — used by the webhook to publish payment events.
@@ -9,7 +10,11 @@ let publisher: Redis | null = null;
 
 export function getPublisher(): Redis {
   if (!publisher) {
-    publisher = new Redis(redisUrl, { maxRetriesPerRequest: 3 });
+    publisher = new Redis(redisUrl, {
+      host: 'bidding-redis',
+      port: 6379,
+      maxRetriesPerRequest: 3,
+    });
   }
   return publisher;
 }
