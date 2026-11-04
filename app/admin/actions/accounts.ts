@@ -56,6 +56,7 @@ export async function fetchAccounts(filters?: {
     }
 
     const accessToken = await getAccessTokenRaw();
+    console.log(accessToken, "accessToken in fetchAccounts");
 
     const params = new URLSearchParams();
     if (filters?.status) params.set("status", filters.status);
@@ -64,7 +65,7 @@ export async function fetchAccounts(filters?: {
     if (filters?.limit) params.set("limit", filters.limit.toString());
 
     const response = await fetch(
-      `${API_URL}/admin/accounts${params.toString() ? `?${params}` : ""}`,
+      `${API_URL}/accounts${params.toString() ? `?${params}` : ""}`,
       {
         headers: {
           "Authorization": `Bearer ${accessToken}`,
@@ -102,7 +103,7 @@ export async function fetchAccountById(accountId: string) {
 
     const accessToken = await getAccessTokenRaw();
 
-    const response = await fetch(`${API_URL}/admin/accounts/${accountId}`, {
+    const response = await fetch(`${API_URL}/accounts/${accountId}`, {
       headers: {
         "Authorization": `Bearer ${accessToken}`,
         "Content-Type": "application/json",

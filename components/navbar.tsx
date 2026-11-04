@@ -16,6 +16,7 @@ interface MainNavbarProps {
 export default  function Navbar({user, isUserAuthenticated}: MainNavbarProps) {
 
   const router = usePathname();
+  // console.log(isUserAuthenticated, "isUserAuthenticated");
 
   if (router.startsWith("/admin")) {
     return null; // Do not render navbar on admin pages
@@ -76,7 +77,8 @@ export default  function Navbar({user, isUserAuthenticated}: MainNavbarProps) {
 
             {/* Desktop Auth - Hidden on mobile */}
             <div className="hidden md:flex items-center">
-              {isUserAuthenticated && user ? (
+              {/* {user} */}
+              {isUserAuthenticated  && user ? (
                 <UserMenu user={user} />
               ) : (
                 <LoginLink className="h-10 px-5 inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-[transform,background-color] text-sm font-medium whitespace-nowrap">

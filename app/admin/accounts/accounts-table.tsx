@@ -11,43 +11,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import type { Account } from "@/lib/types";
 
-// Mock data - replace with real data from server
-const mockAccounts = [
-  {
-    id: "acc_1",
-    kindeId: "kinde_123",
-    email: "john.doe@example.com",
-    fullName: "John Doe",
-    status: "ACTIVE",
-    kycStatus: "APPROVED",
-    totalBids: 45,
-    joinedAt: new Date("2024-01-10"),
-  },
-  {
-    id: "acc_2",
-    kindeId: "kinde_456",
-    email: "jane.smith@example.com",
-    fullName: "Jane Smith",
-    status: "ACTIVE",
-    kycStatus: "PENDING",
-    totalBids: 12,
-    joinedAt: new Date("2024-01-15"),
-  },
-  {
-    id: "acc_3",
-    kindeId: "kinde_789",
-    email: "bob.wilson@example.com",
-    fullName: "Bob Wilson",
-    status: "SUSPENDED",
-    kycStatus: "APPROVED",
-    totalBids: 89,
-    joinedAt: new Date("2023-12-05"),
-    suspensionReason: "Suspicious bidding activity",
-  },
-];
-
-function StatusBadge({ status }: { status: string }) {
+export function StatusBadge({ status }: { status: string }) {
   const variants = {
     ACTIVE: "success",
     SUSPENDED: "sale",
@@ -61,7 +27,7 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function KYCStatusBadge({ status }: { status: string }) {
+export function KYCStatusBadge({ status }: { status: string }) {
   const variants = {
     APPROVED: "success",
     PENDING: "default",
@@ -76,13 +42,13 @@ function KYCStatusBadge({ status }: { status: string }) {
   );
 }
 
-function TerminateAccountModal({
+export function TerminateAccountModal({
   account,
   onConfirm,
   onCancel,
   isProcessing,
 }: {
-  account: any;
+  account: Account;
   onConfirm: (reason: string, permanent: boolean) => void;
   onCancel: () => void;
   isProcessing: boolean;
@@ -151,18 +117,20 @@ function TerminateAccountModal({
   );
 }
 
-export default function AccountsTable() {
+export default function AccountsTable({ accounts }: { accounts: Account[] }) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
-  const [accountToTerminate, setAccountToTerminate] = useState<any>(null);
+  const [accountToTerminate, setAccountToTerminate] = useState<Account | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const filteredAccounts = mockAccounts.filter((account) => {
+  const filteredAccounts = accounts.filter((account) => {
+    const name = account.fullName ?? account.email ?? "";
     const matchesSearch =
-      account.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      account.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = filterStatus === "ALL" || account.status === filterStatus;
+      name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (account.email ?? "").toLowerCase().includes(searchQuery.toLowerCase());
+    const status = account.status ?? "ACTIVE";
+    const matchesStatus = filterStatus === "ALL" || status === filterStatus;
     return matchesSearch && matchesStatus;
   });
 
@@ -261,15 +229,15 @@ export default function AccountsTable() {
                 <tr key={account.id} className="hover:bg-soft-cloud/60 transition-colors">
                   <td className="px-6 py-4">
                     <div>
-                      <p className="text-sm font-medium text-ink">{account.fullName}</p>
+                      <p className="text-sm font-medium text-ink">{account.fullName ?? "—"}</p>
                       <div className="flex items-center gap-1 text-xs text-mute mt-1">
                         <Mail className="h-3 w-3" />
-                        {account.email}
+                        {account.email ?? "—"}
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <StatusBadge status={account.status} />
+                    <StatusBadge status={account.status ?? "ACTIVE"} />
                     {account.suspensionReason && (
                       <p className="text-xs text-mute mt-1">
                         {account.suspensionReason}
@@ -277,15 +245,15 @@ export default function AccountsTable() {
                     )}
                   </td>
                   <td className="px-6 py-4">
-                    <KYCStatusBadge status={account.kycStatus} />
+                    <KYCStatusBadge status={account.kycStatus ?? "NOT_SUBMITTED"} />
                   </td>
                   <td className="px-6 py-4">
-                    <p className="text-sm text-ink">{account.totalBids}</p>
+                    <p className="text-sm text-ink">{account.totalBids ?? 0}</p>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2 text-sm text-mute">
                       <Calendar className="h-4 w-4" />
-                      {account.joinedAt.toLocaleDateString()}
+                      {new Date(account.createdAt).toLocaleDateString()}
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -299,7 +267,7 @@ export default function AccountsTable() {
                         <Button
                           variant="ghost"
                           size="icon-sm"
-                          onClick={() => handleReactivate(account.id)}
+                          onClick={() => handleReactivate(account.kindeId)}
                           title="Reactivate"
                           className="text-success hover:bg-success/10"
                         >

@@ -5,9 +5,10 @@ import Navbar from '../navbar'
 const MainNavbarPage = async () => {
     const { isAuthenticated, getUser } = getKindeServerSession()
 
+
   return (
    <>
-          <Navbar user={await getUser() ?? {}} isUserAuthenticated={!!isAuthenticated} />
+          <Navbar user={await getUser() ?? {}} isUserAuthenticated={await isAuthenticated() ?? false} />
     
    </>
   )

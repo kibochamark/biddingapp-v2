@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Loader } from "lucide-react";
 import AccountsTable from "./accounts-table";
+import { fetchAccounts } from "../actions/accounts";
 
 function AccountsLoading() {
   return (
@@ -11,6 +12,23 @@ function AccountsLoading() {
       </div>
     </div>
   );
+}
+
+async function AccountsTableSection() {
+  const result = await fetchAccounts();
+
+  if (!result.success) {
+    return (
+      <div className="shadow-surface p-8 text-center">
+        <p className="text-mute">{result.error ?? "Failed to load accounts"}</p>
+      </div>
+    );
+  }
+
+  const data = result.data;
+  const accounts = Array.isArray(data) ? data : (data?.accounts ?? []);
+
+  return <AccountsTable accounts={accounts} />;
 }
 
 export default async function AccountsPage() {
@@ -26,7 +44,7 @@ export default async function AccountsPage() {
 
       {/* Accounts Table */}
       <Suspense fallback={<AccountsLoading />}>
-        <AccountsTable />
+        <AccountsTableSection />
       </Suspense>
     </div>
   );

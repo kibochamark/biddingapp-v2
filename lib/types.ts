@@ -66,24 +66,35 @@ export interface Product {
   updatedAt: Date;
 }
 
+export interface SellerProfile {
+  id: string;
+  [key: string]: unknown;
+}
+
 export interface Account {
   id: string;
   kindeId: string;
   email?: string;
+  contact?: string;
   fullName?: string;
   status?: "ACTIVE" | "SUSPENDED" | "TERMINATED";
   kycStatus?: KycStatus;
   totalBids?: number;
   suspensionReason?: string;
+  sellerProfile?: SellerProfile | null;
+  addresses?: Address[];
   createdAt: Date;
   updatedAt: Date;
 }
 
 export interface Address {
   id: string;
-  label?: string; 
+  label?: string;
   accountId?: string;
   recipientName: string;
+  // The admin accounts endpoint has shipped this field lowercased at least
+  // once in practice — read either casing rather than assume it's fixed.
+  recipientname?: string;
   phone: string;
   street: string;
   city: string;

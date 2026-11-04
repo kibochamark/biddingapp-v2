@@ -1,82 +1,54 @@
 "use client";
 
 import { useState } from "react";
-import { Search, ExternalLink, Calendar, DollarSign, Package, User } from "lucide-react";
+import { Search, ExternalLink, Calendar, DollarSign, Package, User, Trophy } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import type { PaymentStatus } from "@/lib/types";
 
-// Mock data - replace with real data from server
-const mockBids = [
-  {
-    id: "bid_1",
-    auctionId: "auction_1",
-    productId: "prod_1",
-    productTitle: "iPhone 15 Pro Max",
-    userId: "user_1",
-    userName: "John Doe",
-    userEmail: "john@example.com",
-    bidAmount: 899,
-    bidFee: 5,
-    placedAt: new Date("2024-01-20T10:30:00"),
-    status: "ACTIVE",
-  },
-  {
-    id: "bid_2",
-    auctionId: "auction_2",
-    productId: "prod_2",
-    productTitle: "MacBook Pro 16-inch",
-    userId: "user_2",
-    userName: "Jane Smith",
-    userEmail: "jane@example.com",
-    bidAmount: 2299,
-    bidFee: 10,
-    placedAt: new Date("2024-01-20T11:15:00"),
-    status: "ACTIVE",
-  },
-  {
-    id: "bid_3",
-    auctionId: "auction_1",
-    productId: "prod_1",
-    productTitle: "iPhone 15 Pro Max",
-    userId: "user_3",
-    userName: "Bob Wilson",
-    userEmail: "bob@example.com",
-    bidAmount: 899,
-    bidFee: 5,
-    placedAt: new Date("2024-01-20T09:45:00"),
-    status: "WON",
-  },
-];
+// One row per bidder, flattened out of every auction's admin detail — see
+// fetchAuctionDetail in app/admin/actions/auctions.ts for the source.
+export interface AdminBidRow {
+  id: string;
+  auctionId: string;
+  productId: string;
+  productTitle: string;
+  userId: string;
+  userName: string;
+  userEmail?: string;
+  bidAmount: number;
+  bidFee: number;
+  placedAt: Date;
+  status: PaymentStatus;
+  isWinner: boolean;
+}
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status }: { status: PaymentStatus }) {
   const variants = {
-    ACTIVE: "default",
-    WON: "success",
-    CONFIRMED: "success",
-    LOST: "default",
+    PAID: "success",
     PENDING: "default",
     FAILED: "sale",
     REFUNDED: "sale",
   } as const;
 
   return (
-    <Badge variant={variants[status as keyof typeof variants] ?? "default"}>
+    <Badge variant={variants[status] ?? "default"}>
       {status}
     </Badge>
   );
 }
 
-export default function BidsTable() {
+export default function BidsTable({ bids }: { bids: AdminBidRow[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
 
-  const filteredBids = mockBids.filter((bid) => {
+  const filteredBids = bids.filter((bid) => {
     const matchesSearch =
       bid.productTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
       bid.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      bid.userEmail.toLowerCase().includes(searchQuery.toLowerCase());
+      (bid.userEmail ?? "").toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = filterStatus === "ALL" || bid.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
@@ -127,26 +99,26 @@ export default function BidsTable() {
         <Button
           type="button"
           size="sm"
-          variant={filterStatus === "ACTIVE" ? "default" : "outline"}
-          onClick={() => setFilterStatus("ACTIVE")}
+          variant={filterStatus === "PAID" ? "default" : "outline"}
+          onClick={() => setFilterStatus("PAID")}
         >
-          Active
+          Paid
         </Button>
         <Button
           type="button"
           size="sm"
-          variant={filterStatus === "WON" ? "default" : "outline"}
-          onClick={() => setFilterStatus("WON")}
+          variant={filterStatus === "PENDING" ? "default" : "outline"}
+          onClick={() => setFilterStatus("PENDING")}
         >
-          Won
+          Pending
         </Button>
         <Button
           type="button"
           size="sm"
-          variant={filterStatus === "LOST" ? "default" : "outline"}
-          onClick={() => setFilterStatus("LOST")}
+          variant={filterStatus === "FAILED" ? "default" : "outline"}
+          onClick={() => setFilterStatus("FAILED")}
         >
-          Lost
+          Failed
         </Button>
       </div>
 
@@ -198,7 +170,7 @@ export default function BidsTable() {
                       <User className="h-4 w-4 text-mute shrink-0" />
                       <div>
                         <p className="text-sm font-medium text-ink">{bid.userName}</p>
-                        <p className="text-xs text-mute">{bid.userEmail}</p>
+                        <p className="text-xs text-mute">{bid.userEmail ?? "—"}</p>
                       </div>
                     </div>
                   </td>
@@ -214,7 +186,15 @@ export default function BidsTable() {
                     <span className="text-sm font-medium text-primary">${bid.bidFee}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <StatusBadge status={bid.status} />
+                    <div className="flex items-center gap-2">
+                      <StatusBadge status={bid.status} />
+                      {bid.isWinner && (
+                        <Badge variant="success">
+                          <Trophy className="h-3 w-3" />
+                          Winner
+                        </Badge>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2 text-sm text-mute">
