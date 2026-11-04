@@ -7,7 +7,7 @@ function AccountsLoading() {
     <div className="flex items-center justify-center min-h-[400px]">
       <div className="flex flex-col items-center gap-4">
         <Loader className="animate-spin text-primary w-12 h-12" />
-        <p className="text-muted-foreground">Loading accounts...</p>
+        <p className="text-mute">Loading accounts...</p>
       </div>
     </div>
   );
@@ -18,8 +18,8 @@ export default async function AccountsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">User Accounts</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-3xl font-semibold text-ink mb-2">User Accounts</h1>
+        <p className="text-mute">
           Manage user accounts, view activity, and moderate platform access
         </p>
       </div>

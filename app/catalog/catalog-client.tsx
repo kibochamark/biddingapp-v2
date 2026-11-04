@@ -85,7 +85,7 @@ export default function CatalogClient({
   );
 
   const handleClearFilters = useCallback(() => {
-    router.replace("/catalog");
+    router.replace("/catalog?sortBy=ending_soon");
   }, [router]);
 
   // Read current filter values from props (server already resolved them)
@@ -139,7 +139,7 @@ export default function CatalogClient({
 
         {/* Results Count */}
         <div className="mb-6">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-mute">
             {initialProducts.length}{" "}
             {initialProducts.length === 1 ? "auction" : "auctions"} found
           </p>
@@ -147,19 +147,19 @@ export default function CatalogClient({
 
         {/* Products — rendered directly, server already filtered them */}
         {initialProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-10">
             {initialProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-muted-foreground mb-4">
+            <p className="text-mute mb-4">
               No auctions found matching your filters
             </p>
             <button
               onClick={handleClearFilters}
-              className="text-primary hover:underline"
+              className="text-ink underline underline-offset-4 hover:text-primary"
             >
               Clear all filters
             </button>

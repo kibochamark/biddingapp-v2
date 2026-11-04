@@ -7,7 +7,7 @@ function BidsLoading() {
     <div className="flex items-center justify-center min-h-[400px]">
       <div className="flex flex-col items-center gap-4">
         <Loader className="animate-spin text-primary w-12 h-12" />
-        <p className="text-muted-foreground">Loading bids...</p>
+        <p className="text-mute">Loading bids...</p>
       </div>
     </div>
   );
@@ -17,49 +17,49 @@ function BidsLoading() {
 function BidsStats({ stats }: { stats: any }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <div className="glass-card p-4 rounded-lg border border-border">
+      <div className="glass-card p-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <Gavel className="h-5 w-5 text-primary" />
+          <div className="p-2 bg-soft-cloud rounded-lg">
+            <Gavel className="h-5 w-5 text-ink" />
           </div>
           <div>
-            <p className="text-sm text-muted-foreground">Total Bids</p>
-            <p className="text-2xl font-bold text-foreground">{stats.totalBids.toLocaleString()}</p>
+            <p className="text-sm text-mute">Total Bids</p>
+            <p className="text-2xl font-semibold text-ink">{stats.totalBids.toLocaleString()}</p>
           </div>
         </div>
       </div>
-      <div className="glass-card p-4 rounded-lg border border-border">
+      <div className="glass-card p-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-green-500/10 rounded-lg">
-            <TrendingUp className="h-5 w-5 text-green-600" />
+          <div className="p-2 bg-soft-cloud rounded-lg">
+            <TrendingUp className="h-5 w-5 text-success" />
           </div>
           <div>
-            <p className="text-sm text-muted-foreground">Today</p>
-            <p className="text-2xl font-bold text-foreground">{stats.todayBids}</p>
+            <p className="text-sm text-mute">Today</p>
+            <p className="text-2xl font-semibold text-ink">{stats.todayBids}</p>
           </div>
         </div>
       </div>
-      <div className="glass-card p-4 rounded-lg border border-border">
+      <div className="glass-card p-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-500/10 rounded-lg">
-            <DollarSign className="h-5 w-5 text-blue-600" />
+          <div className="p-2 bg-soft-cloud rounded-lg">
+            <DollarSign className="h-5 w-5 text-ink" />
           </div>
           <div>
-            <p className="text-sm text-muted-foreground">Total Revenue</p>
-            <p className="text-2xl font-bold text-foreground">
+            <p className="text-sm text-mute">Total Revenue</p>
+            <p className="text-2xl font-semibold text-ink">
               ${stats.totalRevenue.toLocaleString()}
             </p>
           </div>
         </div>
       </div>
-      <div className="glass-card p-4 rounded-lg border border-border">
+      <div className="glass-card p-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-purple-500/10 rounded-lg">
-            <Gavel className="h-5 w-5 text-purple-600" />
+          <div className="p-2 bg-soft-cloud rounded-lg">
+            <Gavel className="h-5 w-5 text-ink" />
           </div>
           <div>
-            <p className="text-sm text-muted-foreground">Avg. Bid Fee</p>
-            <p className="text-2xl font-bold text-foreground">${stats.avgBidFee}</p>
+            <p className="text-sm text-mute">Avg. Bid Fee</p>
+            <p className="text-2xl font-semibold text-ink">${stats.avgBidFee}</p>
           </div>
         </div>
       </div>
@@ -80,8 +80,8 @@ export default async function BidsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">Bids Management</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-3xl font-semibold text-ink mb-2">Bids Management</h1>
+        <p className="text-mute">
           View and monitor all bidding activity across the platform
         </p>
       </div>

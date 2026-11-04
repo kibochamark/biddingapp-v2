@@ -3,13 +3,14 @@ import Link from "next/link";
 import { Plus, Loader } from "lucide-react";
 import ProductsTable from "./products-table";
 import { getAllProducts } from "@/lib/api/products";
+import { Button } from "@/components/ui/button";
 
 function ProductsLoading() {
   return (
     <div className="flex items-center justify-center min-h-[400px]">
       <div className="flex flex-col items-center gap-4">
         <Loader className="animate-spin text-primary w-12 h-12" />
-        <p className="text-muted-foreground">Loading products...</p>
+        <p className="text-mute">Loading products...</p>
       </div>
     </div>
   );
@@ -27,18 +28,17 @@ export default async function ProductsPage({searchParams}: {searchParams: Promis
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Products</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold text-ink mb-2">Products</h1>
+          <p className="text-mute">
             Manage all products and auctions in the system
           </p>
         </div>
-        <Link
-          href="/admin/products/new"
-          className="flex items-center gap-2 px-4 py-2.5 bg-linear-to-r from-primary to-orange-600 text-white rounded-lg hover:from-primary/90 hover:to-orange-600/90 transition-all text-sm font-medium shadow-md hover:shadow-lg"
-        >
-          <Plus className="h-5 w-5" />
-          Add Product
-        </Link>
+        <Button asChild>
+          <Link href="/admin/products/new">
+            <Plus className="h-5 w-5" />
+            Add Product
+          </Link>
+        </Button>
       </div>
 
       {/* Products Table */}

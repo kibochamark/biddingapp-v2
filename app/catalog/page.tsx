@@ -24,16 +24,16 @@ async function CatalogContent({ searchParams }: CatalogPageProps) {
   // The URL contains a category slug (e.g. "smartphones"), but the client
   // filters products by category ID. Resolve slug → ID here so both the
   // server fetch and client-side filtering use the same value.
-  const categorySlug = params?.category;
+  const categorySlug = (await params)?.category;
   const matchedCategory = categorySlug
     ? categories.find((c) => c.slug === categorySlug)
     : undefined;
   const categoryId = matchedCategory?.id ?? categorySlug;
-  const condition = params?.condition;
-  const minPrice = params?.minPrice ? parseFloat(params.minPrice) : undefined;
-  const maxPrice = params?.maxPrice ? parseFloat(params.maxPrice) : undefined;
-  const sortBy = params?.sortBy || "ending_soon";
-  const query = params?.query;
+  const condition = (await params)?.condition;
+  const minPrice = (await params)?.minPrice ? parseFloat((await params).minPrice as string) : undefined;
+  const maxPrice = (await params)?.maxPrice ? parseFloat((await params).maxPrice as string) : undefined;
+  const sortBy = (await params)?.sortBy || "ending_soon";
+  const query = (await params)?.query;
 
   // Fetch initial products
   const { data: initialProducts, pagination } = await searchProducts({
@@ -66,8 +66,8 @@ export default function CatalogPage(props: CatalogPageProps) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Browse Auctions</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl sm:text-3xl font-medium text-ink uppercase mb-2">Browse Auctions</h1>
+        <p className="text-mute">
           Discover quality electronics at unbeatable prices
         </p>
       </div>

@@ -1,6 +1,12 @@
 import Redis from "ioredis";
 
-// Change this line:
+// Single source of truth for where Redis lives — both the publisher and
+// every subscriber connect here. (A `host`/`port` override used to be passed
+// alongside this URL on the publisher below; ioredis's `defaults()` merge
+// resolves the URL string first, so those options were always silently
+// discarded — removed rather than left as misleading dead code. Make sure
+// REDIS_URL in your actual deployment env matches the real Redis host and
+// includes credentials if that instance requires auth.)
 const redisUrl = process.env.REDIS_URL || "redis://bidding-redis:6379";
 
 /**
@@ -11,8 +17,6 @@ let publisher: Redis | null = null;
 export function getPublisher(): Redis {
   if (!publisher) {
     publisher = new Redis(redisUrl, {
-      host: 'bidding-redis',
-      port: 6379,
       maxRetriesPerRequest: 3,
     });
   }

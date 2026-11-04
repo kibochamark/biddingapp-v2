@@ -5,6 +5,17 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { createAddress, updateAddress } from "@/lib/api/addresses";
 import { toast } from "@/lib/toast";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface AddressFormProps {
   initialData?: Address;
@@ -77,23 +88,26 @@ export default function AddressForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Label */}
         <div>
-          <label className="text-sm font-semibold text-foreground mb-2 block">
+          <Label htmlFor="label" className="mb-2">
             Label
-          </label>
-          <select
-            name="label"
+          </Label>
+          <Select
             value={addressFormikForm.values.label}
-            onChange={addressFormikForm.handleChange}
-            onBlur={addressFormikForm.handleBlur}
-            className="w-full h-11 px-4 rounded-xl border border-input bg-background text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+            onValueChange={(value) =>
+              addressFormikForm.setFieldValue("label", value)
+            }
           >
-            <option value="">Select a label</option>
-            <option value="Home">Home</option>
-            <option value="Work">Work</option>
-            <option value="Other">Other</option>
-          </select>
+            <SelectTrigger id="label" className="w-full bg-soft-cloud">
+              <SelectValue placeholder="Select a label" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Home">Home</SelectItem>
+              <SelectItem value="Work">Work</SelectItem>
+              <SelectItem value="Other">Other</SelectItem>
+            </SelectContent>
+          </Select>
           {fieldError("label") && (
-            <p className="text-destructive text-xs mt-1.5">
+            <p className="text-sale text-xs mt-1.5">
               {fieldError("label")}
             </p>
           )}
@@ -101,20 +115,20 @@ export default function AddressForm({
 
         {/* Recipient Name */}
         <div>
-          <label className="text-sm font-semibold text-foreground mb-2 block">
+          <Label htmlFor="recipientName" className="mb-2">
             Recipient Name
-          </label>
-          <input
+          </Label>
+          <Input
+            id="recipientName"
             type="text"
             name="recipientName"
             value={addressFormikForm.values.recipientName}
             onChange={addressFormikForm.handleChange}
             onBlur={addressFormikForm.handleBlur}
-            className="w-full h-11 px-4 rounded-xl border border-input bg-background text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
             placeholder="John Doe"
           />
           {fieldError("recipientName") && (
-            <p className="text-destructive text-xs mt-1.5">
+            <p className="text-sale text-xs mt-1.5">
               {fieldError("recipientName")}
             </p>
           )}
@@ -122,20 +136,20 @@ export default function AddressForm({
 
         {/* Phone */}
         <div>
-          <label className="text-sm font-semibold text-foreground mb-2 block">
+          <Label htmlFor="phone" className="mb-2">
             Phone Number
-          </label>
-          <input
+          </Label>
+          <Input
+            id="phone"
             type="tel"
             name="phone"
             value={addressFormikForm.values.phone}
             onChange={addressFormikForm.handleChange}
             onBlur={addressFormikForm.handleBlur}
-            className="w-full h-11 px-4 rounded-xl border border-input bg-background text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
             placeholder="+1 (555) 000-0000"
           />
           {fieldError("phone") && (
-            <p className="text-destructive text-xs mt-1.5">
+            <p className="text-sale text-xs mt-1.5">
               {fieldError("phone")}
             </p>
           )}
@@ -144,20 +158,20 @@ export default function AddressForm({
 
       {/* Street */}
       <div>
-        <label className="text-sm font-semibold text-foreground mb-2 block">
+        <Label htmlFor="street" className="mb-2">
           Street Address
-        </label>
-        <input
+        </Label>
+        <Input
+          id="street"
           type="text"
           name="street"
           value={addressFormikForm.values.street}
           onChange={addressFormikForm.handleChange}
           onBlur={addressFormikForm.handleBlur}
-          className="w-full h-11 px-4 rounded-xl border border-input bg-background text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
           placeholder="123 Main St, Apt 4B"
         />
         {fieldError("street") && (
-          <p className="text-destructive text-xs mt-1.5">
+          <p className="text-sale text-xs mt-1.5">
             {fieldError("street")}
           </p>
         )}
@@ -166,20 +180,20 @@ export default function AddressForm({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* City */}
         <div>
-          <label className="text-sm font-semibold text-foreground mb-2 block">
+          <Label htmlFor="city" className="mb-2">
             City
-          </label>
-          <input
+          </Label>
+          <Input
+            id="city"
             type="text"
             name="city"
             value={addressFormikForm.values.city}
             onChange={addressFormikForm.handleChange}
             onBlur={addressFormikForm.handleBlur}
-            className="w-full h-11 px-4 rounded-xl border border-input bg-background text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
             placeholder="San Francisco"
           />
           {fieldError("city") && (
-            <p className="text-destructive text-xs mt-1.5">
+            <p className="text-sale text-xs mt-1.5">
               {fieldError("city")}
             </p>
           )}
@@ -187,20 +201,20 @@ export default function AddressForm({
 
         {/* State */}
         <div>
-          <label className="text-sm font-semibold text-foreground mb-2 block">
+          <Label htmlFor="state" className="mb-2">
             State
-          </label>
-          <input
+          </Label>
+          <Input
+            id="state"
             type="text"
             name="state"
             value={addressFormikForm.values.state}
             onChange={addressFormikForm.handleChange}
             onBlur={addressFormikForm.handleBlur}
-            className="w-full h-11 px-4 rounded-xl border border-input bg-background text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
             placeholder="CA"
           />
           {fieldError("state") && (
-            <p className="text-destructive text-xs mt-1.5">
+            <p className="text-sale text-xs mt-1.5">
               {fieldError("state")}
             </p>
           )}
@@ -208,20 +222,20 @@ export default function AddressForm({
 
         {/* ZIP Code */}
         <div>
-          <label className="text-sm font-semibold text-foreground mb-2 block">
+          <Label htmlFor="zipCode" className="mb-2">
             ZIP Code
-          </label>
-          <input
+          </Label>
+          <Input
+            id="zipCode"
             type="text"
             name="zipCode"
             value={addressFormikForm.values.zipCode}
             onChange={addressFormikForm.handleChange}
             onBlur={addressFormikForm.handleBlur}
-            className="w-full h-11 px-4 rounded-xl border border-input bg-background text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
             placeholder="94102"
           />
           {fieldError("zipCode") && (
-            <p className="text-destructive text-xs mt-1.5">
+            <p className="text-sale text-xs mt-1.5">
               {fieldError("zipCode")}
             </p>
           )}
@@ -230,26 +244,29 @@ export default function AddressForm({
 
       {/* Country */}
       <div>
-        <label className="text-sm font-semibold text-foreground mb-2 block">
+        <Label htmlFor="country" className="mb-2">
           Country
-        </label>
-        <select
-          name="country"
+        </Label>
+        <Select
           value={addressFormikForm.values.country}
-          onChange={addressFormikForm.handleChange}
-          onBlur={addressFormikForm.handleBlur}
-          className="w-full h-11 px-4 rounded-xl border border-input bg-background text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+          onValueChange={(value) =>
+            addressFormikForm.setFieldValue("country", value)
+          }
         >
-          <option value="">Select a country</option>
-          <option value="USA">United States</option>
-          <option value="Canada">Canada</option>
-          <option value="Mexico">Mexico</option>
-          <option value="UK">United Kingdom</option>
-          <option value="Germany">Germany</option>
-          <option value="France">France</option>
-        </select>
+          <SelectTrigger id="country" className="w-full bg-soft-cloud">
+            <SelectValue placeholder="Select a country" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="USA">United States</SelectItem>
+            <SelectItem value="Canada">Canada</SelectItem>
+            <SelectItem value="Mexico">Mexico</SelectItem>
+            <SelectItem value="UK">United Kingdom</SelectItem>
+            <SelectItem value="Germany">Germany</SelectItem>
+            <SelectItem value="France">France</SelectItem>
+          </SelectContent>
+        </Select>
         {fieldError("country") && (
-          <p className="text-destructive text-xs mt-1.5">
+          <p className="text-sale text-xs mt-1.5">
             {fieldError("country")}
           </p>
         )}
@@ -257,40 +274,34 @@ export default function AddressForm({
 
       {/* Primary checkbox */}
       <div className="flex items-center gap-2.5">
-        <input
-          type="checkbox"
+        <Checkbox
           id="isPrimary"
           name="isPrimary"
           checked={addressFormikForm.values.isPrimary}
           onChange={addressFormikForm.handleChange}
-          className="w-4 h-4 rounded border-input"
         />
-        <label htmlFor="isPrimary" className="text-sm font-medium">
+        <Label htmlFor="isPrimary">
           Set as default address
-        </label>
+        </Label>
       </div>
 
       {/* Actions */}
       <div className="flex gap-3 pt-2">
-        <button
-          type="submit"
-          disabled={addressFormikForm.isSubmitting}
-          className="h-11 px-6 bg-primary text-primary-foreground rounded-xl font-semibold text-sm hover:bg-primary/90 disabled:opacity-50 transition-colors"
-        >
+        <Button type="submit" disabled={addressFormikForm.isSubmitting}>
           {addressFormikForm.isSubmitting
             ? "Saving..."
             : initialData
             ? "Update Address"
             : "Add Address"}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="outline"
           onClick={onCancel}
           disabled={addressFormikForm.isSubmitting}
-          className="h-11 px-6 border border-input rounded-xl font-semibold text-sm hover:bg-accent disabled:opacity-50 transition-colors"
         >
           Cancel
-        </button>
+        </Button>
       </div>
     </form>
   );

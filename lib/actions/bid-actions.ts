@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import Stripe from "stripe";
+import { encodeBidAmountsMetadata } from "@/lib/stripe/bid-metadata";
 
 const stripeKey = process.env.STRIPE_SECRET_KEY;
 
@@ -9,8 +10,10 @@ interface CreateBidCheckoutParams {
   productId: string;
   productTitle: string;
   biddingFee: number;
-  bidAmount: number;
-  numberOfBids: number;
+  // One bid amount per entry — e.g. 5 entries means 5 distinct amounts, not
+  // the same amount charged 5 times. The entry fee is what's paid now; each
+  // bidAmount is only charged later if that specific entry wins.
+  bidAmounts: number[];
   bidderId: string;
   bidderName: string;
   bidderEmail: string;
@@ -21,12 +24,13 @@ export async function createBidCheckoutAction(params: CreateBidCheckoutParams) {
     productId,
     productTitle,
     biddingFee,
-    bidAmount,
-    numberOfBids,
+    bidAmounts,
     bidderId,
     bidderName,
     bidderEmail,
   } = params;
+
+  const numberOfBids = bidAmounts.length;
 
   console.log("Creating bid checkout:", { productId, numberOfBids, bidderId });
 
@@ -67,10 +71,10 @@ export async function createBidCheckoutAction(params: CreateBidCheckoutParams) {
         bidderId,
         bidderName,
         bidderEmail,
-        bidAmount: bidAmount.toString(),
         numberOfBids: numberOfBids.toString(),
         biddingFee: biddingFee.toString(),
         totalAmount: totalAmount.toString(),
+        ...encodeBidAmountsMetadata(bidAmounts),
       },
       customer_email: bidderEmail,
       // Optional: Add customer creation

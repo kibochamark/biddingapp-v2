@@ -1,9 +1,20 @@
 "use client";
 
 import { Category, ProductCondition } from "@/lib/types";
-import { SlidersHorizontal, X, LayoutGrid } from "lucide-react";
+import { SlidersHorizontal, X } from "lucide-react";
 import { useState } from "react";
-import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 interface CatalogFiltersProps {
   categories: Category[];
@@ -58,20 +69,21 @@ export default function CatalogFilters({
     GOOD: "Good",
     FAIR: "Fair",
     POOR: "Poor",
-    MINT:"Mint",
-    "EXCELLENT":"Excellent"
+    MINT: "Mint",
+    EXCELLENT: "Excellent",
   };
 
   return (
     <>
       {/* Mobile Filter Button */}
-      <button
+      <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg"
+        className="lg:hidden"
+        size="sm"
       >
         <SlidersHorizontal className="h-4 w-4" />
         Filters
-      </button>
+      </Button>
 
       {/* Filters Sidebar */}
       <div
@@ -85,127 +97,105 @@ export default function CatalogFilters({
         <div className="p-6 lg:p-0 lg:space-y-6">
           {/* Mobile Header */}
           <div className="flex items-center justify-between mb-6 lg:hidden">
-            <h2 className="text-lg font-semibold">Filters</h2>
-            <button onClick={() => setIsOpen(false)}>
-              <X className="h-5 w-5" />
+            <h2 className="text-lg font-medium text-ink">Filters</h2>
+            <button onClick={() => setIsOpen(false)} aria-label="Close filters">
+              <X className="h-5 w-5 text-ink" />
             </button>
           </div>
 
           {/* Clear Filters */}
           <button
             onClick={onClearFilters}
-            className="text-sm text-muted-foreground hover:text-foreground mb-4"
+            className="text-sm text-mute hover:text-ink underline underline-offset-4 mb-4"
           >
             Clear all filters
           </button>
 
           {/* Sort By */}
-          <div className="space-y-3">
-            <h3 className="font-semibold">Sort By</h3>
-            <select
-              value={sortBy}
-              onChange={(e) => onSortChange(e.target.value)}
-              className="w-full px-3 py-2 border border-input rounded-lg bg-background"
-            >
-              <option value="ending_soon">Ending Soon</option>
-              <option value="newest">Newest First</option>
-              <option value="highest_bid">Highest Bid</option>
-              <option value="lowest_price">Lowest Price</option>
-            </select>
+          <div className="space-y-3 pb-6 border-b border-hairline lg:border-b-0 lg:pb-0">
+            <h3 className="font-medium text-ink">Sort By</h3>
+            <Select value={sortBy} onValueChange={onSortChange}>
+              <SelectTrigger className="w-full bg-soft-cloud">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ending_soon">Ending Soon</SelectItem>
+                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="highest_bid">Highest Bid</SelectItem>
+                <SelectItem value="lowest_price">Lowest Price</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          {/* Categories */}
-          <div className="space-y-3">
-            <h3 className="font-semibold">Category</h3>
-            <div className="grid grid-cols-2 gap-2">
+          {/* Categories — filter-chip / filter-chip-active */}
+          <div className="space-y-3 py-6 border-b border-hairline lg:border-b-0 lg:py-0">
+            <h3 className="font-medium text-ink">Category</h3>
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => onCategoryChange("")}
-                className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all text-center ${
+                className={cn(
+                  "h-10 px-4 rounded-full border text-sm font-medium transition-colors",
                   !selectedCategory
-                    ? "border-primary bg-primary/10 text-primary shadow-sm"
-                    : "border-border hover:border-primary/40 hover:bg-accent"
-                }`}
+                    ? "border-ink bg-ink text-background"
+                    : "border-hairline bg-background text-ink hover:bg-soft-cloud"
+                )}
               >
-                <div className="relative h-6 w-6 flex items-center justify-center">
-                  <LayoutGrid className="h-5 w-5" />
-                </div>
-                <span className="text-xs font-medium leading-tight">All</span>
+                All
               </button>
               {categories.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => onCategoryChange(category.id)}
-                  className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all text-center ${
+                  className={cn(
+                    "h-10 px-4 rounded-full border text-sm font-medium transition-colors",
                     selectedCategory === category.id
-                      ? "border-primary bg-primary/10 text-primary shadow-sm"
-                      : "border-border hover:border-primary/40 hover:bg-accent"
-                  }`}
-                >
-                  {category.icon ? (
-                    <div className="relative h-6 w-6">
-                      <Image
-                        src={category.icon}
-                        alt={category.name}
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
-                  ) : (
-                    <div className="h-6 w-6 rounded-full bg-muted" />
+                      ? "border-ink bg-ink text-background"
+                      : "border-hairline bg-background text-ink hover:bg-soft-cloud"
                   )}
-                  <span className="text-xs font-medium leading-tight line-clamp-1">
-                    {category.name}
-                  </span>
+                >
+                  {category.name}
                 </button>
               ))}
             </div>
           </div>
 
           {/* Condition */}
-          <div className="space-y-3">
-            <h3 className="font-semibold">Condition</h3>
-            <div className="space-y-2">
+          <div className="space-y-3 py-6 border-b border-hairline lg:border-b-0 lg:py-0">
+            <h3 className="font-medium text-ink">Condition</h3>
+            <div className="space-y-2.5">
               {conditions.map((condition) => (
-                <label
-                  key={condition}
-                  className="flex items-center gap-2 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
+                <Label key={condition} className="cursor-pointer font-normal">
+                  <Checkbox
                     checked={selectedConditions.includes(condition)}
                     onChange={() => handleConditionToggle(condition)}
-                    className="w-4 h-4 rounded border-input"
                   />
-                  <span className="text-sm">{conditionLabels[condition]}</span>
-                </label>
+                  <span className="text-sm text-ink">{conditionLabels[condition]}</span>
+                </Label>
               ))}
             </div>
           </div>
 
           {/* Price Range */}
-          <div className="space-y-3">
-            <h3 className="font-semibold">Price Range</h3>
+          <div className="space-y-3 pt-6">
+            <h3 className="font-medium text-ink">Price Range</h3>
             <div className="space-y-2">
-              <input
+              <Input
                 type="number"
                 placeholder="Min price"
                 value={localMinPrice}
                 onChange={(e) => setLocalMinPrice(e.target.value)}
-                className="w-full px-3 py-2 border border-input rounded-lg bg-background"
+                className="h-10 bg-background border border-hairline"
               />
-              <input
+              <Input
                 type="number"
                 placeholder="Max price"
                 value={localMaxPrice}
                 onChange={(e) => setLocalMaxPrice(e.target.value)}
-                className="w-full px-3 py-2 border border-input rounded-lg bg-background"
+                className="h-10 bg-background border border-hairline"
               />
-              <button
-                onClick={handlePriceApply}
-                className="w-full px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
-              >
+              <Button onClick={handlePriceApply} size="sm" className="w-full">
                 Apply
-              </button>
+              </Button>
             </div>
           </div>
         </div>

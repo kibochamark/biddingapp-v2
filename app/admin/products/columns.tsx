@@ -8,6 +8,7 @@ import { Edit } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import DeleteModal from "@/components/admin/DeleteModal";
 import { deleteProduct } from "../actions/products";
+import { Badge } from "@/components/ui/badge";
 
 
 export const productcolumns: ColumnDef<Product>[] = [
@@ -20,10 +21,10 @@ export const productcolumns: ColumnDef<Product>[] = [
                 <div className="flex items-center gap-2">
                     <Link
                         href={`/admin/products/edit?id=${product.id}`}
-                        className="p-2 hover:bg-accent rounded-lg transition-colors"
+                        className="p-2 hover:bg-soft-cloud rounded-full transition-colors"
                         title="Edit product"
                     >
-                        <Edit className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+                        <Edit className="w-4 h-4 text-mute hover:text-ink" />
                     </Link>
                     <DeleteModal
                         resourceName="Product"
@@ -45,7 +46,7 @@ export const productcolumns: ColumnDef<Product>[] = [
             const firstImage = images?.[0];
 
             return (
-                <div className="flex items-center justify-center w-16 h-16 bg-muted rounded-md overflow-hidden">
+                <div className="flex items-center justify-center w-16 h-16 bg-soft-cloud overflow-hidden">
                     {firstImage ? (
                         <Image
                             src={firstImage}
@@ -55,7 +56,7 @@ export const productcolumns: ColumnDef<Product>[] = [
                             className="object-cover w-full h-full"
                         />
                     ) : (
-                        <div className="flex items-center justify-center w-full h-full text-xs text-muted-foreground">
+                        <div className="flex items-center justify-center w-full h-full text-xs text-mute">
                             No image
                         </div>
                     )}
@@ -91,16 +92,6 @@ export const productcolumns: ColumnDef<Product>[] = [
         ),
         cell: ({ row }) => {
             const condition = row.getValue("condition") as string;
-            const conditionStyles: Record<string, string> = {
-                NEW: "bg-green-500/10 text-green-600 border-green-500/20",
-                MINT: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-                EXCELLENT: "bg-blue-500/10 text-blue-600 border-blue-500/20",
-                LIKE_NEW: "bg-blue-500/10 text-blue-600 border-blue-500/20",
-                GOOD: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
-                FAIR: "bg-orange-500/10 text-orange-600 border-orange-500/20",
-                POOR: "bg-red-500/10 text-red-600 border-red-500/20",
-            };
-
             const conditionLabels: Record<string, string> = {
                 NEW: "New",
                 MINT: "Mint",
@@ -112,13 +103,9 @@ export const productcolumns: ColumnDef<Product>[] = [
             };
 
             return (
-                <span
-                    className={`inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border ${
-                        conditionStyles[condition] || "bg-muted text-muted-foreground border-border"
-                    }`}
-                >
+                <Badge variant="default">
                     {conditionLabels[condition] || condition}
-                </span>
+                </Badge>
             );
         },
     },

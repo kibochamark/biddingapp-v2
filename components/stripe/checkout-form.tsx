@@ -8,6 +8,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { Loader2, ShieldCheck, AlertCircle } from "lucide-react";
 import { formatPrice } from "@/lib/format";
+import { Button } from "@/components/ui/button";
 
 interface CheckoutFormProps {
   totalAmount: number;
@@ -59,7 +60,7 @@ export default function CheckoutForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Payment Element */}
-      <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 border border-gray-200 dark:border-gray-800">
+      <div className="bg-soft-cloud p-4">
         <PaymentElement
           options={{
             layout: "tabs",
@@ -70,25 +71,26 @@ export default function CheckoutForm({
 
       {/* Error Message */}
       {errorMessage && (
-        <div className="flex items-center gap-2 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400">
+        <div className="flex items-center gap-2 p-4 bg-sale/10 text-sale">
           <AlertCircle className="h-5 w-5 shrink-0" />
           <p className="text-sm">{errorMessage}</p>
         </div>
       )}
 
       {/* Total Amount Display */}
-      <div className="flex justify-between items-center p-4 bg-primary/5 rounded-lg border-2 border-primary/20">
-        <span className="font-semibold">Total to Pay</span>
-        <span className="text-2xl font-bold text-primary">
+      <div className="flex justify-between items-center py-4 border-y border-hairline">
+        <span className="font-medium text-ink">Total to Pay</span>
+        <span className="text-2xl font-semibold text-ink">
           {formatPrice(totalAmount)}
         </span>
       </div>
 
       {/* Submit Button */}
-      <button
+      <Button
         type="submit"
         disabled={!stripe || !elements || isProcessing}
-        className="w-full py-4 bg-gradient-to-r from-primary to-orange-600 text-white rounded-xl font-bold text-lg hover:from-primary/90 hover:to-orange-600/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 transition-all shadow-lg hover:shadow-xl"
+        size="lg"
+        className="w-full text-base"
       >
         {isProcessing ? (
           <>
@@ -101,10 +103,10 @@ export default function CheckoutForm({
             Pay {formatPrice(totalAmount)}
           </>
         )}
-      </button>
+      </Button>
 
       {/* Security Badge */}
-      <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+      <div className="flex items-center justify-center gap-2 text-xs text-mute">
         <ShieldCheck className="h-3 w-3" />
         <span className="uppercase tracking-wider">
           Secured by Stripe • SSL Encrypted

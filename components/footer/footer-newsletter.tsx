@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Mail, Loader2, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export function FooterNewsletter() {
   const [email, setEmail] = useState("");
@@ -34,21 +36,17 @@ export function FooterNewsletter() {
   return (
     <form onSubmit={handleSubmit} className="flex gap-2">
       <div className="relative flex-1">
-        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <input
+        <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-mute" />
+        <Input
           type="email"
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={isLoading || isSubscribed}
-          className="w-full pl-10 pr-4 py-2.5 bg-muted border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm disabled:opacity-50"
+          className="pl-11"
         />
       </div>
-      <button
-        type="submit"
-        disabled={isLoading || isSubscribed}
-        className="px-6 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium disabled:opacity-50 flex items-center gap-2"
-      >
+      <Button type="submit" disabled={isLoading || isSubscribed} className="px-5">
         {isLoading ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -62,7 +60,7 @@ export function FooterNewsletter() {
         ) : (
           <span>Subscribe</span>
         )}
-      </button>
+      </Button>
     </form>
   );
 }

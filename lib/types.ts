@@ -174,3 +174,40 @@ export interface UserBid {
   placedAt: string;
   auction: UserBidAuction;
 }
+
+// Admin auction-detail view — one bidder's entry on a single auction, with
+// enough identity/payment context for an admin to moderate it.
+export interface AuctionBidder {
+  id: string; // bid id
+  bidderId: string;
+  bidderName: string;
+  bidderEmail?: string;
+  bidAmount: number;
+  isUnique: boolean;
+  paymentStatus: PaymentStatus;
+  placedAt: string;
+}
+
+// Admin auction-detail view — the product inline (no redirect needed), the
+// auction's own lifecycle fields, and every current bidder with their price.
+export interface AuctionDetail {
+  id: string;
+  status: AuctionStatus;
+  startDate: string;
+  endDate: string;
+  entryFee: number;
+  prizeValue: number;
+  totalBidsCount: number;
+  winnerId?: string;
+  winningBidAmount?: number;
+  product: {
+    id: string;
+    title: string;
+    description: string;
+    images: string[];
+    condition: ProductCondition;
+    sellerName: string;
+    retailValue: number;
+  };
+  bidders: AuctionBidder[];
+}

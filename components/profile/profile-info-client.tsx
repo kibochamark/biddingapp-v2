@@ -6,6 +6,8 @@ import { Loader, User, Mail, Phone, Shield } from "lucide-react";
 import { createProfile } from "@/lib/api/account";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 interface ProfileInfoClientProps {
   initialData: {
@@ -48,38 +50,39 @@ export default function ProfileInfoClient({
   });
 
   return (
-    <div className="space-y-8">
-      {/* Profile Information Card */}
-      <div className="rounded-2xl border border-border bg-card overflow-hidden">
-        <div className="px-6 py-5 border-b border-border">
-          <h2 className="text-xl font-bold tracking-tight">
+    <div className="space-y-10">
+      {/* Profile Information */}
+      <div>
+        <div className="pb-5 border-b border-hairline mb-6">
+          <h2 className="text-lg font-medium text-ink">
             Profile Information
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-mute mt-1">
             Update your personal details and contact information
           </p>
         </div>
 
-        <form onSubmit={formik.handleSubmit} className="p-6 space-y-5">
+        <form onSubmit={formik.handleSubmit} className="space-y-5">
           {/* Full Name */}
           <div>
-            <label className="text-sm font-semibold text-foreground mb-2 block">
+            <Label htmlFor="fullName" className="mb-2 block">
               Full Name
-            </label>
+            </Label>
             <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <User className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-mute" />
               <input
+                id="fullName"
                 type="text"
                 name="fullName"
                 value={formik.values.fullName}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 placeholder="Enter your full name"
-                className="w-full h-11 pl-10 pr-4 rounded-xl border border-input bg-background text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                className="flex h-12 w-full min-w-0 rounded-full bg-soft-cloud pl-12 pr-5 text-base text-ink placeholder:text-mute transition-[background-color,box-shadow] outline-none focus-visible:bg-background focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-4 focus-visible:ring-offset-soft-cloud"
               />
             </div>
             {formik.errors.fullName && formik.touched.fullName && (
-              <p className="text-destructive text-xs mt-1.5">
+              <p className="text-sale text-xs mt-1.5">
                 {formik.errors.fullName}
               </p>
             )}
@@ -87,56 +90,54 @@ export default function ProfileInfoClient({
 
           {/* Email */}
           <div>
-            <label className="text-sm font-semibold text-foreground mb-2 block">
+            <Label htmlFor="email" className="mb-2 block">
               Email Address
-            </label>
+            </Label>
             <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-mute" />
               <input
+                id="email"
                 type="email"
                 name="email"
                 value={formik.values.email}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 disabled
-                className="w-full h-11 pl-10 pr-4 rounded-xl border border-input bg-muted text-sm text-muted-foreground cursor-not-allowed"
+                className="flex h-12 w-full min-w-0 rounded-full bg-soft-cloud pl-12 pr-5 text-base text-mute outline-none cursor-not-allowed"
               />
             </div>
-            <p className="text-xs text-muted-foreground mt-1.5">
+            <p className="text-xs text-mute mt-1.5">
               Email is managed by your authentication provider
             </p>
           </div>
 
           {/* Phone */}
           <div>
-            <label className="text-sm font-semibold text-foreground mb-2 block">
+            <Label htmlFor="contact" className="mb-2 block">
               Phone Number
-            </label>
+            </Label>
             <div className="relative">
-              <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Phone className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-mute" />
               <input
+                id="contact"
                 type="tel"
                 name="contact"
                 placeholder="+1 (555) 000-0000"
                 value={formik.values.contact}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full h-11 pl-10 pr-4 rounded-xl border border-input bg-background text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                className="flex h-12 w-full min-w-0 rounded-full bg-soft-cloud pl-12 pr-5 text-base text-ink placeholder:text-mute transition-[background-color,box-shadow] outline-none focus-visible:bg-background focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-4 focus-visible:ring-offset-soft-cloud"
               />
             </div>
             {formik.errors.contact && formik.touched.contact && (
-              <p className="text-destructive text-xs mt-1.5">
+              <p className="text-sale text-xs mt-1.5">
                 {formik.errors.contact}
               </p>
             )}
           </div>
 
           <div className="pt-2">
-            <button
-              type="submit"
-              className="h-11 px-6 bg-primary text-primary-foreground rounded-xl font-semibold text-sm hover:bg-primary/90 disabled:opacity-50 transition-colors flex items-center gap-2"
-              disabled={formik.isSubmitting || !formik.isValid}
-            >
+            <Button type="submit" disabled={formik.isSubmitting || !formik.isValid}>
               {formik.isSubmitting ? (
                 <>
                   <Loader className="h-4 w-4 animate-spin" />
@@ -145,33 +146,31 @@ export default function ProfileInfoClient({
               ) : (
                 "Save Changes"
               )}
-            </button>
+            </Button>
           </div>
         </form>
       </div>
 
-      {/* Account Status Card */}
-      <div className="rounded-2xl border border-border bg-card overflow-hidden">
-        <div className="px-6 py-5 border-b border-border">
-          <h2 className="text-xl font-bold tracking-tight">Account</h2>
+      {/* Account Status */}
+      <div>
+        <div className="pb-5 border-b border-hairline mb-6">
+          <h2 className="text-lg font-medium text-ink">Account</h2>
         </div>
-        <div className="p-6">
-          <div className="flex items-center justify-between py-3">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <Shield className="h-4 w-4 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold">Account Type</p>
-                <p className="text-xs text-muted-foreground">
-                  Your membership tier
-                </p>
-              </div>
+        <div className="flex items-center justify-between py-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-full bg-soft-cloud">
+              <Shield className="h-4 w-4 text-ink" />
             </div>
-            <span className="text-sm font-semibold px-3 py-1.5 rounded-lg bg-muted">
-              Standard
-            </span>
+            <div>
+              <p className="text-sm font-medium text-ink">Account Type</p>
+              <p className="text-xs text-mute">
+                Your membership tier
+              </p>
+            </div>
           </div>
+          <span className="text-sm font-medium px-3 py-1.5 rounded-full bg-soft-cloud text-ink">
+            Standard
+          </span>
         </div>
       </div>
     </div>

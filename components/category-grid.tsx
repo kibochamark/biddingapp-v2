@@ -12,13 +12,12 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
       {categories.map((category) => (
         <Link
           key={category.id}
-          href={`/catalog?category=${category.slug}`}
+          href={`/catalog?category=${category.slug}&sortBy=ending_soon`}
           className="group"
         >
-          <div className="relative glass-card flex flex-col items-center gap-4 rounded-2xl border border-white/10 bg-primary/5 backdrop-blur-md p-5 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10">
-
+          <div className="flex flex-col items-center gap-4 bg-soft-cloud p-5">
             {/* Icon */}
-            <div className="relative h-20 w-20 rounded-2xl overflow-hidden">
+            <div className="relative h-20 w-20">
               <Image
                 src={category.icon as string}
                 alt={category.name}
@@ -28,7 +27,7 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
             </div>
 
             {/* Title */}
-            <h3 className="text-sm font-semibold text-center text-foreground/90 group-hover:text-primary transition-colors">
+            <h3 className="text-sm font-medium text-center text-ink group-hover:text-primary transition-colors">
               {category.name}
             </h3>
           </div>

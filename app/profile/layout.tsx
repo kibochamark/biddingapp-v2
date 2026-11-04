@@ -34,19 +34,19 @@ export default async function ProfileLayout({
   return (
     <div className="bg-background">
       {/* Profile Header */}
-      <div className="border-b border-border bg-linear-to-br from-primary/5 via-background to-primary/5">
+      <div className="border-b border-hairline bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
           <div className="flex items-center gap-5 sm:gap-6">
-            <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl bg-primary flex items-center justify-center shrink-0">
-              <span className="text-2xl sm:text-3xl font-bold text-primary-foreground">
+            <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-primary flex items-center justify-center shrink-0">
+              <span className="text-2xl sm:text-3xl font-medium text-primary-foreground">
                 {initials}
               </span>
             </div>
             <div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+              <h1 className="text-3xl sm:text-4xl font-medium tracking-tight text-ink">
                 {displayName}
               </h1>
-              <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+              <p className="text-mute mt-1 text-sm sm:text-base">
                 {user?.email}
               </p>
             </div>

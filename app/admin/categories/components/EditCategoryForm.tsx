@@ -7,6 +7,17 @@ import * as Yup from "yup";
 import { updateCategory, getCategoryById, CategoryWithRelations } from "../../actions/categories";
 import { X, Save, Loader, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface EditCategoryFormProps {
   categoryId: string;
@@ -96,10 +107,10 @@ export default function EditCategoryForm({
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-card rounded-xl border border-border max-w-lg w-full p-12 flex flex-col items-center justify-center">
-          <Loader className="h-12 w-12 text-primary animate-spin mb-4" />
-          <p className="text-muted-foreground">Loading category...</p>
+      <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div className="bg-card border border-hairline max-w-lg w-full p-12 flex flex-col items-center justify-center">
+          <Loader className="h-12 w-12 text-ink animate-spin mb-4" />
+          <p className="text-mute">Loading category...</p>
         </div>
       </div>
     );
@@ -116,20 +127,17 @@ export default function EditCategoryForm({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-card rounded-xl border border-border max-w-lg w-full">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-card border border-hairline max-w-lg w-full">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="flex items-center justify-between p-6 border-b border-hairline">
           <div>
-            <h3 className="text-xl font-bold text-foreground">Edit Category</h3>
-            <p className="text-xs text-muted-foreground mt-1">Slug: {category.slug}</p>
+            <h3 className="text-xl font-bold text-ink">Edit Category</h3>
+            <p className="text-xs text-mute mt-1">Slug: {category.slug}</p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-accent rounded-lg transition-colors"
-          >
+          <Button variant="ghost" size="icon-sm" onClick={onClose}>
             <X className="h-5 w-5" />
-          </button>
+          </Button>
         </div>
 
         {/* Form */}
@@ -138,39 +146,39 @@ export default function EditCategoryForm({
           validationSchema={updateCategorySchema}
           onSubmit={handleSubmit}
         >
-          {({ isSubmitting: formikSubmitting }) => (
+          {({ isSubmitting: formikSubmitting, values, setFieldValue }) => (
             <Form className="p-6 space-y-4">
               {/* Name */}
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
+                <Label htmlFor="name" className="mb-2">
                   Category Name
-                </label>
+                </Label>
                 <Field
+                  as={Input}
                   type="text"
                   id="name"
                   name="name"
                   placeholder="e.g., Electronics, Fashion, etc."
-                  className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm"
                 />
                 <ErrorMessage
                   name="name"
                   component="div"
-                  className="text-destructive text-sm mt-1"
+                  className="text-sale text-sm mt-1"
                 />
               </div>
 
               {/* Icon */}
               <div>
-                <label htmlFor="icon" className="block text-sm font-medium text-foreground mb-2">
+                <Label htmlFor="icon-upload" className="mb-2">
                   Icon
-                </label>
+                </Label>
                 <div className="flex items-center gap-4">
                   <label
                     htmlFor="icon-upload"
-                    className="cursor-pointer w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm flex items-center gap-2"
+                    className="cursor-pointer w-full h-12 rounded-full bg-soft-cloud px-5 text-sm flex items-center gap-2"
                   >
-                    <Upload className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">
+                    <Upload className="h-4 w-4 text-mute" />
+                    <span className="text-mute">
                       {iconFile ? iconFile.name : (category.icon ? "Replace image" : "Upload an image")}
                     </span>
                   </label>
@@ -185,80 +193,80 @@ export default function EditCategoryForm({
                 </div>
                 {category.icon && !iconFile && (
                   <div className="mt-2">
-                    <img src={category.icon} alt={category.name} className="h-16 w-16 object-cover rounded-md" />
+                    <img src={category.icon} alt={category.name} className="h-16 w-16 object-cover" />
                   </div>
                 )}
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-mute mt-1">
                   Optional image to represent this category
                 </p>
               </div>
 
               {/* Description */}
               <div>
-                <label htmlFor="description" className="block text-sm font-medium text-foreground mb-2">
+                <Label htmlFor="description" className="mb-2">
                   Description
-                </label>
+                </Label>
                 <Field
-                  as="textarea"
+                  as={Textarea}
                   id="description"
                   name="description"
                   placeholder="Brief description of this category..."
-                  className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm resize-none"
                   rows={3}
                 />
                 <ErrorMessage
                   name="description"
                   component="div"
-                  className="text-destructive text-sm mt-1"
+                  className="text-sale text-sm mt-1"
                 />
               </div>
 
               {/* Parent Category */}
               <div>
-                <label htmlFor="parentId" className="block text-sm font-medium text-foreground mb-2">
+                <Label htmlFor="parentId" className="mb-2">
                   Parent Category
-                </label>
-                <Field
-                  as="select"
-                  id="parentId"
-                  name="parentId"
-                  className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm"
+                </Label>
+                <Select
+                  value={values.parentId || "none"}
+                  onValueChange={(value) =>
+                    setFieldValue("parentId", value === "none" ? "" : value)
+                  }
                 >
-                  <option value="">None (Top Level)</option>
-                  {parentCategories
-                    .filter((cat) => cat.id !== categoryId)
-                    .map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.icon && `${cat.icon} `}
-                        {cat.name}
-                      </option>
-                    ))}
-                </Field>
+                  <SelectTrigger id="parentId" className="w-full bg-soft-cloud">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None (Top Level)</SelectItem>
+                    {parentCategories
+                      .filter((cat) => cat.id !== categoryId)
+                      .map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id}>
+                          {cat.icon && `${cat.icon} `}
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
                 <ErrorMessage
                   name="parentId"
                   component="div"
-                  className="text-destructive text-sm mt-1"
+                  className="text-sale text-sm mt-1"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-mute mt-1">
                   Select a parent to make this a subcategory
                 </p>
               </div>
 
               {/* Actions */}
               <div className="flex items-center justify-end gap-3 pt-4">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={onClose}
                   disabled={isSubmitting || formikSubmitting}
-                  className="px-4 py-2 border border-border rounded-lg hover:bg-accent transition-all text-sm font-medium disabled:opacity-50"
                 >
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting || formikSubmitting}
-                  className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-primary to-orange-600 text-white rounded-lg hover:from-primary/90 hover:to-orange-600/90 transition-all text-sm font-medium disabled:opacity-50"
-                >
+                </Button>
+                <Button type="submit" disabled={isSubmitting || formikSubmitting}>
                   {isSubmitting ? (
                     <>
                       <Loader className="h-4 w-4 animate-spin" />
@@ -270,7 +278,7 @@ export default function EditCategoryForm({
                       Save Changes
                     </>
                   )}
-                </button>
+                </Button>
               </div>
             </Form>
           )}

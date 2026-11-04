@@ -2,28 +2,15 @@
 
 export function ProductCardSkeleton() {
   return (
-    <div className="glass-card rounded-lg overflow-hidden animate-pulse">
+    <div className="animate-pulse">
       {/* Image skeleton */}
-      <div className="aspect-square bg-muted" />
+      <div className="aspect-square bg-soft-cloud" />
 
       {/* Content skeleton */}
-      <div className="p-4 space-y-3">
-        {/* Title */}
-        <div className="h-4 bg-muted rounded w-3/4" />
-
-        {/* Price */}
-        <div className="space-y-2">
-          <div className="h-3 bg-muted rounded w-1/2" />
-          <div className="h-6 bg-muted rounded w-2/3" />
-        </div>
-
-        {/* Time */}
-        <div className="h-3 bg-muted rounded w-1/3" />
-
-        {/* Seller */}
-        <div className="pt-2 border-t border-border">
-          <div className="h-3 bg-muted rounded w-1/2" />
-        </div>
+      <div className="pt-3 space-y-2">
+        <div className="h-4 bg-soft-cloud rounded w-3/4" />
+        <div className="h-3 bg-soft-cloud rounded w-1/3" />
+        <div className="h-5 bg-soft-cloud rounded w-1/2" />
       </div>
     </div>
   );

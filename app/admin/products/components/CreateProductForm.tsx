@@ -10,6 +10,17 @@ import { Loader, ChevronLeft, ChevronRight } from "lucide-react";
 import ProductImageUpload from "./ProductImageUpload";
 import CategorySelector from "./CategorySelector";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ProductFormValues {
   title: string;
@@ -122,18 +133,18 @@ export default function CreateProductForm() {
             <div
               className={`flex items-center justify-center w-10 h-10 rounded-full ${
                 currentStep >= 1
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground"
+                  ? "bg-ink text-background"
+                  : "bg-soft-cloud text-mute"
               }`}
             >
               1
             </div>
-            <span className="text-sm font-medium">Product Details</span>
+            <span className="text-sm font-medium text-ink">Product Details</span>
           </div>
-          <div className="flex-1 h-1 mx-4 bg-muted">
+          <div className="flex-1 h-1 mx-4 bg-soft-cloud">
             <div
               className={`h-full transition-all ${
-                currentStep >= 2 ? "bg-primary" : "bg-muted"
+                currentStep >= 2 ? "bg-ink" : "bg-soft-cloud"
               }`}
               style={{ width: currentStep >= 2 ? "100%" : "0%" }}
             />
@@ -142,21 +153,21 @@ export default function CreateProductForm() {
             <div
               className={`flex items-center justify-center w-10 h-10 rounded-full ${
                 currentStep >= 2
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground"
+                  ? "bg-ink text-background"
+                  : "bg-soft-cloud text-mute"
               }`}
             >
               2
             </div>
-            <span className="text-sm font-medium">Upload Images</span>
+            <span className="text-sm font-medium text-ink">Upload Images</span>
           </div>
         </div>
       </div>
 
       {/* Step 1: Product Details Form */}
       {currentStep === 1 && (
-        <div className="glass-card rounded-xl border border-border p-6">
-          <h2 className="text-xl font-bold mb-6">Product Information</h2>
+        <div className="border border-hairline p-6">
+          <h2 className="text-xl font-bold mb-6 text-ink">Product Information</h2>
           <Formik
             initialValues={initialValues}
             validationSchema={productValidationSchema}
@@ -166,49 +177,48 @@ export default function CreateProductForm() {
               <Form className="space-y-6">
                 {/* Title */}
                 <div>
-                  <label htmlFor="title" className="block text-sm font-medium mb-2">
+                  <Label htmlFor="title" className="mb-2">
                     Product Title *
-                  </label>
+                  </Label>
                   <Field
+                    as={Input}
                     type="text"
                     id="title"
                     name="title"
-                    className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
                     placeholder="Enter product title"
                   />
                   <ErrorMessage
                     name="title"
                     component="div"
-                    className="text-destructive text-sm mt-1"
+                    className="text-sale text-sm mt-1"
                   />
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label htmlFor="description" className="block text-sm font-medium mb-2">
+                  <Label htmlFor="description" className="mb-2">
                     Description *
-                  </label>
+                  </Label>
                   <Field
-                    as="textarea"
+                    as={Textarea}
                     id="description"
                     name="description"
                     rows={4}
-                    className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
                     placeholder="Enter product description"
                   />
                   <ErrorMessage
                     name="description"
                     component="div"
-                    className="text-destructive text-sm mt-1"
+                    className="text-sale text-sm mt-1"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Category */}
                   <div>
-                    <label htmlFor="categoryId" className="block text-sm font-medium mb-2">
+                    <Label htmlFor="categoryId" className="mb-2">
                       Category *
-                    </label>
+                    </Label>
                     <CategorySelector
                       value={values.categoryId}
                       onChange={(categoryId) => setFieldValue("categoryId", categoryId)}
@@ -217,171 +227,170 @@ export default function CreateProductForm() {
                     <ErrorMessage
                       name="categoryId"
                       component="div"
-                      className="text-destructive text-sm mt-1"
+                      className="text-sale text-sm mt-1"
                     />
                   </div>
 
                   {/* Condition */}
                   <div>
-                    <label htmlFor="condition" className="block text-sm font-medium mb-2">
+                    <Label htmlFor="condition" className="mb-2">
                       Condition *
-                    </label>
-                    <Field
-                      as="select"
-                      id="condition"
-                      name="condition"
-                      className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                    </Label>
+                    <Select
+                      value={values.condition}
+                      onValueChange={(value) => setFieldValue("condition", value)}
                     >
-                      <option value="NEW">New</option>
-                      <option value="MINT">Mint</option>
-                      <option value="EXCELLENT">Excellent</option>
-                      <option value="GOOD">Good</option>
-                      <option value="FAIR">Fair</option>
-                    </Field>
+                      <SelectTrigger id="condition" className="w-full bg-soft-cloud">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="NEW">New</SelectItem>
+                        <SelectItem value="MINT">Mint</SelectItem>
+                        <SelectItem value="EXCELLENT">Excellent</SelectItem>
+                        <SelectItem value="GOOD">Good</SelectItem>
+                        <SelectItem value="FAIR">Fair</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <ErrorMessage
                       name="condition"
                       component="div"
-                      className="text-destructive text-sm mt-1"
+                      className="text-sale text-sm mt-1"
                     />
                   </div>
                 </div>
 
                 {/* Seller Name */}
                 <div>
-                  <label htmlFor="sellerName" className="block text-sm font-medium mb-2">
+                  <Label htmlFor="sellerName" className="mb-2">
                     Seller Name *
-                  </label>
+                  </Label>
                   <Field
+                    as={Input}
                     type="text"
                     id="sellerName"
                     name="sellerName"
-                    className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
                     placeholder="Enter seller name"
                   />
                   <ErrorMessage
                     name="sellerName"
                     component="div"
-                    className="text-destructive text-sm mt-1"
+                    className="text-sale text-sm mt-1"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* Starting Price */}
                   <div>
-                    <label htmlFor="startingPrice" className="block text-sm font-medium mb-2">
+                    <Label htmlFor="startingPrice" className="mb-2">
                       Starting Price *
-                    </label>
+                    </Label>
                     <Field
+                      as={Input}
                       type="number"
                       id="startingPrice"
                       name="startingPrice"
                       step="0.01"
-                      className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
                       placeholder="0.00"
                     />
                     <ErrorMessage
                       name="startingPrice"
                       component="div"
-                      className="text-destructive text-sm mt-1"
+                      className="text-sale text-sm mt-1"
                     />
                   </div>
 
                   {/* Reserve Price */}
                   <div>
-                    <label htmlFor="reservePrice" className="block text-sm font-medium mb-2">
+                    <Label htmlFor="reservePrice" className="mb-2">
                       Reserve Price
-                    </label>
+                    </Label>
                     <Field
+                      as={Input}
                       type="number"
                       id="reservePrice"
                       name="reservePrice"
                       step="0.01"
-                      className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
                       placeholder="0.00"
                     />
                     <ErrorMessage
                       name="reservePrice"
                       component="div"
-                      className="text-destructive text-sm mt-1"
+                      className="text-sale text-sm mt-1"
                     />
                   </div>
 
                   {/* Buy Now Price */}
                   <div>
-                    <label htmlFor="buyNowPrice" className="block text-sm font-medium mb-2">
+                    <Label htmlFor="buyNowPrice" className="mb-2">
                       Buy Now Price
-                    </label>
+                    </Label>
                     <Field
+                      as={Input}
                       type="number"
                       id="buyNowPrice"
                       name="buyNowPrice"
                       step="0.01"
-                      className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
                       placeholder="0.00"
                     />
                     <ErrorMessage
                       name="buyNowPrice"
                       component="div"
-                      className="text-destructive text-sm mt-1"
+                      className="text-sale text-sm mt-1"
                     />
                   </div>
                 </div>
 
                 {/* End Date */}
                 <div>
-                  <label htmlFor="endDate" className="block text-sm font-medium mb-2">
+                  <Label htmlFor="endDate" className="mb-2">
                     Auction End Date *
-                  </label>
+                  </Label>
                   <Field
+                    as={Input}
                     type="datetime-local"
                     id="endDate"
                     name="endDate"
-                    className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                   <ErrorMessage
                     name="endDate"
                     component="div"
-                    className="text-destructive text-sm mt-1"
+                    className="text-sale text-sm mt-1"
                   />
                 </div>
 
                 {/* Specifications */}
                 <div>
-                  <label htmlFor="specifications" className="block text-sm font-medium mb-2">
+                  <Label htmlFor="specifications" className="mb-2">
                     Specifications (JSON)
-                  </label>
+                  </Label>
                   <Field
-                    as="textarea"
+                    as={Textarea}
                     id="specifications"
                     name="specifications"
                     rows={3}
-                    className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring font-mono text-sm"
+                    className="font-mono text-sm"
                     placeholder='{"brand": "Apple", "model": "iPhone 15"}'
                   />
                   <ErrorMessage
                     name="specifications"
                     component="div"
-                    className="text-destructive text-sm mt-1"
+                    className="text-sale text-sm mt-1"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-mute mt-1">
                     Enter specifications as a JSON object
                   </p>
                 </div>
 
                 {/* Submit Button */}
                 <div className="flex justify-end gap-3">
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
                     onClick={() => router.push("/admin/products")}
-                    className="px-6 py-2.5 border border-border rounded-lg hover:bg-accent transition-all text-sm font-medium"
                   >
                     Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting || formikSubmitting}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-linear-to-r from-primary to-orange-600 text-white rounded-lg hover:from-primary/90 hover:to-orange-600/90 transition-all text-sm font-medium disabled:opacity-50"
-                  >
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting || formikSubmitting}>
                     {isSubmitting ? (
                       <>
                         <Loader className="w-4 h-4 animate-spin" />
@@ -393,7 +402,7 @@ export default function CreateProductForm() {
                         <ChevronRight className="w-4 h-4" />
                       </>
                     )}
-                  </button>
+                  </Button>
                 </div>
               </Form>
             )}
@@ -403,12 +412,12 @@ export default function CreateProductForm() {
 
       {/* Step 2: Image Upload */}
       {currentStep === 2 && createdProductId && (
-        <div className="glass-card rounded-xl border border-border p-6">
+        <div className="border border-hairline p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold">Upload Product Images</h2>
+            <h2 className="text-xl font-bold text-ink">Upload Product Images</h2>
             <button
               onClick={() => setCurrentStep(1)}
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+              className="flex items-center gap-2 text-sm text-mute hover:text-ink"
             >
               <ChevronLeft className="w-4 h-4" />
               Back to Details

@@ -9,6 +9,18 @@ import { Product, ProductCondition } from "@/lib/types";
 import { Loader, Save } from "lucide-react";
 import ProductImageUpload from "./ProductImageUpload";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface EditProductFormProps {
   product: Product;
@@ -104,92 +116,94 @@ export default function EditProductForm({ product }: EditProductFormProps) {
   return (
     <div className="max-w-4xl space-y-6">
       {/* Product Details Form */}
-      <div className="glass-card rounded-xl border border-border p-6">
-        <h2 className="text-xl font-bold mb-6">Product Information</h2>
+      <div>
+        <h2 className="text-xl font-bold mb-6 text-ink">Product Information</h2>
         <Formik
           initialValues={initialValues}
           validationSchema={productValidationSchema}
           onSubmit={handleSubmit}
         >
-          {({ isSubmitting: formikSubmitting }) => (
+          {({ isSubmitting: formikSubmitting, values, setFieldValue }) => (
             <Form className="space-y-6">
               {/* Title */}
               <div>
-                <label htmlFor="title" className="block text-sm font-medium mb-2">
+                <Label htmlFor="title" className="mb-2">
                   Product Title *
-                </label>
+                </Label>
                 <Field
+                  as={Input}
                   type="text"
                   id="title"
                   name="title"
-                  className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
                   placeholder="Enter product title"
                 />
                 <ErrorMessage
                   name="title"
                   component="div"
-                  className="text-destructive text-sm mt-1"
+                  className="text-sale text-sm mt-1"
                 />
               </div>
 
               {/* Description */}
               <div>
-                <label htmlFor="description" className="block text-sm font-medium mb-2">
+                <Label htmlFor="description" className="mb-2">
                   Description *
-                </label>
+                </Label>
                 <Field
-                  as="textarea"
+                  as={Textarea}
                   id="description"
                   name="description"
                   rows={4}
-                  className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
                   placeholder="Enter product description"
                 />
                 <ErrorMessage
                   name="description"
                   component="div"
-                  className="text-destructive text-sm mt-1"
+                  className="text-sale text-sm mt-1"
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Condition */}
                 <div>
-                  <label htmlFor="condition" className="block text-sm font-medium mb-2">
+                  <Label htmlFor="condition" className="mb-2">
                     Condition *
-                  </label>
-                  <Field
-                    as="select"
-                    id="condition"
-                    name="condition"
-                    className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                  </Label>
+                  <Select
+                    value={values.condition}
+                    onValueChange={(value) => setFieldValue("condition", value)}
                   >
-                    <option value="NEW">New</option>
-                    <option value="MINT">Mint</option>
-                    <option value="EXCELLENT">Excellent</option>
-                    <option value="GOOD">Good</option>
-                    <option value="FAIR">Fair</option>
-                  </Field>
+                    <SelectTrigger id="condition" className="w-full bg-soft-cloud">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="NEW">New</SelectItem>
+                      <SelectItem value="MINT">Mint</SelectItem>
+                      <SelectItem value="EXCELLENT">Excellent</SelectItem>
+                      <SelectItem value="GOOD">Good</SelectItem>
+                      <SelectItem value="FAIR">Fair</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <ErrorMessage
                     name="condition"
                     component="div"
-                    className="text-destructive text-sm mt-1"
+                    className="text-sale text-sm mt-1"
                   />
                 </div>
 
                 {/* Active Status */}
                 <div>
-                  <label htmlFor="isActive" className="block text-sm font-medium mb-2">
+                  <Label htmlFor="isActive" className="mb-2">
                     Status
-                  </label>
-                  <div className="flex items-center gap-3 h-[42px]">
+                  </Label>
+                  <div className="flex items-center gap-3 h-12">
                     <Field
+                      as={Checkbox}
                       type="checkbox"
                       id="isActive"
                       name="isActive"
-                      className="w-5 h-5 rounded border-border text-primary focus:ring-2 focus:ring-ring"
                     />
-                    <label htmlFor="isActive" className="text-sm cursor-pointer">
+                    <label htmlFor="isActive" className="text-sm text-ink cursor-pointer">
                       Product is active
                     </label>
                   </div>
@@ -198,41 +212,41 @@ export default function EditProductForm({ product }: EditProductFormProps) {
 
               {/* Seller Name */}
               <div>
-                <label htmlFor="sellerName" className="block text-sm font-medium mb-2">
+                <Label htmlFor="sellerName" className="mb-2">
                   Seller Name *
-                </label>
+                </Label>
                 <Field
+                  as={Input}
                   type="text"
                   id="sellerName"
                   name="sellerName"
-                  className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
                   placeholder="Enter seller name"
                 />
                 <ErrorMessage
                   name="sellerName"
                   component="div"
-                  className="text-destructive text-sm mt-1"
+                  className="text-sale text-sm mt-1"
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Reserve Price */}
                 <div>
-                  <label htmlFor="retailValue" className="block text-sm font-medium mb-2">
+                  <Label htmlFor="retailValue" className="mb-2">
                     Reserve Price
-                  </label>
+                  </Label>
                   <Field
+                    as={Input}
                     type="number"
                     id="retailValue"
                     name="retailValue"
                     step="0.01"
-                    className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
                     placeholder="0.00"
                   />
                   <ErrorMessage
                     name="retailValue"
                     component="div"
-                    className="text-destructive text-sm mt-1"
+                    className="text-sale text-sm mt-1"
                   />
                 </div>
 
@@ -240,59 +254,55 @@ export default function EditProductForm({ product }: EditProductFormProps) {
 
               {/* End Date */}
               <div>
-                <label htmlFor="endDate" className="block text-sm font-medium mb-2">
+                <Label htmlFor="endDate" className="mb-2">
                   Auction End Date *
-                </label>
+                </Label>
                 <Field
+                  as={Input}
                   type="datetime-local"
                   id="endDate"
                   name="endDate"
-                  className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
                 />
                 <ErrorMessage
                   name="endDate"
                   component="div"
-                  className="text-destructive text-sm mt-1"
+                  className="text-sale text-sm mt-1"
                 />
               </div>
 
               {/* Specifications */}
               <div>
-                <label htmlFor="specifications" className="block text-sm font-medium mb-2">
+                <Label htmlFor="specifications" className="mb-2">
                   Specifications (JSON)
-                </label>
+                </Label>
                 <Field
-                  as="textarea"
+                  as={Textarea}
                   id="specifications"
                   name="specifications"
                   rows={4}
-                  className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring font-mono text-sm"
+                  className="font-mono text-sm"
                   placeholder='{"brand": "Apple", "model": "iPhone 15"}'
                 />
                 <ErrorMessage
                   name="specifications"
                   component="div"
-                  className="text-destructive text-sm mt-1"
+                  className="text-sale text-sm mt-1"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-mute mt-1">
                   Enter specifications as a JSON object
                 </p>
               </div>
 
               {/* Submit Button */}
-              <div className="flex justify-end gap-3 pt-4 border-t border-border">
-                <button
+              <div className="flex justify-end gap-3 pt-4 border-t border-hairline">
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={() => router.push("/admin/products")}
-                  className="px-6 py-2.5 border border-border rounded-lg hover:bg-accent transition-all text-sm font-medium"
                 >
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting || formikSubmitting}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-linear-to-r from-primary to-orange-600 text-white rounded-lg hover:from-primary/90 hover:to-orange-600/90 transition-all text-sm font-medium disabled:opacity-50"
-                >
+                </Button>
+                <Button type="submit" disabled={isSubmitting || formikSubmitting}>
                   {isSubmitting ? (
                     <>
                       <Loader className="w-4 h-4 animate-spin" />
@@ -304,7 +314,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
                       Save Changes
                     </>
                   )}
-                </button>
+                </Button>
               </div>
             </Form>
           )}
@@ -312,8 +322,8 @@ export default function EditProductForm({ product }: EditProductFormProps) {
       </div>
 
       {/* Image Management */}
-      <div className="glass-card rounded-xl border border-border p-6">
-        <h2 className="text-xl font-bold mb-6">Product Images</h2>
+      <div className="pt-6 border-t border-hairline">
+        <h2 className="text-xl font-bold mb-6 text-ink">Product Images</h2>
         <ProductImageUpload
           productId={product.id}
           existingImages={product.images}

@@ -17,23 +17,23 @@ function StatsCard({
   trendValue?: string;
 }) {
   return (
-    <div className="glass-card p-6 rounded-xl border border-border">
+    <div className="glass-card p-6">
       <div className="flex items-center justify-between mb-4">
-        <div className="p-3 bg-primary/10 rounded-lg">
-          <Icon className="h-6 w-6 text-primary" />
+        <div className="p-3 bg-soft-cloud rounded-lg">
+          <Icon className="h-6 w-6 text-ink" />
         </div>
         {trend && (
           <div
             className={`flex items-center gap-1 text-sm font-medium ${
-              trend === "up" ? "text-green-600" : "text-red-600"
+              trend === "up" ? "text-success" : "text-sale"
             }`}
           >
             {trend === "up" ? "↑" : "↓"} {trendValue}
           </div>
         )}
       </div>
-      <h3 className="text-sm font-medium text-muted-foreground mb-1">{title}</h3>
-      <p className="text-3xl font-bold text-foreground">{value}</p>
+      <h3 className="text-sm font-medium text-mute mb-1">{title}</h3>
+      <p className="text-3xl font-semibold text-ink">{value}</p>
     </div>
   );
 }
@@ -44,7 +44,7 @@ function DashboardLoading() {
     <div className="flex items-center justify-center min-h-[400px]">
       <div className="flex flex-col items-center gap-4">
         <Loader className="animate-spin text-primary w-12 h-12" />
-        <p className="text-muted-foreground">Loading dashboard...</p>
+        <p className="text-mute">Loading dashboard...</p>
       </div>
     </div>
   );
@@ -139,18 +139,18 @@ function RecentActivity() {
   ];
 
   return (
-    <div className="glass-card p-6 rounded-xl border border-border">
-      <h2 className="text-xl font-bold text-foreground mb-6">Recent Activity</h2>
+    <div className="glass-card p-6">
+      <h2 className="text-xl font-semibold text-ink mb-6">Recent Activity</h2>
       <div className="space-y-4">
         {activities.map((activity) => (
           <div
             key={activity.id}
-            className="flex items-start gap-3 pb-4 border-b border-border last:border-b-0 last:pb-0"
+            className="flex items-start gap-3 pb-4 border-b border-hairline last:border-b-0 last:pb-0"
           >
-            <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
+            <div className="w-2 h-2 bg-stone rounded-full mt-2"></div>
             <div className="flex-1">
-              <p className="text-sm text-foreground">{activity.message}</p>
-              <p className="text-xs text-muted-foreground mt-1">{activity.time}</p>
+              <p className="text-sm text-ink">{activity.message}</p>
+              <p className="text-xs text-mute mt-1">{activity.time}</p>
             </div>
           </div>
         ))}
@@ -164,8 +164,8 @@ export default function page() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-3xl font-semibold text-ink mb-2">Dashboard</h1>
+        <p className="text-mute">
           Welcome to the admin portal. Here's an overview of your platform.
         </p>
       </div>
@@ -178,36 +178,36 @@ export default function page() {
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <RecentActivity />
-        <div className="glass-card p-6 rounded-xl border border-border">
-          <h2 className="text-xl font-bold text-foreground mb-6">Quick Actions</h2>
+        <div className="glass-card p-6">
+          <h2 className="text-xl font-semibold text-ink mb-6">Quick Actions</h2>
           <div className="grid grid-cols-2 gap-4">
             <a
               href="/admin/products/new"
-              className="flex flex-col items-center justify-center gap-2 p-4 bg-primary/5 hover:bg-primary/10 rounded-lg transition-all border border-primary/20"
+              className="flex flex-col items-center justify-center gap-2 p-4 bg-soft-cloud hover:bg-hairline-soft rounded-lg transition-colors border border-hairline"
             >
-              <Package className="h-8 w-8 text-primary" />
-              <span className="text-sm font-medium text-foreground">Add Product</span>
+              <Package className="h-8 w-8 text-ink" />
+              <span className="text-sm font-medium text-ink">Add Product</span>
             </a>
             <a
               href="/admin/kyc"
-              className="flex flex-col items-center justify-center gap-2 p-4 bg-primary/5 hover:bg-primary/10 rounded-lg transition-all border border-primary/20"
+              className="flex flex-col items-center justify-center gap-2 p-4 bg-soft-cloud hover:bg-hairline-soft rounded-lg transition-colors border border-hairline"
             >
-              <ShieldCheck className="h-8 w-8 text-primary" />
-              <span className="text-sm font-medium text-foreground">Review KYC</span>
+              <ShieldCheck className="h-8 w-8 text-ink" />
+              <span className="text-sm font-medium text-ink">Review KYC</span>
             </a>
             <a
               href="/admin/accounts"
-              className="flex flex-col items-center justify-center gap-2 p-4 bg-primary/5 hover:bg-primary/10 rounded-lg transition-all border border-primary/20"
+              className="flex flex-col items-center justify-center gap-2 p-4 bg-soft-cloud hover:bg-hairline-soft rounded-lg transition-colors border border-hairline"
             >
-              <Users className="h-8 w-8 text-primary" />
-              <span className="text-sm font-medium text-foreground">Manage Users</span>
+              <Users className="h-8 w-8 text-ink" />
+              <span className="text-sm font-medium text-ink">Manage Users</span>
             </a>
             <a
               href="/admin/bids"
-              className="flex flex-col items-center justify-center gap-2 p-4 bg-primary/5 hover:bg-primary/10 rounded-lg transition-all border border-primary/20"
+              className="flex flex-col items-center justify-center gap-2 p-4 bg-soft-cloud hover:bg-hairline-soft rounded-lg transition-colors border border-hairline"
             >
-              <Gavel className="h-8 w-8 text-primary" />
-              <span className="text-sm font-medium text-foreground">View Bids</span>
+              <Gavel className="h-8 w-8 text-ink" />
+              <span className="text-sm font-medium text-ink">View Bids</span>
             </a>
           </div>
         </div>

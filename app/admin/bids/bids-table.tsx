@@ -1,13 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Eye, Calendar, DollarSign, Package, User } from "lucide-react";
+import { Search, ExternalLink, Calendar, DollarSign, Package, User } from "lucide-react";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 // Mock data - replace with real data from server
 const mockBids = [
   {
     id: "bid_1",
+    auctionId: "auction_1",
     productId: "prod_1",
     productTitle: "iPhone 15 Pro Max",
     userId: "user_1",
@@ -20,6 +24,7 @@ const mockBids = [
   },
   {
     id: "bid_2",
+    auctionId: "auction_2",
     productId: "prod_2",
     productTitle: "MacBook Pro 16-inch",
     userId: "user_2",
@@ -32,6 +37,7 @@ const mockBids = [
   },
   {
     id: "bid_3",
+    auctionId: "auction_1",
     productId: "prod_1",
     productTitle: "iPhone 15 Pro Max",
     userId: "user_3",
@@ -45,21 +51,20 @@ const mockBids = [
 ];
 
 function StatusBadge({ status }: { status: string }) {
-  const styles = {
-    ACTIVE: "bg-blue-500/10 text-blue-600 border-blue-500/20",
-    WON: "bg-green-500/10 text-green-600 border-green-500/20",
-    LOST: "bg-gray-500/10 text-gray-600 border-gray-500/20",
-    REFUNDED: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-  };
+  const variants = {
+    ACTIVE: "default",
+    WON: "success",
+    CONFIRMED: "success",
+    LOST: "default",
+    PENDING: "default",
+    FAILED: "sale",
+    REFUNDED: "sale",
+  } as const;
 
   return (
-    <span
-      className={`px-2 py-1 text-xs font-medium rounded-full border ${
-        styles[status as keyof typeof styles]
-      }`}
-    >
+    <Badge variant={variants[status as keyof typeof variants] ?? "default"}>
       {status}
-    </span>
+    </Badge>
   );
 }
 
@@ -86,24 +91,24 @@ export default function BidsTable() {
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         {/* Search */}
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-mute pointer-events-none" />
+          <Input
             type="text"
             placeholder="Search by product, user, or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm"
+            className="pl-11"
           />
         </div>
 
         {/* Summary */}
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">Total:</span>
-            <span className="font-semibold text-foreground">{totalBids} bids</span>
+            <span className="text-mute">Total:</span>
+            <span className="font-semibold text-ink">{totalBids} bids</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">Revenue:</span>
+            <span className="text-mute">Revenue:</span>
             <span className="font-semibold text-primary">${totalRevenue}</span>
           </div>
         </div>
@@ -111,104 +116,96 @@ export default function BidsTable() {
 
       {/* Status Filters */}
       <div className="flex items-center gap-2 flex-wrap">
-        <button
+        <Button
+          type="button"
+          size="sm"
+          variant={filterStatus === "ALL" ? "default" : "outline"}
           onClick={() => setFilterStatus("ALL")}
-          className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-            filterStatus === "ALL"
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-foreground hover:bg-accent"
-          }`}
         >
           All
-        </button>
-        <button
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant={filterStatus === "ACTIVE" ? "default" : "outline"}
           onClick={() => setFilterStatus("ACTIVE")}
-          className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-            filterStatus === "ACTIVE"
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-foreground hover:bg-accent"
-          }`}
         >
           Active
-        </button>
-        <button
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant={filterStatus === "WON" ? "default" : "outline"}
           onClick={() => setFilterStatus("WON")}
-          className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-            filterStatus === "WON"
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-foreground hover:bg-accent"
-          }`}
         >
           Won
-        </button>
-        <button
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant={filterStatus === "LOST" ? "default" : "outline"}
           onClick={() => setFilterStatus("LOST")}
-          className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-            filterStatus === "LOST"
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-foreground hover:bg-accent"
-          }`}
         >
           Lost
-        </button>
+        </Button>
       </div>
 
       {/* Table */}
-      <div className="glass-card rounded-xl border border-border overflow-hidden">
+      <div className="glass-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-muted/50">
+            <thead className="bg-soft-cloud">
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
+                <th className="px-6 py-4 text-left text-sm font-semibold text-ink">
                   Product
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
+                <th className="px-6 py-4 text-left text-sm font-semibold text-ink">
                   User
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
+                <th className="px-6 py-4 text-left text-sm font-semibold text-ink">
                   Bid Amount
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
+                <th className="px-6 py-4 text-left text-sm font-semibold text-ink">
                   Fee
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
+                <th className="px-6 py-4 text-left text-sm font-semibold text-ink">
                   Status
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
+                <th className="px-6 py-4 text-left text-sm font-semibold text-ink">
                   Placed At
                 </th>
-                <th className="px-6 py-4 text-right text-sm font-semibold text-foreground">
+                <th className="px-6 py-4 text-right text-sm font-semibold text-ink">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-hairline">
               {filteredBids.map((bid) => (
-                <tr key={bid.id} className="hover:bg-accent/50 transition-colors">
+                <tr key={bid.id} className="hover:bg-soft-cloud/60 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <Package className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <Package className="h-4 w-4 text-mute shrink-0" />
                       <div>
-                        <p className="text-sm font-medium text-foreground line-clamp-1">
+                        <p className="text-sm font-medium text-ink line-clamp-1">
                           {bid.productTitle}
                         </p>
-                        <p className="text-xs text-muted-foreground">ID: {bid.productId}</p>
+                        <p className="text-xs text-mute">ID: {bid.productId}</p>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <User className="h-4 w-4 text-mute shrink-0" />
                       <div>
-                        <p className="text-sm font-medium text-foreground">{bid.userName}</p>
-                        <p className="text-xs text-muted-foreground">{bid.userEmail}</p>
+                        <p className="text-sm font-medium text-ink">{bid.userName}</p>
+                        <p className="text-xs text-mute">{bid.userEmail}</p>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-1">
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-semibold text-foreground">
+                      <DollarSign className="h-4 w-4 text-mute" />
+                      <span className="text-sm font-semibold text-ink">
                         {bid.bidAmount.toLocaleString()}
                       </span>
                     </div>
@@ -220,7 +217,7 @@ export default function BidsTable() {
                     <StatusBadge status={bid.status} />
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-mute">
                       <Calendar className="h-4 w-4" />
                       <div>
                         <p>{bid.placedAt.toLocaleDateString()}</p>
@@ -230,21 +227,21 @@ export default function BidsTable() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <Link
-                        href={`/product/${bid.productId}`}
-                        target="_blank"
-                        className="p-2 hover:bg-accent rounded-lg transition-colors"
-                        title="View Product"
-                      >
-                        <Eye className="h-4 w-4 text-muted-foreground" />
-                      </Link>
-                      <Link
-                        href={`/admin/accounts/${bid.userId}`}
-                        className="p-2 hover:bg-accent rounded-lg transition-colors"
-                        title="View User"
-                      >
-                        <User className="h-4 w-4 text-muted-foreground" />
-                      </Link>
+                      <Button asChild size="sm" title="View auction detail, bidders, and controls">
+                        <Link href={`/admin/bids/${bid.auctionId}`}>
+                          View Auction
+                        </Link>
+                      </Button>
+                      <Button asChild variant="ghost" size="icon-sm" title="Open public product page">
+                        <Link href={`/product/${bid.productId}`} target="_blank">
+                          <ExternalLink className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                      <Button asChild variant="ghost" size="icon-sm" title="View User">
+                        <Link href={`/admin/accounts/${bid.userId}`}>
+                          <User className="h-4 w-4" />
+                        </Link>
+                      </Button>
                     </div>
                   </td>
                 </tr>
@@ -255,7 +252,7 @@ export default function BidsTable() {
 
         {filteredBids.length === 0 && (
           <div className="p-12 text-center">
-            <p className="text-muted-foreground">No bids found</p>
+            <p className="text-mute">No bids found</p>
           </div>
         )}
       </div>

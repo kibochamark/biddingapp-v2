@@ -31,10 +31,10 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
             <button
               key={index}
               onClick={() => setSelectedImage(index)}
-              className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all ${
+              className={`relative aspect-square overflow-hidden border-2 transition-colors ${
                 selectedImage === index
-                  ? "border-primary"
-                  : "border-border hover:border-muted-foreground"
+                  ? "border-ink"
+                  : "border-hairline hover:border-mute"
               }`}
             >
               <Image

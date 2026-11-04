@@ -8,6 +8,7 @@ import CreateCategoryForm from "./components/CreateCategoryForm";
 import EditCategoryForm from "./components/EditCategoryForm";
 import Image from "next/image";
 import { toast } from "@/lib/toast";
+import { Button } from "@/components/ui/button";
 
 interface CategoriesManagerProps {
   initialCategories: CategoryWithRelations[];
@@ -25,33 +26,25 @@ function DeleteConfirmModal({
   isDeleting: boolean;
 }) {
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-card rounded-xl border border-border max-w-md w-full p-6">
-        <h3 className="text-xl font-bold text-foreground mb-2">Delete Category</h3>
-        <p className="text-muted-foreground mb-6">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-card border border-hairline max-w-md w-full p-6">
+        <h3 className="text-xl font-bold text-ink mb-2">Delete Category</h3>
+        <p className="text-mute mb-6">
           Are you sure you want to delete "<strong>{category.name}</strong>"?
           {category._count && category._count.products > 0 && (
-            <span className="block mt-2 text-destructive text-sm">
+            <span className="block mt-2 text-sale text-sm">
               Warning: This category has {category._count.products} products. They will need to be
               reassigned.
             </span>
           )}
         </p>
         <div className="flex items-center justify-end gap-3">
-          <button
-            onClick={onCancel}
-            disabled={isDeleting}
-            className="px-4 py-2 border border-border rounded-lg hover:bg-accent transition-all text-sm font-medium disabled:opacity-50"
-          >
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isDeleting}>
             Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            disabled={isDeleting}
-            className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-all text-sm font-medium disabled:opacity-50"
-          >
+          </Button>
+          <Button type="button" variant="destructive" onClick={onConfirm} disabled={isDeleting}>
             {isDeleting ? "Deleting..." : "Delete"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -66,6 +59,8 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
   const [isDeleting, setIsDeleting] = useState(false);
 
   const categories = initialCategories;
+
+  console.log("Initial categories:", categories);
 
   // Get all top-level categories for parent selection
   const topLevelCategories = categories.filter((cat) => !cat.parentId);
@@ -88,38 +83,49 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
     <div className="space-y-4">
       {/* Actions */}
       <div className="flex justify-end">
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-linear-to-r from-primary to-orange-600 text-white rounded-lg hover:from-primary/90 hover:to-orange-600/90 transition-all text-sm font-medium shadow-md hover:shadow-lg"
-        >
+        <Button onClick={() => setShowCreateModal(true)}>
           <Plus className="h-5 w-5" />
           Add Category
-        </button>
+        </Button>
       </div>
 
-      {/* Categories List */}
-      <div className="space-y-4">
+      {/* Categories List — one continuous list, single divider between rows */}
+      {categories.length === 0 ? (
+        <div className="p-12 text-center">
+          <FolderTree className="h-12 w-12 text-mute mx-auto mb-4" />
+          <p className="text-lg font-medium text-ink mb-2">No Categories Yet</p>
+          <p className="text-sm text-mute mb-6">
+            Create your first category to organize products
+          </p>
+          <Button onClick={() => setShowCreateModal(true)}>
+            <Plus className="h-4 w-4" />
+            Add Category
+          </Button>
+        </div>
+      ) : (
+      <div className="border-y border-hairline divide-y divide-hairline">
         {topLevelCategories.map((category) => (
-          <div key={category.id} className="glass-card rounded-xl border border-border">
+          <div key={category.id} className="bg-background">
             {/* Parent Category */}
             <div className="p-6 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-primary/10 rounded-lg">
+                <div className="p-3 bg-soft-cloud">
                   {category.icon ? (
-                    <span className="text-2xl">{category.icon}</span>
+                    <Image alt={`${category.name}`} width={100} height={100} className="text-lg" src={category.icon as string}></Image>
+                    // <span className="text-2xl">{category.icon}</span>
                   ) : (
-                    <FolderTree className="h-6 w-6 text-primary" />
+                    <FolderTree className="h-6 w-6 text-ink" />
                   )}
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-foreground">{category.name}</h3>
-                  <p className="text-sm text-muted-foreground">{category.description}</p>
+                  <h3 className="text-lg font-bold text-ink">{category.name}</h3>
+                  <p className="text-sm text-mute">{category.description}</p>
                   <div className="flex items-center gap-4 mt-2">
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-mute">
                       {category._count?.products || 0} products
                     </span>
                     {category.children && category.children.length > 0 && (
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs text-mute">
                         {category.children.length} subcategories
                       </span>
                     )}
@@ -127,62 +133,66 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
                   onClick={() => setEditingCategoryId(category.id)}
-                  className="p-2 hover:bg-accent rounded-lg transition-colors"
                   title="Edit"
                 >
-                  <Edit className="h-4 w-4 text-muted-foreground" />
-                </button>
-                <button
+                  <Edit className="h-4 w-4 text-mute" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
                   onClick={() => setDeletingCategory(category)}
-                  className="p-2 hover:bg-destructive/10 rounded-lg transition-colors"
                   title="Delete"
                 >
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </button>
+                  <Trash2 className="h-4 w-4 text-sale" />
+                </Button>
               </div>
             </div>
 
             {/* Subcategories */}
             {category.children && category.children.length > 0 && (
-              <div className="border-t border-border bg-muted/20">
-                <div className="p-4 space-y-2">
+              <div className="border-t border-hairline bg-soft-cloud">
+                <div className="divide-y divide-hairline">
                   {category.children.map((subcat) => (
                     <div
                       key={subcat.id}
-                      className="flex items-center justify-between p-3 bg-background rounded-lg border border-border"
+                      className="flex items-center justify-between p-3"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-1 h-8 bg-primary/30 rounded-full"></div>
+                        <div className="w-1 h-8 bg-hairline rounded-full"></div>
                         <div>
                           <div className="flex items-center gap-2">
                             {subcat.icon && <Image alt={`${subcat.name}`}width={100} height={100} className="text-lg" src={subcat.icon as string}></Image>}
-                            <p className="text-sm font-medium text-foreground">{subcat.name}</p>
+                            <p className="text-sm font-medium text-ink">{subcat.name}</p>
                           </div>
                           <div className="flex items-center gap-3 mt-1">
-                            <p className="text-xs text-muted-foreground">{subcat.description}</p>
-                            <span className="text-xs text-muted-foreground">
+                            <p className="text-xs text-mute">{subcat.description}</p>
+                            <span className="text-xs text-mute">
                               • {subcat._count?.products || 0} products
                             </span>
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
                           onClick={() => setEditingCategoryId(subcat.id)}
-                          className="p-2 hover:bg-accent rounded-lg transition-colors"
                           title="Edit"
                         >
-                          <Edit className="h-4 w-4 text-muted-foreground" />
-                        </button>
-                        <button
+                          <Edit className="h-4 w-4 text-mute" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
                           onClick={() => setDeletingCategory(subcat)}
-                          className="p-2 hover:bg-destructive/10 rounded-lg transition-colors"
                           title="Delete"
                         >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </button>
+                          <Trash2 className="h-4 w-4 text-sale" />
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -191,24 +201,8 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
             )}
           </div>
         ))}
-
-        {categories.length === 0 && (
-          <div className="glass-card rounded-xl border border-border p-12 text-center">
-            <FolderTree className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-lg font-medium text-foreground mb-2">No Categories Yet</p>
-            <p className="text-sm text-muted-foreground mb-6">
-              Create your first category to organize products
-            </p>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all text-sm font-medium"
-            >
-              <Plus className="h-4 w-4" />
-              Add Category
-            </button>
-          </div>
-        )}
       </div>
+      )}
 
       {/* Create Modal */}
       {showCreateModal && (

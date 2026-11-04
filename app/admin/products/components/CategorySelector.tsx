@@ -80,8 +80,8 @@ export default function CategorySelector({ value, onChange, error }: CategorySel
     return (
       <div key={category.id}>
         <div
-          className={`flex items-center gap-2 px-3 py-2.5 hover:bg-accent cursor-pointer transition-colors ${
-            isSelected ? "bg-primary/10 text-primary" : ""
+          className={`flex items-center gap-2 px-3 py-2.5 hover:bg-soft-cloud cursor-pointer transition-colors ${
+            isSelected ? "bg-soft-cloud text-ink" : "text-ink"
           }`}
           style={{ paddingLeft: `${level * 1.5 + 0.75}rem` }}
         >
@@ -91,12 +91,12 @@ export default function CategorySelector({ value, onChange, error }: CategorySel
                 e.stopPropagation();
                 toggleExpand(category.id);
               }}
-              className="p-0.5 hover:bg-accent rounded"
+              className="p-0.5 hover:bg-soft-cloud rounded-full"
             >
               {isExpanded ? (
-                <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                <ChevronDown className="w-4 h-4 text-mute" />
               ) : (
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                <ChevronRight className="w-4 h-4 text-mute" />
               )}
             </button>
           ) : (
@@ -112,7 +112,7 @@ export default function CategorySelector({ value, onChange, error }: CategorySel
             {category.icon && <span className="text-lg">{category.icon}</span>}
             <span className="text-sm font-medium">{category.name}</span>
             {category._count && category._count.products > 0 && (
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-mute">
                 ({category._count.products})
               </span>
             )}
@@ -129,9 +129,9 @@ export default function CategorySelector({ value, onChange, error }: CategorySel
 
   if (loading) {
     return (
-      <div className="w-full px-4 py-2.5 rounded-lg border border-border bg-background flex items-center gap-2">
-        <Loader className="w-4 h-4 animate-spin text-muted-foreground" />
-        <span className="text-sm text-muted-foreground">Loading categories...</span>
+      <div className="w-full h-12 px-5 rounded-full bg-soft-cloud flex items-center gap-2">
+        <Loader className="w-4 h-4 animate-spin text-mute" />
+        <span className="text-sm text-mute">Loading categories...</span>
       </div>
     );
   }
@@ -141,15 +141,15 @@ export default function CategorySelector({ value, onChange, error }: CategorySel
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full px-4 py-2.5 rounded-lg border ${
-          error ? "border-destructive" : "border-border"
-        } bg-background text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-ring`}
+        className={`w-full h-12 px-5 rounded-full bg-soft-cloud text-left flex items-center justify-between outline-none focus-visible:bg-background focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-4 focus-visible:ring-offset-soft-cloud ${
+          error ? "ring-2 ring-sale" : ""
+        }`}
       >
-        <span className={value ? "text-foreground" : "text-muted-foreground"}>
+        <span className={value ? "text-ink" : "text-mute"}>
           {getSelectedCategoryName()}
         </span>
         <ChevronDown
-          className={`w-4 h-4 text-muted-foreground transition-transform ${
+          className={`w-4 h-4 text-mute transition-transform ${
             isOpen ? "rotate-180" : ""
           }`}
         />
@@ -161,9 +161,9 @@ export default function CategorySelector({ value, onChange, error }: CategorySel
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute z-20 w-full mt-2 bg-card border border-border rounded-lg shadow-lg max-h-80 overflow-y-auto">
+          <div className="absolute z-20 w-full mt-2 bg-card border border-hairline max-h-80 overflow-y-auto">
             {getParentCategories().length === 0 ? (
-              <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+              <div className="px-4 py-8 text-center text-sm text-mute">
                 No categories available
               </div>
             ) : (

@@ -37,18 +37,18 @@ export default async function BidPage({ params }: { params: Promise<BidPageProps
   // }
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-background to-muted/20">
+    <div className="min-h-screen bg-background">
       {/* Cancelled Payment Notification Handler */}
       <CancelledNotification />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
+        <nav className="flex items-center gap-2 text-sm text-mute mb-8">
           <Link href="/" className="hover:text-primary transition-colors">
             Home
           </Link>
           <ChevronRight className="h-4 w-4" />
-          <Link href="/catalog" className="hover:text-primary transition-colors">
+          <Link href="/catalog?sortBy=ending_soon" className="hover:text-primary transition-colors">
             Catalog
           </Link>
           <ChevronRight className="h-4 w-4" />
@@ -56,7 +56,7 @@ export default async function BidPage({ params }: { params: Promise<BidPageProps
             {product.title}
           </Link>
           <ChevronRight className="h-4 w-4" />
-          <span className="text-foreground font-medium">Place Bid</span>
+          <span className="text-ink font-medium">Place Bid</span>
         </nav>
 
         {/* Main Content */}

@@ -4,10 +4,10 @@ export default function Loading() {
       {/* Header Skeleton */}
       <div className="flex items-center justify-between">
         <div>
-          <div className="h-6 w-36 bg-muted rounded-lg animate-pulse" />
-          <div className="h-4 w-48 bg-muted rounded mt-2 animate-pulse" />
+          <div className="h-6 w-36 bg-soft-cloud rounded-full animate-pulse" />
+          <div className="h-4 w-48 bg-soft-cloud rounded-full mt-2 animate-pulse" />
         </div>
-        <div className="h-10 w-36 bg-muted rounded-xl animate-pulse" />
+        <div className="h-10 w-36 bg-soft-cloud rounded-full animate-pulse" />
       </div>
 
       {/* Listings Grid Skeleton */}
@@ -15,17 +15,17 @@ export default function Loading() {
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div
             key={i}
-            className="rounded-2xl border border-border bg-card overflow-hidden"
+            className="border border-hairline overflow-hidden"
           >
             {/* Image Placeholder */}
-            <div className="aspect-4/3 bg-muted animate-pulse" />
+            <div className="aspect-4/3 bg-soft-cloud animate-pulse" />
             {/* Content */}
             <div className="p-4 space-y-3">
-              <div className="h-5 w-3/4 bg-muted rounded animate-pulse" />
-              <div className="h-4 w-1/2 bg-muted rounded animate-pulse" />
+              <div className="h-5 w-3/4 bg-soft-cloud rounded-full animate-pulse" />
+              <div className="h-4 w-1/2 bg-soft-cloud rounded-full animate-pulse" />
               <div className="flex items-center justify-between pt-1">
-                <div className="h-5 w-20 bg-muted rounded animate-pulse" />
-                <div className="h-5 w-16 bg-muted rounded-full animate-pulse" />
+                <div className="h-5 w-20 bg-soft-cloud rounded-full animate-pulse" />
+                <div className="h-5 w-16 bg-soft-cloud rounded-full animate-pulse" />
               </div>
             </div>
           </div>

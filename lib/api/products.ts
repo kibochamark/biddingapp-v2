@@ -88,9 +88,14 @@ export async function fetchFeaturedProducts(): Promise<Product[]> {
 // Fetch single product by ID
 export async function fetchProductById(id: string): Promise<Product | null> {
   try {
+    // This is a live-bidding page — always render from live data. The tag is
+    // kept so an on-demand revalidateTag(PRODUCT_TAGS.detail(id)) call still
+    // means something if this ever moves to a time-based cache later, but
+    // cache: "no-store" is what actually keeps this page fresh today.
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`,
       {
-        next: { tags: [`product/${id}`] }
+        cache: "no-store",
+        next: { tags: [PRODUCT_TAGS.detail(id)] }
       }
     );
 

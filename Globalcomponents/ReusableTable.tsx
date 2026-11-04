@@ -102,13 +102,13 @@ export function DataTable<TData, TValue>({
             <div className="flex flex-col sm:flex-row gap-4">
                 {/* Search */}
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-mute" />
                     <input
                         type="text"
                         placeholder={`Search ${search_alias_name}...`}
                         value={(table.getState().globalFilter as string) ?? ""}
                         onChange={(e) => table.setGlobalFilter(e.target.value.toString())}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm"
+                        className="w-full h-10 pl-11 pr-4 rounded-full bg-soft-cloud outline-none focus-visible:bg-background focus-visible:ring-2 focus-visible:ring-ink text-sm transition-[background-color,box-shadow]"
                     />
                 </div>
 
@@ -145,7 +145,7 @@ export function DataTable<TData, TValue>({
                             {(table.getColumn(filtercolumn)?.getFilterValue() as string) ? (
                                     <button
                                         onClick={() => table.getColumn(filtercolumn)?.setFilterValue("")}
-                                        className={`${classnames} px-4 py-2 text-sm font-medium rounded-lg transition-all bg-muted text-foreground hover:bg-accent hover:cursor-pointer ${filtervalue === table.getColumn(filtercolumn)?.getFilterValue() ? "bg-primary text-primary-foreground" : "bg-muted text-foreground hover:bg-accent"}
+                                        className={`${classnames} h-10 px-4 text-sm font-medium rounded-full transition-colors hover:cursor-pointer ${filtervalue === table.getColumn(filtercolumn)?.getFilterValue() ? "bg-ink text-background" : "bg-soft-cloud text-ink hover:bg-hairline-soft"}
                                 }`}
                                     >
                                         {filtervalue}
@@ -153,7 +153,7 @@ export function DataTable<TData, TValue>({
                             ):(
                                         <button
                                             onClick={() => table.getColumn(filtercolumn)?.setFilterValue(filtervalue)}
-                                            className={`${classnames} px-4 py-2 text-sm font-medium rounded-lg transition-all bg-muted text-foreground hover:bg-accent hover:cursor-pointer ${filtervalue === defaultfilter ? "bg-primary text-primary-foreground" : "bg-muted text-foreground hover:bg-accent"}
+                                            className={`${classnames} h-10 px-4 text-sm font-medium rounded-full transition-colors hover:cursor-pointer ${filtervalue === defaultfilter ? "bg-ink text-background" : "bg-soft-cloud text-ink hover:bg-hairline-soft"}
                                 }`}
                                         >
                                             {filtervalue}
@@ -167,7 +167,7 @@ export function DataTable<TData, TValue>({
                 </div>
             </div>
 
-            <div className="glass-card rounded-xl border border-border overflow-hidden">
+            <div className="border border-hairline overflow-hidden">
                 <div className="relative w-full overflow-x-auto">
                     <Table className="min-w-full">
                         <TableHeader>
@@ -245,28 +245,20 @@ function DeleteConfirmModal({
     isDeleting: boolean;
 }) {
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-card rounded-xl border border-border max-w-md w-full p-6">
-                <h3 className="text-xl font-bold text-foreground mb-2">Delete Product</h3>
-                <p className="text-muted-foreground mb-6">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-card border border-hairline max-w-md w-full p-6">
+                <h3 className="text-xl font-semibold text-ink mb-2">Delete Product</h3>
+                <p className="text-mute mb-6">
                     Are you sure you want to delete "<strong>{productTitle}</strong>"? This action cannot be
                     undone.
                 </p>
                 <div className="flex items-center justify-end gap-3">
-                    <button
-                        onClick={onCancel}
-                        disabled={isDeleting}
-                        className="px-4 py-2 border border-border rounded-lg hover:bg-accent transition-all text-sm font-medium disabled:opacity-50"
-                    >
+                    <Button variant="outline" onClick={onCancel} disabled={isDeleting}>
                         Cancel
-                    </button>
-                    <button
-                        onClick={onConfirm}
-                        disabled={isDeleting}
-                        className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-all text-sm font-medium disabled:opacity-50"
-                    >
+                    </Button>
+                    <Button variant="destructive" onClick={onConfirm} disabled={isDeleting}>
                         {isDeleting ? "Deleting..." : "Delete"}
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>

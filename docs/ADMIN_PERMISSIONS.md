@@ -44,11 +44,20 @@ This document outlines all the permissions required for the BidMarket Admin Port
 
 ### 6. Bid Management
 **Permission Code:** `manage:bids`
-**Description:** View and monitor all bidding activity
+**Description:** View and monitor all bidding activity, view a single auction's full detail (product, bidders, lifecycle dates), and extend an active auction's end date
 **Required For:** Bid moderators, Super admins
 **Used In:**
 - `/app/admin/bids/*`
-- `/app/admin/actions/bids.ts` (to be created)
+- `/app/admin/bids/[auctionId]` (auction detail, bidders, extend)
+- `/app/admin/actions/auctions.ts`
+
+### 6a. Auction Termination
+**Permission Code:** `terminate:auctions`
+**Description:** End an active auction early (sets it to CANCELLED instead of letting it run to its natural end)
+**Required For:** Senior bid moderators, Super admins
+**Used In:**
+- `/app/admin/bids/[auctionId]` (terminate action)
+- `/app/admin/actions/auctions.ts`
 
 ### 7. KYC Approval
 **Permission Code:** `approve:kyc`
@@ -84,6 +93,7 @@ All permissions:
 - `manage:accounts`
 - `terminate:accounts`
 - `manage:bids`
+- `terminate:auctions`
 - `approve:kyc`
 - `reject:kyc`
 - `view:analytics`
@@ -110,6 +120,7 @@ All permissions:
 - `manage:accounts`
 - `terminate:accounts`
 - `manage:bids`
+- `terminate:auctions`
 - `view:analytics`
 
 ---
@@ -183,6 +194,7 @@ const canManageProducts = permissions?.some(p => p === "manage:products");
 | `/admin/accounts` | `manage:accounts` | Account management |
 | `/admin/accounts/[id]/terminate` | `terminate:accounts` | Account termination |
 | `/admin/bids` | `manage:bids` | Bid monitoring |
+| `/admin/bids/[auctionId]` | `manage:bids` (view/extend), `terminate:auctions` (terminate) | Auction detail: product, bidders, extend/terminate |
 | `/admin/kyc` | `approve:kyc` OR `reject:kyc` | KYC verification |
 
 ---

@@ -21,20 +21,20 @@ export function UserMenu({ user }: UserMenuProps) {
     <div className="hidden md:flex items-center gap-2 relative">
       <button
         onClick={() => setShowUserMenu(!showUserMenu)}
-        className="flex items-center gap-2 px-3 py-2 hover:bg-accent rounded-full transition-colors"
+        className="flex items-center gap-2 px-3 py-2 hover:bg-soft-cloud rounded-full transition-colors"
       >
         {user?.picture ? (
           <img
             src={user.picture}
             alt={user.given_name || "User"}
-            className="w-8 h-8 rounded-full border-2 border-border"
+            className="w-8 h-8 rounded-full"
           />
         ) : (
           <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
             <User className="h-4 w-4 text-primary-foreground" />
           </div>
         )}
-        <span className="text-sm font-medium text-foreground hidden lg:block">
+        <span className="text-sm font-medium text-ink hidden lg:block">
           {user?.given_name || "Account"}
         </span>
       </button>
@@ -47,31 +47,31 @@ export function UserMenu({ user }: UserMenuProps) {
             className="fixed inset-0 z-30"
             onClick={() => setShowUserMenu(false)}
           />
-          <div className="absolute top-12 right-0 w-56 bg-card rounded-xl shadow-lg border border-border py-2 z-40">
-            <div className="px-4 py-3 border-b border-border">
-              <p className="text-sm font-semibold text-card-foreground">
+          <div className="absolute top-12 right-0 w-56 bg-card border border-hairline py-2 z-40">
+            <div className="px-4 py-3 border-b border-hairline">
+              <p className="text-sm font-semibold text-ink">
                 {user?.given_name} {user?.family_name}
               </p>
-              <p className="text-xs text-muted-foreground mt-0.5">{user?.email}</p>
+              <p className="text-xs text-mute mt-0.5">{user?.email}</p>
             </div>
             <Link
               href="/profile"
-              className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-accent transition-colors text-foreground"
+              className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-soft-cloud transition-colors text-ink"
               onClick={() => setShowUserMenu(false)}
             >
-              <User className="h-4 w-4 text-muted-foreground" />
+              <User className="h-4 w-4 text-mute" />
               My Profile
             </Link>
             <Link
               href="/profile/bids"
-              className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-accent transition-colors text-foreground"
+              className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-soft-cloud transition-colors text-ink"
               onClick={() => setShowUserMenu(false)}
             >
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <TrendingUp className="h-4 w-4 text-mute" />
               My Bids
             </Link>
-            <hr className="my-2 border-border" />
-            <LogoutLink className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-destructive/10 transition-colors text-destructive">
+            <hr className="my-2 border-hairline" />
+            <LogoutLink className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-sale/10 transition-colors text-sale">
               <LogOut className="h-4 w-4" />
               Sign Out
             </LogoutLink>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Cookie, X, Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
@@ -79,57 +80,48 @@ export function CookieConsent() {
       {!showSettings && (
         <div className="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6 animate-in slide-in-from-bottom duration-300">
           <div className="max-w-7xl mx-auto">
-            <div className="bg-card border border-border rounded-xl shadow-2xl p-6">
+            <div className="bg-card border border-hairline p-6">
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 p-2 bg-primary/10 rounded-lg">
-                  <Cookie className="h-6 w-6 text-primary" />
+                <div className="flex-shrink-0 size-10 rounded-full bg-soft-cloud flex items-center justify-center">
+                  <Cookie className="h-5 w-5 text-ink" />
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                  <h3 className="text-lg font-semibold text-ink mb-2">
                     We Value Your Privacy
                   </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <p className="text-sm text-mute mb-4">
                     We use cookies to enhance your browsing experience, analyze site traffic,
                     and personalize content. By clicking &quot;Accept All&quot;, you consent to our use
                     of cookies.{" "}
                     <Link
                       href="/cookies"
-                      className="text-primary hover:underline"
+                      className="text-ink underline underline-offset-4"
                     >
                       Learn more
                     </Link>
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <button
-                      onClick={acceptAll}
-                      className="px-6 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
-                    >
+                    <Button onClick={acceptAll} size="sm">
                       Accept All
-                    </button>
-                    <button
-                      onClick={acceptEssential}
-                      className="px-6 py-2.5 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors text-sm font-medium"
-                    >
+                    </Button>
+                    <Button onClick={acceptEssential} variant="secondary" size="sm">
                       Essential Only
-                    </button>
-                    <button
-                      onClick={() => setShowSettings(true)}
-                      className="px-6 py-2.5 bg-background text-foreground border border-border rounded-lg hover:bg-accent transition-colors text-sm font-medium inline-flex items-center gap-2"
-                    >
+                    </Button>
+                    <Button onClick={() => setShowSettings(true)} variant="outline" size="sm">
                       <Settings className="h-4 w-4" />
                       Customize
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
                 <button
                   onClick={acceptEssential}
-                  className="flex-shrink-0 p-2 hover:bg-accent rounded-lg transition-colors"
+                  className="flex-shrink-0 p-2 hover:bg-soft-cloud rounded-full transition-colors"
                   aria-label="Close and accept essential cookies only"
                 >
-                  <X className="h-5 w-5 text-muted-foreground" />
+                  <X className="h-5 w-5 text-mute" />
                 </button>
               </div>
             </div>
@@ -140,43 +132,43 @@ export function CookieConsent() {
       {/* Detailed Settings Modal */}
       {showSettings && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
-          <div className="bg-card border border-border rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-card border-b border-border p-6 flex items-center justify-between">
+          <div className="bg-card border border-hairline max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-card sticky-edge-b p-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <Settings className="h-5 w-5 text-primary" />
+                <div className="size-10 rounded-full bg-soft-cloud flex items-center justify-center">
+                  <Settings className="h-5 w-5 text-ink" />
                 </div>
-                <h2 className="text-xl font-semibold text-foreground">
+                <h2 className="text-xl font-semibold text-ink">
                   Cookie Preferences
                 </h2>
               </div>
               <button
                 onClick={() => setShowSettings(false)}
-                className="p-2 hover:bg-accent rounded-lg transition-colors"
+                className="p-2 hover:bg-soft-cloud rounded-full transition-colors"
               >
-                <X className="h-5 w-5 text-muted-foreground" />
+                <X className="h-5 w-5 text-mute" />
               </button>
             </div>
 
             <div className="p-6 space-y-6">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-mute">
                 We use different types of cookies to optimize your experience on our platform.
                 You can choose which categories you want to allow below.
               </p>
 
               {/* Essential Cookies */}
-              <div className="bg-muted rounded-lg p-4">
+              <div className="bg-soft-cloud p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-foreground mb-1">
+                    <h3 className="font-semibold text-ink mb-1">
                       Essential Cookies
                     </h3>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-mute">
                       Required for the platform to function. Cannot be disabled.
                     </p>
                   </div>
                   <div className="ml-4">
-                    <div className="px-3 py-1 bg-primary/20 text-primary rounded-full text-xs font-medium">
+                    <div className="px-3 py-1 rounded-full bg-background border border-hairline text-ink text-xs font-medium">
                       Always Active
                     </div>
                   </div>
@@ -184,13 +176,13 @@ export function CookieConsent() {
               </div>
 
               {/* Analytics Cookies */}
-              <div className="bg-card border border-border rounded-lg p-4">
+              <div className="border border-hairline p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-foreground mb-1">
+                    <h3 className="font-semibold text-ink mb-1">
                       Analytics Cookies
                     </h3>
-                    <p className="text-sm text-muted-foreground mb-3">
+                    <p className="text-sm text-mute mb-3">
                       Help us understand how visitors interact with our platform through
                       anonymous data collection.
                     </p>
@@ -205,20 +197,20 @@ export function CookieConsent() {
                         }
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      <div className="w-11 h-6 bg-hairline-soft peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-ink rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-background after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-background after:border-hairline after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-ink"></div>
                     </label>
                   </div>
                 </div>
               </div>
 
               {/* Functional Cookies */}
-              <div className="bg-card border border-border rounded-lg p-4">
+              <div className="border border-hairline p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-foreground mb-1">
+                    <h3 className="font-semibold text-ink mb-1">
                       Functional Cookies
                     </h3>
-                    <p className="text-sm text-muted-foreground mb-3">
+                    <p className="text-sm text-mute mb-3">
                       Enable enhanced functionality like remembering your preferences and
                       personalized features.
                     </p>
@@ -233,20 +225,20 @@ export function CookieConsent() {
                         }
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      <div className="w-11 h-6 bg-hairline-soft peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-ink rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-background after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-background after:border-hairline after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-ink"></div>
                     </label>
                   </div>
                 </div>
               </div>
 
               {/* Marketing Cookies */}
-              <div className="bg-card border border-border rounded-lg p-4">
+              <div className="border border-hairline p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-foreground mb-1">
+                    <h3 className="font-semibold text-ink mb-1">
                       Marketing Cookies
                     </h3>
-                    <p className="text-sm text-muted-foreground mb-3">
+                    <p className="text-sm text-mute mb-3">
                       Used to deliver relevant advertisements and track campaign effectiveness.
                     </p>
                   </div>
@@ -260,39 +252,33 @@ export function CookieConsent() {
                         }
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      <div className="w-11 h-6 bg-hairline-soft peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-ink rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-background after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-background after:border-hairline after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-ink"></div>
                     </label>
                   </div>
                 </div>
               </div>
 
-              <div className="text-sm text-muted-foreground">
+              <div className="text-sm text-mute">
                 <p>
                   For more information, please read our{" "}
-                  <Link href="/cookies" className="text-primary hover:underline">
+                  <Link href="/cookies" className="text-ink underline underline-offset-4">
                     Cookie Policy
                   </Link>{" "}
                   and{" "}
-                  <Link href="/privacy" className="text-primary hover:underline">
+                  <Link href="/privacy" className="text-ink underline underline-offset-4">
                     Privacy Policy
                   </Link>.
                 </p>
               </div>
             </div>
 
-            <div className="sticky bottom-0 bg-card border-t border-border p-6 flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={saveCustomPreferences}
-                className="flex-1 px-6 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
-              >
+            <div className="sticky bottom-0 bg-card sticky-edge-t p-6 flex flex-col sm:flex-row gap-3">
+              <Button onClick={saveCustomPreferences} className="flex-1">
                 Save Preferences
-              </button>
-              <button
-                onClick={acceptAll}
-                className="flex-1 px-6 py-2.5 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors text-sm font-medium"
-              >
+              </Button>
+              <Button onClick={acceptAll} variant="secondary" className="flex-1">
                 Accept All
-              </button>
+              </Button>
             </div>
           </div>
         </div>

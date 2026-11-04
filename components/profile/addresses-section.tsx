@@ -8,6 +8,8 @@ import { deleteAddress, setPrimaryAddress } from "@/lib/api/addresses";
 import AddressForm from "./address-form";
 import { toast } from "@/lib/toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -90,30 +92,29 @@ export default function AddressesSection({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-medium text-ink uppercase">
             Shipping Addresses
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-mute mt-1">
             Manage your delivery locations
           </p>
         </div>
-        <button
+        <Button
           onClick={() => {
             setEditingAddress(null);
             setShowForm(true);
           }}
-          className="flex items-center gap-2 h-10 px-4 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors"
         >
           <Plus className="h-4 w-4" />
           Add Address
-        </button>
+        </Button>
       </div>
 
       {/* Address Form */}
       {showForm && (
-        <div className="rounded-2xl border border-border bg-card overflow-hidden">
-          <div className="px-6 py-5 border-b border-border">
-            <h3 className="text-lg font-bold tracking-tight">
+        <div className="border border-hairline overflow-hidden">
+          <div className="px-6 py-5 border-b border-hairline">
+            <h3 className="text-lg font-medium text-ink">
               {editingAddress ? "Edit Address" : "New Address"}
             </h3>
           </div>
@@ -132,12 +133,12 @@ export default function AddressesSection({
 
       {/* Address Cards */}
       {initialAddresses.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border p-12 text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-muted mb-4">
-            <MapPin className="h-6 w-6 text-muted-foreground" />
+        <div className="border border-dashed border-hairline p-12 text-center">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-soft-cloud mb-4">
+            <MapPin className="h-6 w-6 text-mute" />
           </div>
-          <p className="text-base font-semibold mb-1">No addresses yet</p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-base font-medium mb-1 text-ink">No addresses yet</p>
+          <p className="text-sm text-mute">
             Add a shipping address to get started
           </p>
         </div>
@@ -147,64 +148,62 @@ export default function AddressesSection({
             {initialAddresses.map((address) => (
               <div
                 key={address.id}
-                className={`rounded-2xl border bg-card overflow-hidden transition-all ${
+                className={`border overflow-hidden transition-colors ${
                   address.isPrimary
-                    ? "border-primary/40 ring-1 ring-primary/20"
-                    : "border-border hover:border-primary/20"
+                    ? "border-primary/40"
+                    : "border-hairline hover:border-ink/20"
                 }`}
               >
                 {/* Card Header */}
-                <div className="flex items-center justify-between px-5 py-3 border-b border-border/50">
+                <div className="flex items-center justify-between px-5 py-3 border-b border-hairline">
                   <div className="flex items-center gap-2">
                     {address.isPrimary && (
-                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
                         <Star className="h-3 w-3 fill-primary" />
                         Default
                       </span>
                     )}
                     {address.label && (
-                      <span className="text-xs font-medium px-2 py-0.5 rounded-md bg-muted text-muted-foreground">
-                        {address.label}
-                      </span>
+                      <Badge variant="default">{address.label}</Badge>
                     )}
                   </div>
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleEdit(address)}
-                      className="p-2 rounded-lg hover:bg-muted transition-colors"
+                      className="p-2 rounded-full hover:bg-soft-cloud transition-colors"
                       disabled={loading === address.id}
                     >
-                      <Edit className="h-3.5 w-3.5 text-muted-foreground" />
+                      <Edit className="h-3.5 w-3.5 text-mute" />
                     </button>
                     <button
                       onClick={() => handleDeleteClick(address.id)}
-                      className="p-2 rounded-lg hover:bg-destructive/10 transition-colors"
+                      className="p-2 rounded-full hover:bg-sale/10 transition-colors"
                       disabled={loading === address.id}
                     >
-                      <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
+                      <Trash2 className="h-3.5 w-3.5 text-mute hover:text-sale" />
                     </button>
                   </div>
                 </div>
 
                 {/* Card Body */}
                 <div className="p-5">
-                  <h3 className="font-semibold text-base mb-2">
+                  <h3 className="font-medium text-base mb-2 text-ink">
                     {address.recipientName}
                   </h3>
-                  <div className="space-y-0.5 text-sm text-muted-foreground">
+                  <div className="space-y-0.5 text-sm text-mute">
                     <p>{address.street}</p>
                     <p>
                       {address.city}, {address.state} {address.zipCode}
                     </p>
                     <p>{address.country}</p>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-3">
+                  <p className="text-sm text-mute mt-3">
                     {address.phone}
                   </p>
                   {!address.isPrimary && (
                     <button
                       onClick={() => handleSetPrimary(address.id)}
-                      className="mt-4 text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
+                      className="mt-4 text-xs font-medium text-primary hover:text-primary/80 transition-colors"
                       disabled={loading === address.id}
                     >
                       {loading === address.id
@@ -230,18 +229,12 @@ export default function AddressesSection({
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <button
-              onClick={handleDeleteCancel}
-              className="px-4 py-2 border border-input rounded-xl font-medium text-sm hover:bg-accent transition-colors"
-            >
+            <Button variant="outline" onClick={handleDeleteCancel}>
               Cancel
-            </button>
-            <button
-              onClick={handleDeleteConfirm}
-              className="px-4 py-2 bg-destructive text-destructive-foreground rounded-xl font-medium text-sm hover:bg-destructive/90 transition-colors"
-            >
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteConfirm}>
               Delete
-            </button>
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

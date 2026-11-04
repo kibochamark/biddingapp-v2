@@ -1,104 +1,66 @@
 import { getKindeServerSession} from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import {
-  LayoutDashboard,
-  Package,
-  FolderTree,
-  Users,
-  Gavel,
-  ShieldCheck,
-  UserX
-} from "lucide-react";
 import Sidebar from "@/components/admin/layout/Sidebar";
 import Navbar from "@/components/admin/layout/Navbar";
+import { getAdminRoleLabel } from "@/components/admin/layout/admin-nav";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, getPermission, getPermissions, getRoles } = getKindeServerSession();
+  const { isAuthenticated, getPermission, getUser } = getKindeServerSession();
   const authenticated = await isAuthenticated();
 
   if (!authenticated) {
     redirect("/api/auth/login");
   }
 
-  const allowedPermissions = await getPermissions()
   // Check if user has admin access
   const adminAccess = await getPermission("admin:access");
-
-  // console.log("Admin Access:", allowedPermissions);
 
   if (!adminAccess?.isGranted) {
     redirect("/"); // Redirect to home if not admin
   }
 
-  // Get all permissions to show/hide nav items
-  const canManageProducts = await getPermission("manage:products");
-  const canManageCategories = await getPermission("manage:categories");
-  const canManageAccounts = await getPermission("manage:accounts");
-  const canManageBids = await getPermission("manage:bids");
-  const canManageKYC = await getPermission("approve:kyc");
+  // Get all permissions to show/hide nav items — the single source of truth
+  // for nav structure lives in components/admin/layout/admin-nav.ts and
+  // consumes this same permissions object on both Sidebar and MobileSidebar.
+  const [canManageProducts, canManageCategories, canManageAccounts, canManageBids, canManageKYC, kindeUser] =
+    await Promise.all([
+      getPermission("manage:products"),
+      getPermission("manage:categories"),
+      getPermission("manage:accounts"),
+      getPermission("manage:bids"),
+      getPermission("approve:kyc"),
+      getUser(),
+    ]);
 
-  const navItems = [
-    {
-      href: "/admin",
-      label: "Dashboard",
-      icon: LayoutDashboard,
-      show: true,
-    },
-    {
-      href: "/admin/products",
-      label: "Products",
-      icon: Package,
-      show: canManageProducts?.isGranted,
-    },
-    {
-      href: "/admin/categories",
-      label: "Categories",
-      icon: FolderTree,
-      show: canManageCategories?.isGranted,
-    },
-    {
-      href: "/admin/accounts",
-      label: "Accounts",
-      icon: Users,
-      show: canManageAccounts?.isGranted,
-    },
-    {
-      href: "/admin/bids",
-      label: "Bids",
-      icon: Gavel,
-      show: canManageBids?.isGranted,
-    },
-    {
-      href: "/admin/kyc",
-      label: "KYC Verification",
-      icon: ShieldCheck,
-      show: canManageKYC?.isGranted,
-    },
-  ];
-
-  const permissions = { 
+  const permissions = {
     canManageProducts,
     canManageCategories,
     canManageAccounts,
     canManageBids,
-    canManageKYC
+    canManageKYC,
+  };
+
+  const user = {
+    name: `${kindeUser?.given_name || ""} ${kindeUser?.family_name || ""}`.trim() || "Admin",
+    email: kindeUser?.email || "",
+    picture: kindeUser?.picture || null,
+    role: getAdminRoleLabel(permissions),
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-background to-muted/20">
+    <div className="min-h-screen bg-background">
       <div className="flex">
         {/* Sidebar */}
-        <Sidebar permissions={permissions} />
+        <Sidebar permissions={permissions} user={user} />
 
         {/* Main Content */}
         <div className="lg:pl-64 flex-1 min-w-0">
           {/* Mobile Header */}
-          <Navbar permissions={permissions}/>
+          <Navbar permissions={permissions} user={user} />
 
           {/* Page Content */}
           <main className="p-4 sm:p-6 lg:p-8 max-w-full overflow-x-auto">

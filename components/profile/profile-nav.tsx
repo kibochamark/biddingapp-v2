@@ -38,30 +38,30 @@ export default function ProfileNav() {
           <Link
             key={tab.href}
             href={tab.href}
-            className={`group flex items-center gap-3 px-4 py-3 rounded-xl transition-all whitespace-nowrap ${
+            className={`group flex items-center gap-3 px-4 py-3 rounded-full transition-colors whitespace-nowrap ${
               isActive
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "hover:bg-muted text-foreground"
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-soft-cloud text-ink"
             }`}
           >
             <div
-              className={`p-2 rounded-lg ${
+              className={`p-2 rounded-full ${
                 isActive
                   ? "bg-primary-foreground/20"
-                  : "bg-muted group-hover:bg-background"
+                  : "bg-soft-cloud group-hover:bg-background"
               }`}
             >
               <Icon className="h-4 w-4" />
             </div>
             <div className="hidden lg:block">
-              <p className="text-sm font-semibold leading-tight">
+              <p className="text-sm font-medium leading-tight">
                 {tab.label}
               </p>
               <p
                 className={`text-xs mt-0.5 ${
                   isActive
                     ? "text-primary-foreground/70"
-                    : "text-muted-foreground"
+                    : "text-mute"
                 }`}
               >
                 {tab.description}
@@ -72,7 +72,7 @@ export default function ProfileNav() {
                 className={`h-4 w-4 ${
                   isActive
                     ? "text-primary-foreground/50"
-                    : "text-muted-foreground/40 group-hover:text-muted-foreground"
+                    : "text-mute/60 group-hover:text-mute"
                 }`}
               />
             </span>

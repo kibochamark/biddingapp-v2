@@ -54,21 +54,21 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
       {/* Hamburger trigger */}
       <SheetTrigger asChild>
         <button
-          className="lg:hidden p-2 hover:bg-accent rounded-lg transition-colors"
+          className="lg:hidden p-2 hover:bg-soft-cloud rounded-full transition-colors"
           aria-label="Open menu"
         >
-          <Menu className="h-5 w-5 text-foreground" />
+          <Menu className="h-5 w-5 text-ink" />
         </button>
       </SheetTrigger>
 
       <SheetContent side="right" className="w-72 sm:w-80 p-0 flex flex-col">
         {/* Header */}
-        <SheetHeader className="px-5 py-4 border-b border-border shrink-0">
+        <SheetHeader className="px-5 py-4 border-b border-hairline shrink-0">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-linear-to-br from-primary to-orange-600 rounded-lg flex items-center justify-center">
-              <Package className="h-4 w-4 text-white" />
+            <div className="w-7 h-7 bg-primary flex items-center justify-center">
+              <Package className="h-4 w-4 text-primary-foreground" />
             </div>
-            <SheetTitle className="text-base font-bold">BidMarket</SheetTitle>
+            <SheetTitle className="text-base font-semibold">BidMarket</SheetTitle>
           </div>
         </SheetHeader>
 
@@ -76,14 +76,14 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
         <div className="flex-1 overflow-y-auto p-4 space-y-5">
           {/* Explore */}
           <div>
-            <p className="px-1 pb-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+            <p className="px-1 pb-2 text-[11px] font-medium text-mute uppercase tracking-wider">
               Explore
             </p>
             <div className="space-y-1">
               <SheetClose asChild>
                 <Link
-                  href="/catalog"
-                  className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
+                  href="/catalog?sortBy=ending_soon"
+                  className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-ink hover:text-primary hover:bg-soft-cloud rounded-full transition-colors"
                 >
                   <Package className="h-5 w-5 shrink-0" />
                   <span>Browse Auctions</span>
@@ -91,8 +91,8 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
               </SheetClose>
               <SheetClose asChild>
                 <Link
-                  href="/catalog?filter=ending-soon"
-                  className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
+                  href="/catalog?sortBy=ending_soon"
+                  className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-ink hover:text-primary hover:bg-soft-cloud rounded-full transition-colors"
                 >
                   <Clock className="h-5 w-5 shrink-0" />
                   <span>Ending Soon</span>
@@ -100,8 +100,8 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
               </SheetClose>
               <SheetClose asChild>
                 <Link
-                  href="/catalog?filter=trending"
-                  className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
+                  href="/catalog?sortBy=ending_soon"
+                  className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-ink hover:text-primary hover:bg-soft-cloud rounded-full transition-colors"
                 >
                   <TrendingUp className="h-5 w-5 shrink-0" />
                   <span>Trending</span>
@@ -111,31 +111,31 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
           </div>
 
           {/* Account */}
-          <div className="border-t border-border pt-5">
+          <div className="border-t border-hairline pt-5">
             {isAuthenticated ? (
               <>
-                <p className="px-1 pb-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                <p className="px-1 pb-2 text-[11px] font-medium text-mute uppercase tracking-wider">
                   Account
                 </p>
 
                 {/* User info */}
-                <div className="flex items-center gap-3 px-4 py-3 bg-primary/5 rounded-lg mb-3">
+                <div className="flex items-center gap-3 px-4 py-3 bg-soft-cloud mb-3">
                   {user?.picture ? (
                     <img
                       src={user.picture}
                       alt={user.given_name || "User"}
-                      className="w-10 h-10 rounded-full border-2 border-primary/20 shrink-0"
+                      className="w-10 h-10 rounded-full shrink-0"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary to-orange-600 flex items-center justify-center shrink-0">
-                      <User className="h-5 w-5 text-white" />
+                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0">
+                      <User className="h-5 w-5 text-primary-foreground" />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground truncate">
+                    <p className="text-sm font-semibold text-ink truncate">
                       {user?.given_name || "Account"}
                     </p>
-                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                    <p className="text-xs text-mute truncate">{user?.email}</p>
                   </div>
                 </div>
 
@@ -143,7 +143,7 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
                   <SheetClose asChild>
                     <Link
                       href="/profile"
-                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
+                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-ink hover:text-primary hover:bg-soft-cloud rounded-full transition-colors"
                     >
                       <UserCircle className="h-5 w-5 shrink-0" />
                       <span>My Profile</span>
@@ -152,7 +152,7 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
                   <SheetClose asChild>
                     <Link
                       href="/profile/bids"
-                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
+                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-ink hover:text-primary hover:bg-soft-cloud rounded-full transition-colors"
                     >
                       <Gavel className="h-5 w-5 shrink-0" />
                       <span>My Bids</span>
@@ -161,7 +161,7 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
                   <SheetClose asChild>
                     <Link
                       href="/profile/listings"
-                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
+                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-ink hover:text-primary hover:bg-soft-cloud rounded-full transition-colors"
                     >
                       <ShoppingBag className="h-5 w-5 shrink-0" />
                       <span>My Listings</span>
@@ -172,12 +172,12 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
             ) : (
               <div className="space-y-3">
                 <SheetClose asChild>
-                  <LoginLink className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-linear-to-r from-primary to-orange-600 text-white rounded-lg hover:from-primary/90 hover:to-orange-600/90 text-sm font-medium transition-all shadow-md">
+                  <LoginLink className="flex items-center justify-center gap-2 w-full h-12 px-4 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 active:scale-95 text-sm font-medium transition-[transform,background-color]">
                     <User className="h-4 w-4" />
                     <span>Sign In</span>
                   </LoginLink>
                 </SheetClose>
-                <p className="text-xs text-center text-muted-foreground">
+                <p className="text-xs text-center text-mute">
                   Sign in to place bids and manage your account
                 </p>
               </div>
@@ -187,8 +187,8 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
 
         {/* Sign Out pinned to bottom via SheetFooter */}
         {isAuthenticated && (
-          <SheetFooter className="border-t border-border p-4">
-            <LogoutLink className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 text-sm font-medium transition-all">
+          <SheetFooter className="border-t border-hairline p-4">
+            <LogoutLink className="flex items-center justify-center gap-2 w-full h-12 px-4 bg-soft-cloud text-sale rounded-full hover:bg-hairline-soft active:scale-95 text-sm font-medium transition-[transform,background-color]">
               <LogOut className="h-4 w-4" />
               <span>Sign Out</span>
             </LogoutLink>

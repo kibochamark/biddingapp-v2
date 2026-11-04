@@ -17,11 +17,14 @@ import {
   CreditCard,
   CheckCircle2,
   X,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import StripeProvider from "./stripe-provider";
 import CheckoutForm from "./checkout-form";
 import { createPaymentIntent } from "@/lib/actions/payment-actions";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface BidPaymentModalProps {
   isOpen: boolean;
@@ -38,32 +41,53 @@ interface BidPaymentModalProps {
 }
 
 interface BidFormValues {
-  bidAmount: string;
-  numberOfBids: number;
+  // One bid amount per entry — each entry is a separate, independent guess at
+  // the lowest unique bid, so they must be allowed to differ.
+  bidAmounts: string[];
   acceptTerms: boolean;
   auctionId:string
 }
 
+const bidAmountSchema = Yup.string()
+  .required("Required")
+  .test("is-valid-amount", "Enter a valid amount (e.g., 100.50)", (value) => {
+    if (!value) return false;
+    const num = parseFloat(value);
+    return !isNaN(num) && num > 0 && num <= 999999.99;
+  })
+  .test("max-decimals", "Maximum 2 decimal places allowed", (value) => {
+    if (!value) return true;
+    return /^\d+(\.\d{0,2})?$/.test(value);
+  });
+
 const validationSchema = Yup.object({
-  bidAmount: Yup.string()
-    .required("Bid amount is required")
-    .test("is-valid-amount", "Enter a valid amount (e.g., 100.50)", (value) => {
-      if (!value) return false;
-      const num = parseFloat(value);
-      return !isNaN(num) && num > 0 && num <= 999999.99;
-    })
-    .test("max-decimals", "Maximum 2 decimal places allowed", (value) => {
-      if (!value) return true;
-      return /^\d+(\.\d{0,2})?$/.test(value);
-    }),
-  numberOfBids: Yup.number()
-    .min(1, "Minimum 1 bid required")
-    .max(100, "Maximum 100 bids allowed at once")
-    .required("Number of bids is required"),
+  bidAmounts: Yup.array()
+    .of(bidAmountSchema)
+    .min(1, "At least one entry is required")
+    .max(100, "Maximum 100 entries allowed at once")
+    .test(
+      "unique-amounts",
+      "Each entry needs a different bid amount — duplicates can't both be the lowest unique bid",
+      (arr) => {
+        if (!arr) return true;
+        const values = arr.filter((v): v is string => !!v);
+        return new Set(values).size === values.length;
+      }
+    )
+    .required(),
   acceptTerms: Yup.boolean()
     .oneOf([true], "You must accept the terms and conditions")
     .required("You must accept the terms and conditions"),
 });
+
+// Grow/shrink the entries array to an exact count, preserving amounts the
+// user already typed.
+function resizeBidAmounts(current: string[], count: number): string[] {
+  if (count > current.length) {
+    return [...current, ...Array(count - current.length).fill("")];
+  }
+  return current.slice(0, count);
+}
 
 type Step = "form" | "payment" | "success";
 
@@ -81,8 +105,7 @@ export default function BidPaymentModal({
   const [isCreatingIntent, setIsCreatingIntent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [bidData, setBidData] = useState<{
-    bidAmount: number;
-    numberOfBids: number;
+    bidAmounts: number[];
     totalAmount: number;
   } | null>(null);
 
@@ -97,8 +120,7 @@ export default function BidPaymentModal({
   }, [isOpen]);
 
   const initialValues: BidFormValues = {
-    bidAmount: "",
-    numberOfBids: 1,
+    bidAmounts: [""],
     acceptTerms: false,
     auctionId: auction_id
   };
@@ -107,8 +129,8 @@ export default function BidPaymentModal({
     setIsCreatingIntent(true);
     setError(null);
 
-    const totalAmount = values.numberOfBids * biddingFee;
-    const bidAmount = parseFloat(values.bidAmount);
+    const bidAmounts = values.bidAmounts.map((amount) => parseFloat(amount));
+    const totalAmount = bidAmounts.length * biddingFee;
 
     try {
       // Call server action to create PaymentIntent
@@ -116,8 +138,7 @@ export default function BidPaymentModal({
         productId,
         productTitle,
         biddingFee,
-        bidAmount,
-        numberOfBids: values.numberOfBids,
+        bidAmounts,
         bidderId: user.id,
         bidderName: user.name,
         bidderEmail: user.email,
@@ -131,8 +152,7 @@ export default function BidPaymentModal({
       if (result.clientSecret) {
         setClientSecret(result.clientSecret);
         setBidData({
-          bidAmount,
-          numberOfBids: values.numberOfBids,
+          bidAmounts,
           totalAmount,
         });
         setStep("payment");
@@ -162,12 +182,12 @@ export default function BidPaymentModal({
         {step === "form" && (
           <>
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold">
+              <DialogTitle className="text-xl font-semibold text-ink">
                 Place Your Bid
               </DialogTitle>
               <DialogDescription>
                 Enter your bid amount for{" "}
-                <span className="font-semibold text-foreground">
+                <span className="font-semibold text-ink">
                   {productTitle}
                 </span>
               </DialogDescription>
@@ -179,50 +199,14 @@ export default function BidPaymentModal({
               onSubmit={handleFormSubmit}
             >
               {({ values, isValid, setFieldValue, errors, touched }) => {
-                const totalCost = values.numberOfBids * biddingFee;
+                const entryCount = values.bidAmounts.length;
+                const totalCost = entryCount * biddingFee;
 
                 return (
                   <Form className="space-y-5 mt-4">
-                    {/* Bid Amount */}
+                    {/* Number of Entries */}
                     <div>
-                      <label
-                        htmlFor="bidAmount"
-                        className="block text-sm font-medium mb-2"
-                      >
-                        Your Bid Amount <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">
-                          USD
-                        </span>
-                        <Field
-                          type="text"
-                          id="bidAmount"
-                          name="bidAmount"
-                          placeholder="0.00"
-                          disabled={isCreatingIntent}
-                          className="w-full h-12 pl-10 pr-4 text-xl font-bold rounded-lg border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-background"
-                        />
-                      </div>
-                      <ErrorMessage name="bidAmount">
-                        {(msg) => (
-                          <div className="text-red-500 text-sm mt-1 flex items-center gap-1">
-                            <AlertCircle className="h-3 w-3" />
-                            {msg}
-                          </div>
-                        )}
-                      </ErrorMessage>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Lowest unique bid wins!
-                      </p>
-                    </div>
-
-                    {/* Number of Bids */}
-                    <div>
-                      <label
-                        htmlFor="numberOfBids"
-                        className="block text-sm font-medium mb-2"
-                      >
+                      <label className="block text-sm font-medium text-ink mb-2">
                         Number of Entries
                       </label>
                       <div className="flex items-center gap-3">
@@ -230,46 +214,32 @@ export default function BidPaymentModal({
                           type="button"
                           onClick={() =>
                             setFieldValue(
-                              "numberOfBids",
-                              Math.max(1, values.numberOfBids - 1)
+                              "bidAmounts",
+                              resizeBidAmounts(values.bidAmounts, Math.max(1, entryCount - 1))
                             )
                           }
-                          disabled={values.numberOfBids <= 1 || isCreatingIntent}
-                          className="h-10 w-10 rounded-lg border-2 border-border hover:border-primary hover:bg-primary/5 font-bold text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          disabled={entryCount <= 1 || isCreatingIntent}
+                          className="size-10 rounded-full bg-soft-cloud hover:bg-hairline-soft font-medium text-lg text-ink transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           −
                         </button>
-                        <Field
-                          type="number"
-                          id="numberOfBids"
-                          name="numberOfBids"
-                          min="1"
-                          max="100"
-                          disabled={isCreatingIntent}
-                          className="flex-1 h-10 px-4 text-center text-lg font-bold rounded-lg border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-background"
-                        />
+                        <div className="flex-1 h-10 px-4 flex items-center justify-center text-lg font-semibold rounded-full bg-soft-cloud text-ink">
+                          {entryCount}
+                        </div>
                         <button
                           type="button"
                           onClick={() =>
                             setFieldValue(
-                              "numberOfBids",
-                              Math.min(100, values.numberOfBids + 1)
+                              "bidAmounts",
+                              resizeBidAmounts(values.bidAmounts, Math.min(100, entryCount + 1))
                             )
                           }
-                          disabled={values.numberOfBids >= 100 || isCreatingIntent}
-                          className="h-10 w-10 rounded-lg border-2 border-border hover:border-primary hover:bg-primary/5 font-bold text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          disabled={entryCount >= 100 || isCreatingIntent}
+                          className="size-10 rounded-full bg-soft-cloud hover:bg-hairline-soft font-medium text-lg text-ink transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           +
                         </button>
                       </div>
-                      <ErrorMessage name="numberOfBids">
-                        {(msg) => (
-                          <div className="text-red-500 text-sm mt-1 flex items-center gap-1">
-                            <AlertCircle className="h-3 w-3" />
-                            {msg}
-                          </div>
-                        )}
-                      </ErrorMessage>
                     </div>
 
                     {/* Quick Select */}
@@ -278,33 +248,102 @@ export default function BidPaymentModal({
                         <button
                           key={count}
                           type="button"
-                          onClick={() => setFieldValue("numberOfBids", count)}
+                          onClick={() =>
+                            setFieldValue("bidAmounts", resizeBidAmounts(values.bidAmounts, count))
+                          }
                           disabled={isCreatingIntent}
-                          className={`py-2 px-3 rounded-lg border-2 font-semibold text-xs transition-all disabled:opacity-50 ${
-                            values.numberOfBids === count
-                              ? "border-primary bg-primary/10 text-primary"
-                              : "border-border hover:border-primary hover:bg-primary/5"
-                          }`}
+                          className={cn(
+                            "h-10 rounded-full border text-xs font-medium transition-colors disabled:opacity-50",
+                            entryCount === count
+                              ? "border-ink bg-ink text-background"
+                              : "border-hairline hover:bg-soft-cloud text-ink"
+                          )}
                         >
                           {count}x
                         </button>
                       ))}
                     </div>
 
+                    {/* Per-entry bid amounts */}
+                    <div className="space-y-3">
+                      <label className="block text-sm font-medium text-ink">
+                        Your Bid Amount{entryCount > 1 ? "s" : ""} <span className="text-sale">*</span>
+                      </label>
+                      {values.bidAmounts.map((_, index) => (
+                        <div key={index}>
+                          <div className="flex items-center gap-2">
+                            {entryCount > 1 && (
+                              <span className="w-14 shrink-0 text-xs text-mute">
+                                #{index + 1}
+                              </span>
+                            )}
+                            <div className="relative flex-1">
+                              <span className="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-medium text-mute">
+                                USD
+                              </span>
+                              <Field
+                                type="text"
+                                name={`bidAmounts[${index}]`}
+                                placeholder="0.00"
+                                disabled={isCreatingIntent}
+                                className="w-full h-12 pl-14 pr-5 text-lg font-semibold rounded-full bg-soft-cloud outline-none transition-[background-color,box-shadow] focus:bg-background focus:ring-2 focus:ring-ink focus:ring-offset-4 focus:ring-offset-soft-cloud disabled:opacity-50 disabled:cursor-not-allowed"
+                              />
+                            </div>
+                            {entryCount > 1 && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setFieldValue(
+                                    "bidAmounts",
+                                    values.bidAmounts.filter((_, i) => i !== index)
+                                  )
+                                }
+                                disabled={isCreatingIntent}
+                                aria-label={`Remove entry ${index + 1}`}
+                                className="size-9 shrink-0 rounded-full hover:bg-soft-cloud text-mute hover:text-sale transition-colors disabled:opacity-50"
+                              >
+                                <Trash2 className="h-4 w-4 mx-auto" />
+                              </button>
+                            )}
+                          </div>
+                          <ErrorMessage
+                            name={`bidAmounts[${index}]`}
+                            component="div"
+                            className="text-sale text-xs mt-1 ml-1 flex items-center gap-1"
+                          >
+                            {(msg) => (
+                              <>
+                                <AlertCircle className="h-3 w-3" />
+                                {msg}
+                              </>
+                            )}
+                          </ErrorMessage>
+                        </div>
+                      ))}
+                      {typeof errors.bidAmounts === "string" && (
+                        <div className="text-sale text-sm flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {errors.bidAmounts}
+                        </div>
+                      )}
+                      <p className="text-xs text-mute">
+                        Lowest unique bid wins — each entry needs its own amount.
+                      </p>
+                    </div>
+
                     {/* Cost Summary */}
-                    <div className="p-4 rounded-lg border-2 border-primary/20 bg-primary/5">
+                    <div className="py-4 border-y border-hairline space-y-2">
                       <div className="flex justify-between items-center text-sm">
-                        <span className="text-muted-foreground">
-                          Entry Fee ({values.numberOfBids}x {formatPrice(biddingFee)})
+                        <span className="text-mute">
+                          Entry Fee ({entryCount}x {formatPrice(biddingFee)})
                         </span>
-                        <span className="font-semibold">
+                        <span className="font-medium text-ink">
                           {formatPrice(totalCost)}
                         </span>
                       </div>
-                      <div className="h-px bg-border my-2" />
                       <div className="flex justify-between items-center">
-                        <span className="font-bold">Total</span>
-                        <span className="text-xl font-bold text-primary">
+                        <span className="font-medium text-ink">Total</span>
+                        <span className="text-xl font-semibold text-ink">
                           {formatPrice(totalCost)}
                         </span>
                       </div>
@@ -314,26 +353,18 @@ export default function BidPaymentModal({
                     <div>
                       <label
                         htmlFor="acceptTerms"
-                        className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                          values.acceptTerms
-                            ? "border-primary bg-primary/5"
-                            : "border-border hover:border-primary"
-                        } ${
-                          errors.acceptTerms && touched.acceptTerms
-                            ? "border-red-500"
-                            : ""
-                        }`}
+                        className="flex items-start gap-3 cursor-pointer"
                       >
                         <Field
                           type="checkbox"
                           id="acceptTerms"
                           name="acceptTerms"
                           disabled={isCreatingIntent}
-                          className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                          className="mt-0.5 h-4 w-4 border border-hairline accent-ink"
                         />
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-mute">
                           I agree to the{" "}
-                          <a href="/terms" className="text-primary hover:underline">
+                          <a href="/terms" className="text-ink underline underline-offset-4">
                             Terms
                           </a>{" "}
                           and understand that entry fees are non-refundable.
@@ -341,7 +372,7 @@ export default function BidPaymentModal({
                       </label>
                       <ErrorMessage name="acceptTerms">
                         {(msg) => (
-                          <div className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                          <div className="text-sale text-xs mt-1.5 flex items-center gap-1">
                             <AlertCircle className="h-3 w-3" />
                             {msg}
                           </div>
@@ -351,17 +382,18 @@ export default function BidPaymentModal({
 
                     {/* Error Display */}
                     {error && (
-                      <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400">
+                      <div className="flex items-center gap-2 p-3 bg-sale/10 text-sale">
                         <AlertCircle className="h-4 w-4 shrink-0" />
                         <p className="text-sm">{error}</p>
                       </div>
                     )}
 
                     {/* Submit Button */}
-                    <button
+                    <Button
                       type="submit"
                       disabled={!isValid || isCreatingIntent}
-                      className="w-full py-3.5 bg-linear-to-r from-primary to-orange-600 text-white rounded-lg font-bold hover:from-primary/90 hover:to-orange-600/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all"
+                      size="lg"
+                      className="w-full"
                     >
                       {isCreatingIntent ? (
                         <>
@@ -374,7 +406,7 @@ export default function BidPaymentModal({
                           Continue to Payment
                         </>
                       )}
-                    </button>
+                    </Button>
                   </Form>
                 );
               }}
@@ -385,15 +417,31 @@ export default function BidPaymentModal({
         {step === "payment" && clientSecret && bidData && (
           <>
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold">
+              <DialogTitle className="text-xl font-semibold text-ink">
                 Complete Payment
-              </DialogTitle>xx
+              </DialogTitle>
               <DialogDescription>
-                {bidData.numberOfBids} {bidData.numberOfBids === 1 ? "entry" : "entries"} for{" "}
-                <span className="font-semibold text-foreground">
-                  {formatPrice(bidData.bidAmount)}
-                </span>{" "}
-                bid
+                {bidData.bidAmounts.length} {bidData.bidAmounts.length === 1 ? "entry" : "entries"}
+                {bidData.bidAmounts.length === 1 ? (
+                  <>
+                    {" "}for{" "}
+                    <span className="font-semibold text-ink">
+                      {formatPrice(bidData.bidAmounts[0])}
+                    </span>{" "}
+                    bid
+                  </>
+                ) : (
+                  <>
+                    {" "}with bids from{" "}
+                    <span className="font-semibold text-ink">
+                      {formatPrice(Math.min(...bidData.bidAmounts))}
+                    </span>{" "}
+                    to{" "}
+                    <span className="font-semibold text-ink">
+                      {formatPrice(Math.max(...bidData.bidAmounts))}
+                    </span>
+                  </>
+                )}
               </DialogDescription>
             </DialogHeader>
 
@@ -416,7 +464,7 @@ export default function BidPaymentModal({
                 setClientSecret(null);
                 setError(null);
               }}
-              className="w-full py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="w-full py-2 text-sm text-mute hover:text-ink transition-colors"
             >
               ← Back to bid details
             </button>
@@ -425,22 +473,18 @@ export default function BidPaymentModal({
 
         {step === "success" && (
           <div className="py-8 text-center space-y-4">
-            <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-              <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
+            <div className="mx-auto w-16 h-16 bg-success/10 rounded-full flex items-center justify-center">
+              <CheckCircle2 className="h-8 w-8 text-success" />
             </div>
-            <DialogTitle className="text-xl font-bold">
+            <DialogTitle className="text-xl font-semibold text-ink">
               Bid Placed Successfully!
             </DialogTitle>
             <DialogDescription className="text-base">
               Your bid has been submitted. Good luck!
             </DialogDescription>
-            <button
-              type="button"
-              onClick={onClose}
-              className="mt-4 px-6 py-2.5 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
-            >
+            <Button onClick={onClose} className="mt-4">
               Close
-            </button>
+            </Button>
           </div>
         )}
       </DialogContent>

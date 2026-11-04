@@ -1,117 +1,102 @@
-"use client"
-import React, { use } from 'react'
+"use client";
 import {
-    Sheet,
-    SheetClose,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from "@/components/ui/sheet"
-import { HamburgerIcon, MenuIcon } from 'lucide-react'
-import Sidebar, { NavItems } from './Sidebar'
-import Link from 'next/link'
-
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Menu, LogOut } from "lucide-react";
+import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
-    LayoutDashboard,
-    Package,
-    FolderTree,
-    Users,
-    Gavel,
-    ShieldCheck,
-    UserX
-} from "lucide-react";
-import { usePathname } from 'next/navigation'
+  getAdminNavItems,
+  isAdminNavItemActive,
+  type AdminPermissions,
+  type AdminUser,
+} from "./admin-nav";
 
+const MobileSidebar = ({
+  permissions,
+  user,
+}: {
+  permissions: AdminPermissions;
+  user: AdminUser;
+}) => {
+  const path = usePathname();
+  const navItems = getAdminNavItems(permissions).filter((item) => item.show);
 
-
-export interface Permission {
-    canManageProducts?: { isGranted: boolean  } | null;
-    canManageCategories?: { isGranted: boolean  } | null;
-    canManageAccounts?: { isGranted: boolean  } | null;
-    canManageBids?: { isGranted: boolean  } | null;
-    canManageKYC?: { isGranted: boolean  } | null;
-}
-
-
-const MobileSidebar = ({permissions}:{permissions: Permission}) => {
-    const path = usePathname()
-    const navItems = [
-        {
-            href: "/admin",
-            label: "Dashboard",
-            icon: LayoutDashboard,
-            show: true,
-            isactive: path === "/admin",
-        },
-        {
-            href: "/admin/products",
-            label: "Products",
-            icon: Package,
-            show: permissions.canManageProducts?.isGranted,
-            isactuve: path.startsWith("/admin/products"),
-        },
-        {
-            href: "/admin/categories",
-            label: "Categories",
-            icon: FolderTree,
-            show: permissions.canManageCategories?.isGranted,
-            isactive: path.startsWith("/admin/categories"),
-        },
-        {
-            href: "/admin/accounts",
-            label: "Accounts",
-            icon: Users,
-            show: permissions.canManageAccounts?.isGranted,
-            isactive: path.startsWith("/admin/accounts"),
-        },
-        {
-            href: "/admin/bids",
-            label: "Bids",
-            icon: Gavel,
-            show: permissions.canManageBids?.isGranted,
-            isactive: path.startsWith("/admin/bids"),
-        },
-        {
-            href: "/admin/kyc",
-            label: "KYC Verification",
-            icon: ShieldCheck,
-            show: permissions.canManageKYC?.isGranted,
-            isactive: path.startsWith("/admin/kyc"),
-        },
-];
   return (
-    <div className="h-full">
-        
-          <Sheet>
-              <SheetTrigger>
-                <MenuIcon className='w-6 h-6 text-primary hover:cursor-pointer' />
-              </SheetTrigger>
-              <SheetContent>
-                  {/* Navigation */}
-                  <nav className="flex-1 px-4 py-6 my-6 space-y-1 overflow-y-auto">
-                      {navItems.filter(item => item.show).map((item) => {
-                          const Icon = item.icon;
-                          return (
-                              <SheetClose asChild>
-                              <Link
-                                  key={item.href}
-                                  href={item.href}
-                                  className={`flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:text-primary bg-primary/5 rounded-lg transition-all group ${item.isactive ? 'bg-primary/10 text-primary' : ''}`}
-                              >
-                                  <Icon className="h-5 w-5 group-hover:scale-110 text-primary transition-transform" />
-                                  <span className='font-semibold'>{item.label}</span>
-                              </Link>
-                              </SheetClose>
-                          );
-                      })}
-                  </nav>
-              </SheetContent>
-          </Sheet>
-    
-    </div>
-  )
-}
+    <Sheet>
+      <SheetTrigger asChild>
+        <button
+          className="size-10 flex items-center justify-center rounded-full hover:bg-soft-cloud transition-colors"
+          aria-label="Open admin menu"
+        >
+          <Menu className="w-5 h-5 text-ink" />
+        </button>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-72 sm:w-80 p-0 flex flex-col">
+        <SheetHeader className="px-5 py-4 border-b border-hairline shrink-0">
+          <SheetTitle className="text-base">Admin Menu</SheetTitle>
+          <div className="flex items-center gap-3 pt-2">
+            {user.picture ? (
+              <img
+                src={user.picture}
+                alt={user.name}
+                className="w-9 h-9 rounded-full shrink-0"
+              />
+            ) : (
+              <div className="w-9 h-9 rounded-full bg-soft-cloud flex items-center justify-center text-sm font-medium text-ink shrink-0">
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div className="min-w-0 flex-1 text-left">
+              <p className="text-sm font-medium text-ink truncate">{user.name}</p>
+              <p className="text-xs text-mute truncate">{user.role}</p>
+            </div>
+          </div>
+        </SheetHeader>
 
-export default MobileSidebar
+        <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = isAdminNavItemActive(path, item.href);
+            return (
+              <SheetClose asChild key={item.href}>
+                <Link
+                  href={item.href}
+                  className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-full transition-colors ${
+                    active ? "bg-primary/10 text-primary" : "text-ink hover:bg-soft-cloud"
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span>{item.label}</span>
+                </Link>
+              </SheetClose>
+            );
+          })}
+        </nav>
+
+        <div className="border-t border-hairline p-4 space-y-1 shrink-0">
+          <SheetClose asChild>
+            <Link
+              href="/"
+              className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-mute hover:text-ink hover:bg-soft-cloud rounded-full transition-colors"
+            >
+              Back to Site
+            </Link>
+          </SheetClose>
+          <LogoutLink className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-sale hover:bg-sale/10 rounded-full transition-colors">
+            <LogOut className="h-4 w-4" />
+            Sign Out
+          </LogoutLink>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+};
+
+export default MobileSidebar;

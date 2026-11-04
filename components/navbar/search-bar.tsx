@@ -8,6 +8,7 @@ import { Product } from "@/lib/types";
 
 const popularSearches = ["iPhone", "MacBook", "PlayStation", "Camera", "AirPods", "Watch"];
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -79,7 +80,7 @@ export function SearchBar() {
                 value={searchQuery}
                 onChange={handleSearchChange}
                 onFocus={() => searchQuery.length > 0 && setIsSearchOpen(true)}
-                className="w-full h-10 px-4 py-2 pl-10 pr-10 rounded-full border border-input bg-muted focus:bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-sm"
+                className="w-full h-10 px-4 py-2 pl-10 pr-10 rounded-full bg-soft-cloud focus:bg-background focus:outline-none focus:ring-2 focus:ring-ink focus:ring-offset-2 focus:ring-offset-background transition-colors text-sm"
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               {searchQuery && !isSearching && (
@@ -105,7 +106,7 @@ export function SearchBar() {
               {/* Search Results */}
               {searchResults.length > 0 ? (
                 <div className="p-2">
-                  <div className="px-3 py-2 text-xs font-semibold text-white uppercase tracking-wider">
+                  <div className="px-3 py-2 text-xs font-medium text-mute uppercase tracking-wider">
                     Found {searchResults.length} result{searchResults.length !== 1 ? 's' : ''}
                   </div>
                   {searchResults.slice(0, 6).map((product) => (
@@ -113,9 +114,9 @@ export function SearchBar() {
                       key={product.id}
                       href={`/product/${product.id}`}
                       onClick={handleSearchSelect}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors group"
+                      className="flex items-center gap-3 p-3 hover:bg-soft-cloud transition-colors group"
                     >
-                      <div className="relative w-16 h-16 bg-muted rounded-lg overflow-hidden shrink-0">
+                      <div className="relative w-16 h-16 bg-soft-cloud overflow-hidden shrink-0">
                         <Image
                           src={product.images[0] || "/placeholder.png"}
                           alt={product.title}
@@ -124,23 +125,21 @@ export function SearchBar() {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors truncate">
+                        <h4 className="text-sm font-medium text-ink group-hover:text-primary transition-colors truncate">
                           {product.title}
                         </h4>
-                        <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                        <p className="text-xs text-mute mt-0.5 truncate">
                           {product.description}
                         </p>
                         <div className="flex items-center gap-3 mt-1.5">
-                          <span className="text-sm font-semibold text-primary">
+                          <span className="text-sm font-semibold text-ink">
                             {product.entryFee} USD entry
                           </span>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-mute">
                             {product.auctions?.length > 0 ? product.auctions[0].totalBidsCount : "N/A"} bids
                           </span>
                           {product.status === "ACTIVE" && (
-                            <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full font-medium">
-                              Active
-                            </span>
+                            <Badge variant="primary">Active</Badge>
                           )}
                         </div>
                       </div>
@@ -149,7 +148,7 @@ export function SearchBar() {
                   {searchResults.length > 6 && (
                     <div className="px-3 py-2 text-center">
                       <Link
-                        href={`/catalog?search=${encodeURIComponent(searchQuery)}`}
+                        href={`/catalog?query=${encodeURIComponent(searchQuery)}&sortBy=ending_soon`}
                         onClick={handleSearchSelect}
                         className="text-sm text-primary hover:text-primary/80 font-medium"
                       >
@@ -198,7 +197,7 @@ export function SearchBar() {
             placeholder="Search products..."
             value={searchQuery}
             onChange={handleSearchChange}
-            className="w-full px-4 py-2.5 pl-10 pr-10 rounded-full border border-input bg-muted focus:bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-sm"
+            className="w-full px-4 py-2.5 pl-10 pr-10 rounded-full bg-soft-cloud focus:bg-background focus:outline-none focus:ring-2 focus:ring-ink focus:ring-offset-2 focus:ring-offset-background transition-colors text-sm"
           />
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           {searchQuery && (

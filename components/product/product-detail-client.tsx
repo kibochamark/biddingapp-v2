@@ -5,7 +5,6 @@ import {
   formatPrice,
   formatTimeRemaining,
   formatCondition,
-  getConditionColor,
   formatDateTime,
 } from "@/lib/format";
 import {
@@ -20,6 +19,7 @@ import {
 } from "lucide-react";
 import ImageGallery from "@/components/image-gallery";
 import BidFormNew from "@/components/bid-form";
+import { Badge } from "@/components/ui/badge";
 import { Product } from "@/lib/types";
 
 interface ProductDetailClientProps {
@@ -54,16 +54,16 @@ export default function ProductDetailClient({
 
           {/* Tabs */}
           <div className="mt-10">
-            <div className="border-b border-border">
+            <div className="sticky-edge-b">
               <nav className="flex gap-6">
                 {tabs.map((tab) => (
                   <button
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`pb-3 text-sm font-semibold border-b-2 transition-colors ${
+                    className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
                       activeTab === tab.key
-                        ? "border-primary text-primary"
-                        : "border-transparent text-muted-foreground hover:text-foreground"
+                        ? "border-ink text-ink"
+                        : "border-transparent text-mute hover:text-ink"
                     }`}
                   >
                     {tab.label}
@@ -75,12 +75,12 @@ export default function ProductDetailClient({
             <div className="pt-6">
               {/* Description */}
               {activeTab === "description" && (
-                <div className="space-y-6">
-                  <p className="text-muted-foreground leading-relaxed">
+                <div className="space-y-8">
+                  <p className="text-mute leading-relaxed">
                     {product.description}
                   </p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
                     {[
                       {
                         icon: Shield,
@@ -103,14 +103,11 @@ export default function ProductDetailClient({
                         desc: "90-day warranty on all items",
                       },
                     ].map((item) => (
-                      <div
-                        key={item.title}
-                        className="flex items-start gap-3 p-4 rounded-xl bg-muted/40"
-                      >
-                        <item.icon className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                      <div key={item.title} className="flex items-start gap-3">
+                        <item.icon className="h-5 w-5 text-ink shrink-0 mt-0.5" />
                         <div>
-                          <p className="text-sm font-semibold">{item.title}</p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-sm font-medium text-ink">{item.title}</p>
+                          <p className="text-xs text-mute">
                             {item.desc}
                           </p>
                         </div>
@@ -125,26 +122,19 @@ export default function ProductDetailClient({
                 <div>
                   {product.specifications &&
                   Object.keys(product.specifications).length > 0 ? (
-                    <div className="rounded-2xl border border-border overflow-hidden">
+                    <div className="border-t border-hairline">
                       {Object.entries(product.specifications).map(
-                        ([key, value], index) => (
+                        ([key, value]) => (
                           <div
                             key={key}
-                            className={`flex items-center justify-between px-5 py-3.5 text-sm ${
-                              index % 2 === 0 ? "bg-muted/30" : ""
-                            } ${
-                              index !==
-                              Object.keys(product.specifications).length - 1
-                                ? "border-b border-border/60"
-                                : ""
-                            }`}
+                            className="flex items-center justify-between py-3.5 text-sm border-b border-hairline"
                           >
-                            <span className="text-muted-foreground font-medium capitalize">
+                            <span className="text-mute font-medium capitalize">
                               {key
                                 .replace(/([A-Z])/g, " $1")
                                 .replace(/_/g, " ")}
                             </span>
-                            <span className="font-semibold">
+                            <span className="font-medium text-ink">
                               {String(value)}
                             </span>
                           </div>
@@ -152,7 +142,7 @@ export default function ProductDetailClient({
                       )}
                     </div>
                   ) : (
-                    <p className="text-muted-foreground text-sm">
+                    <p className="text-mute text-sm">
                       No specifications available for this product.
                     </p>
                   )}
@@ -161,8 +151,8 @@ export default function ProductDetailClient({
 
               {/* Shipping */}
               {activeTab === "shipping" && (
-                <div className="space-y-4">
-                  <div className="rounded-2xl border border-border divide-y divide-border">
+                <div className="space-y-8">
+                  <div className="border-t border-hairline">
                     {[
                       {
                         icon: Truck,
@@ -182,12 +172,12 @@ export default function ProductDetailClient({
                     ].map((item) => (
                       <div
                         key={item.title}
-                        className="flex items-start gap-3 px-5 py-4"
+                        className="flex items-start gap-3 py-4 border-b border-hairline"
                       >
-                        <item.icon className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                        <item.icon className="h-5 w-5 text-ink shrink-0 mt-0.5" />
                         <div>
-                          <p className="text-sm font-semibold">{item.title}</p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-sm font-medium text-ink">{item.title}</p>
+                          <p className="text-xs text-mute">
                             {item.desc}
                           </p>
                         </div>
@@ -195,11 +185,11 @@ export default function ProductDetailClient({
                     ))}
                   </div>
 
-                  <div className="rounded-2xl border border-border p-5">
-                    <p className="text-sm font-semibold mb-3">
+                  <div>
+                    <p className="text-sm font-medium text-ink mb-3">
                       Returns & Refunds
                     </p>
-                    <ul className="space-y-2 text-xs text-muted-foreground list-disc list-inside">
+                    <ul className="space-y-2 text-xs text-mute list-disc list-inside">
                       <li>30-day return window from delivery date</li>
                       <li>Item must be in original condition with packaging</li>
                       <li>
@@ -219,39 +209,33 @@ export default function ProductDetailClient({
 
         {/* Right Sidebar */}
         <div className="lg:col-span-1">
-          <div className="sticky top-20 space-y-5">
-            {/* Product Info Card */}
-            <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
+          <div className="sticky top-20 space-y-6">
+            {/* Product Info */}
+            <div className="space-y-4 pb-6 border-b border-hairline">
               {/* Badges */}
               <div className="flex flex-wrap items-center gap-2">
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${getConditionColor(
-                    product.condition
-                  )}`}
-                >
-                  {formatCondition(product.condition)}
-                </span>
+                <Badge>{formatCondition(product.condition)}</Badge>
                 {!auctionEnded &&
                   !bidended &&
                   new Date(product.endDate).getTime() - Date.now() <
                     24 * 60 * 60 * 1000 && (
-                    <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-destructive text-destructive-foreground animate-pulse">
+                    <Badge variant="inverse" className="bg-sale">
                       Ending Soon
-                    </span>
+                    </Badge>
                   )}
               </div>
 
               {/* Title */}
-              <h1 className="text-2xl lg:text-3xl font-extrabold leading-tight tracking-tight">
+              <h1 className="text-2xl lg:text-3xl font-medium leading-tight tracking-tight text-ink">
                 {product.title}
               </h1>
 
               {/* Retail Value */}
-              <div className="flex items-baseline justify-between border-t border-border pt-4">
-                <span className="text-sm text-muted-foreground font-medium">
+              <div className="flex items-baseline justify-between pt-2">
+                <span className="text-sm text-mute font-medium">
                   Retail Value
                 </span>
-                <span className="text-xl font-bold">
+                <span className="text-xl font-semibold text-ink">
                   {formatPrice(product.retailValue || 0)}
                 </span>
               </div>
@@ -259,12 +243,12 @@ export default function ProductDetailClient({
 
             {/* Auction Ended Banner */}
             {(auctionEnded || bidended) && (
-              <div className="rounded-2xl border border-border bg-muted/40 p-6 text-center space-y-3">
-                <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-                  <Ban className="h-6 w-6 text-muted-foreground" />
+              <div className="bg-soft-cloud p-6 text-center space-y-3">
+                <div className="mx-auto w-12 h-12 rounded-full bg-background flex items-center justify-center">
+                  <Ban className="h-6 w-6 text-mute" />
                 </div>
-                <p className="font-bold">Auction Ended</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="font-medium text-ink">Auction Ended</p>
+                <p className="text-xs text-mute">
                   Closed on {formatDateTime(new Date(product.endDate))}
                 </p>
               </div>
@@ -272,50 +256,50 @@ export default function ProductDetailClient({
 
             {/* Time Remaining */}
             {!auctionEnded && !bidended && (
-              <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
+              <div className="pb-6 border-b border-hairline">
                 <div className="flex items-center gap-2 mb-2">
-                  <Clock className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <Clock className="h-4 w-4 text-ink" />
+                  <span className="text-xs font-medium text-mute uppercase tracking-wider">
                     Time Remaining
                   </span>
                 </div>
-                <p className="text-2xl font-extrabold text-primary">
+                <p className="text-2xl font-semibold text-ink">
                   {formatTimeRemaining(new Date(product.endDate))}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-mute mt-1">
                   Ends {formatDateTime(new Date(product.endDate))}
                 </p>
               </div>
             )}
 
-            {/* Auction Stats — KLM-style data rows with thin separators */}
-            <div className="rounded-2xl border border-border overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-3.5 border-b border-border/60">
-                <span className="text-sm text-muted-foreground flex items-center gap-2">
+            {/* Auction Stats */}
+            <div className="border-t border-hairline">
+              <div className="flex items-center justify-between py-3.5 border-b border-hairline">
+                <span className="text-sm text-mute flex items-center gap-2">
                   <Users className="h-4 w-4" />
                   Total Entries
                 </span>
-                <span className="text-sm font-bold">
+                <span className="text-sm font-medium text-ink">
                   {product.auctions?.length > 0
                     ? product.auctions[0].totalBidsCount
                     : 0}
                 </span>
               </div>
-              <div className="flex items-center justify-between px-5 py-3.5 bg-muted/30 border-b border-border/60">
-                <span className="text-sm text-muted-foreground flex items-center gap-2">
+              <div className="flex items-center justify-between py-3.5 border-b border-hairline">
+                <span className="text-sm text-mute flex items-center gap-2">
                   <TrendingUp className="h-4 w-4" />
                   Original Price
                 </span>
-                <span className="text-sm font-bold">
+                <span className="text-sm font-medium text-ink">
                   {formatPrice(product.retailValue || 0)}
                 </span>
               </div>
-              <div className="flex items-center justify-between px-5 py-3.5">
-                <span className="text-sm text-muted-foreground flex items-center gap-2">
+              <div className="flex items-center justify-between py-3.5">
+                <span className="text-sm text-mute flex items-center gap-2">
                   <Star className="h-4 w-4" />
                   Seller
                 </span>
-                <span className="text-sm font-bold">{product.sellerName}</span>
+                <span className="text-sm font-medium text-ink">{product.sellerName}</span>
               </div>
             </div>
 
@@ -341,8 +325,8 @@ export default function ProductDetailClient({
                 bidended={bidended}
               />
             ) : (
-              <div className="rounded-2xl border border-border p-5 text-center">
-                <p className="text-sm text-muted-foreground">
+              <div className="bg-soft-cloud p-5 text-center">
+                <p className="text-sm text-mute">
                   Bidding is no longer available for this auction.
                 </p>
               </div>

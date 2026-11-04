@@ -5,6 +5,7 @@ import { Upload, X, Image as ImageIcon, Loader, Check } from "lucide-react";
 import Image from "next/image";
 import { uploadProductImages, deleteProductImage } from "../../actions/products";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 interface ProductImageUploadProps {
   productId: string;
@@ -105,10 +106,10 @@ export default function ProductImageUpload({
       {/* Upload Area */}
       <div
         onClick={() => fileInputRef.current?.click()}
-        className={`relative border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer transition-all ${
+        className={`relative border border-dashed border-hairline bg-soft-cloud p-8 text-center cursor-pointer transition-all ${
           uploading
             ? "opacity-50 cursor-not-allowed"
-            : "hover:border-primary hover:bg-primary/5"
+            : "hover:bg-hairline-soft"
         }`}
       >
         <input
@@ -122,19 +123,19 @@ export default function ProductImageUpload({
         />
         <div className="flex flex-col items-center gap-3">
           {uploading ? (
-            <Loader className="w-12 h-12 text-primary animate-spin" />
+            <Loader className="w-12 h-12 text-ink animate-spin" />
           ) : (
-            <Upload className="w-12 h-12 text-muted-foreground" />
+            <Upload className="w-12 h-12 text-mute" />
           )}
           <div>
-            <p className="text-sm font-medium">
+            <p className="text-sm font-medium text-ink">
               {uploading ? "Uploading..." : "Click to upload images"}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-mute mt-1">
               PNG, JPG, GIF up to 10MB each (Max 10 images)
             </p>
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-mute">
             {images.length} / 10 images uploaded
           </p>
         </div>
@@ -143,12 +144,12 @@ export default function ProductImageUpload({
       {/* Image Grid */}
       {images.length > 0 && (
         <div>
-          <h3 className="text-sm font-medium mb-3">Uploaded Images</h3>
+          <h3 className="text-sm font-medium mb-3 text-ink">Uploaded Images</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {images.map((imageUrl, index) => (
               <div
                 key={index}
-                className="relative group aspect-square rounded-lg overflow-hidden border border-border bg-muted"
+                className="relative group aspect-square overflow-hidden border border-hairline bg-soft-cloud"
               >
                 <Image
                   src={imageUrl}
@@ -160,7 +161,7 @@ export default function ProductImageUpload({
                 <button
                   onClick={() => handleDeleteImage(imageUrl)}
                   disabled={deletingImage === imageUrl}
-                  className="absolute top-2 right-2 p-1.5 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
+                  className="absolute top-2 right-2 p-1.5 bg-sale text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
                   title="Delete image"
                 >
                   {deletingImage === imageUrl ? (
@@ -171,14 +172,14 @@ export default function ProductImageUpload({
                 </button>
                 {/* Primary Badge */}
                 {index === 0 && (
-                  <div className="absolute top-2 left-2 px-2 py-1 bg-primary text-primary-foreground text-xs font-medium rounded">
+                  <div className="absolute top-2 left-2 px-2 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full">
                     Primary
                   </div>
                 )}
               </div>
             ))}
           </div>
-          <p className="text-xs text-muted-foreground mt-3">
+          <p className="text-xs text-mute mt-3">
             The first image will be used as the primary product image
           </p>
         </div>
@@ -187,32 +188,29 @@ export default function ProductImageUpload({
       {/* Empty State */}
       {images.length === 0 && (
         <div className="flex flex-col items-center justify-center py-12 text-center">
-          <ImageIcon className="w-16 h-16 text-muted-foreground mb-3" />
-          <p className="text-sm text-muted-foreground">No images uploaded yet</p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <ImageIcon className="w-16 h-16 text-mute mb-3" />
+          <p className="text-sm text-mute">No images uploaded yet</p>
+          <p className="text-xs text-mute mt-1">
             Upload at least one image to continue
           </p>
         </div>
       )}
 
       {/* Action Buttons */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-border">
-        <button
+      <div className="flex justify-end gap-3 pt-4 border-t border-hairline">
+        <Button
+          type="button"
+          variant="outline"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading || images.length >= 10}
-          className="px-6 py-2.5 border border-border rounded-lg hover:bg-accent transition-all text-sm font-medium disabled:opacity-50"
         >
           Add More Images
-        </button>
+        </Button>
         {onComplete && (
-          <button
-            onClick={handleComplete}
-            disabled={images.length === 0}
-            className="flex items-center gap-2 px-6 py-2.5 bg-linear-to-r from-primary to-orange-600 text-white rounded-lg hover:from-primary/90 hover:to-orange-600/90 transition-all text-sm font-medium disabled:opacity-50"
-          >
+          <Button type="button" onClick={handleComplete} disabled={images.length === 0}>
             <Check className="w-4 h-4" />
             Complete & View Product
-          </button>
+          </Button>
         )}
       </div>
     </div>

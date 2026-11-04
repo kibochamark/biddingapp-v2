@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { toast } from "sonner";
 
-interface PaymentEvent {
-  type: "payment_success" | "payment_failed" | "connected";
+interface RealtimeEvent {
+  type: "payment_success" | "payment_failed" | "connected" | "error";
   productId?: string;
   productTitle?: string;
   message?: string;
@@ -13,6 +14,10 @@ interface PaymentEvent {
 
 export default function RealtimeNotifications() {
   const { isAuthenticated, isLoading } = useKindeBrowserClient();
+  const router = useRouter();
+  const pathname = usePathname();
+  const pathnameRef = useRef(pathname);
+  pathnameRef.current = pathname;
   const eventSourceRef = useRef<EventSource | null>(null);
   const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const retryCountRef = useRef(0);
@@ -29,10 +34,15 @@ export default function RealtimeNotifications() {
 
       es.onmessage = (event) => {
         try {
-          const data: PaymentEvent = JSON.parse(event.data);
+          const data: RealtimeEvent = JSON.parse(event.data);
 
           if (data.type === "connected") {
             retryCountRef.current = 0;
+            return;
+          }
+
+          if (data.type === "error") {
+            console.error("Realtime notification stream error:", data.message);
             return;
           }
 
@@ -43,6 +53,11 @@ export default function RealtimeNotifications() {
                 ? `Your bid entry for "${data.productTitle}" has been recorded.`
                 : "Your bid entry has been recorded.",
             });
+            // The product page is fully dynamic — refresh it so the bidder's
+            // own entry/bid count shows up immediately if they're still on it.
+            if (data.productId && pathnameRef.current === `/product/${data.productId}`) {
+              router.refresh();
+            }
           }
 
           if (data.type === "payment_failed") {

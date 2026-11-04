@@ -5,6 +5,7 @@ import { formatPrice } from "@/lib/format";
 import { Gavel, Loader2, CheckCircle2, Plus } from "lucide-react";
 import { useKindeBrowserClient, LoginLink } from "@kinde-oss/kinde-auth-nextjs";
 import BidPaymentModal from "./stripe/bid-payment-modal";
+import { Button } from "@/components/ui/button";
 
 interface UserBidInfo {
   totalEntries: number;
@@ -52,29 +53,29 @@ export default function BidFormNew({
     <div className="space-y-4">
       {/* User's Active Bid Status */}
       {hasActiveBid && isAuthenticated && (
-        <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl">
+        <div className="p-4 bg-success/10">
           <div className="flex items-center gap-2 mb-2">
-            <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
-            <p className="font-semibold text-green-800 dark:text-green-200">
+            <CheckCircle2 className="h-5 w-5 text-success" />
+            <p className="font-medium text-success">
               You&apos;re in this auction!
             </p>
           </div>
           <div className="space-y-1.5 text-sm">
             <div className="flex justify-between items-center">
-              <span className="text-green-700 dark:text-green-300">Your Entries</span>
-              <span className="font-bold text-green-800 dark:text-green-200">
+              <span className="text-success/80">Your Entries</span>
+              <span className="font-semibold text-success">
                 {userBidInfo.totalEntries} {userBidInfo.totalEntries === 1 ? 'entry' : 'entries'}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-green-700 dark:text-green-300">Your Bid{userBidInfo.bidAmounts.length > 1 ? 's' : ''}</span>
-              <span className="font-bold text-green-800 dark:text-green-200">
+              <span className="text-success/80">Your Bid{userBidInfo.bidAmounts.length > 1 ? 's' : ''}</span>
+              <span className="font-semibold text-success">
                 {userBidInfo.bidAmounts.map(a => formatPrice(a)).join(', ')}
               </span>
             </div>
-            <div className="flex justify-between items-center pt-1 border-t border-green-200 dark:border-green-700">
-              <span className="text-green-700 dark:text-green-300">Total Invested</span>
-              <span className="font-bold text-green-800 dark:text-green-200">
+            <div className="flex justify-between items-center pt-1 border-t border-success/20">
+              <span className="text-success/80">Total Invested</span>
+              <span className="font-semibold text-success">
                 {formatPrice(userBidInfo.totalSpent)}
               </span>
             </div>
@@ -83,16 +84,16 @@ export default function BidFormNew({
       )}
 
       {/* Bidding Info */}
-      <div className="p-5 rounded-2xl border border-primary/20 bg-primary/5">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+      <div className="pb-4 border-b border-hairline">
+        <p className="text-xs font-medium text-mute uppercase tracking-wider mb-1">
           Entry Fee per Bid
         </p>
-        <p className="text-3xl font-extrabold text-primary">
+        <p className="text-3xl font-semibold text-ink">
           {formatPrice(biddingFee)}
         </p>
         <div className="flex items-center gap-1 mt-2">
-          <Gavel className="h-4 w-4 text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">
+          <Gavel className="h-4 w-4 text-mute" />
+          <p className="text-sm text-mute">
             {totalBids} {totalBids === 1 ? "Entry" : "Entries"}
           </p>
         </div>
@@ -100,8 +101,8 @@ export default function BidFormNew({
 
       {/* Status Messages */}
       {!isActive && (
-        <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-2xl">
-          <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">
+        <div className="p-4 bg-soft-cloud">
+          <p className="text-sm font-medium text-ink">
             {productStatus === "CLOSED" &&
               "Bidding has ended. Winner selection in progress."}
             {productStatus === "WINNER_SELECTED" &&
@@ -116,10 +117,11 @@ export default function BidFormNew({
       {!isLoading && !bidended && (
         <>
           {isAuthenticated ? (
-            <button
+            <Button
               onClick={handlePlaceBid}
               disabled={!isActive}
-              className="w-full py-3.5 bg-primary text-primary-foreground rounded-xl font-bold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors shadow-sm"
+              size="lg"
+              className="w-full"
             >
               {hasActiveBid ? (
                 <>
@@ -132,14 +134,14 @@ export default function BidFormNew({
                   Place Bid Now
                 </>
               )}
-            </button>
+            </Button>
           ) : (
             <div className="space-y-3">
-              <LoginLink className="w-full py-3.5 bg-primary text-primary-foreground rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors shadow-sm">
+              <LoginLink className="w-full h-12 bg-primary text-primary-foreground rounded-full font-medium flex items-center justify-center gap-2 hover:bg-primary/90 active:scale-95 transition-[transform,background-color]">
                 <Gavel className="h-5 w-5" />
                 Sign In to Place Bid
               </LoginLink>
-              <p className="text-xs text-center text-muted-foreground">
+              <p className="text-xs text-center text-mute">
                 New to BidMarket? Sign in to get started
               </p>
             </div>
@@ -148,8 +150,8 @@ export default function BidFormNew({
       )}
 
       {isLoading && (
-        <div className="w-full py-3.5 bg-muted rounded-xl flex items-center justify-center">
-          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+        <div className="w-full h-12 bg-soft-cloud rounded-full flex items-center justify-center">
+          <Loader2 className="h-5 w-5 animate-spin text-mute" />
         </div>
       )}
 

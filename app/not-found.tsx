@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Home, Search, TrendingUp, ArrowLeft } from "lucide-react";
+import { Search, TrendingUp } from "lucide-react";
 
 export default function NotFound() {
   return (
@@ -7,21 +7,21 @@ export default function NotFound() {
       <div className="max-w-2xl w-full text-center">
         {/* 404 Illustration */}
         <div className="mb-8 relative">
-          <div className="text-[120px] sm:text-[180px] font-bold text-primary/10 leading-none select-none">
+          <div className="font-display text-[160px] sm:text-[220px] leading-none text-soft-cloud select-none">
             404
           </div>
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="p-6 bg-primary/10 rounded-full">
-              <Search className="h-16 w-16 sm:h-20 sm:w-20 text-primary" />
+            <div className="size-20 sm:size-24 rounded-full bg-soft-cloud flex items-center justify-center">
+              <Search className="h-8 w-8 sm:h-10 sm:w-10 text-ink" />
             </div>
           </div>
         </div>
 
         {/* Error Message */}
-        <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+        <h1 className="text-2xl sm:text-3xl font-medium text-ink uppercase mb-4">
           Page Not Found
         </h1>
-        <p className="text-lg text-muted-foreground mb-8 max-w-md mx-auto">
+        <p className="text-lg text-mute mb-8 max-w-md mx-auto">
           Oops! The page you're looking for doesn't exist. It might have been moved or deleted.
         </p>
 
@@ -29,14 +29,13 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-all shadow-md hover:shadow-lg transform hover:scale-105"
+            className="inline-flex items-center justify-center gap-2 h-12 px-8 bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary/90 active:scale-95 transition-[transform,background-color]"
           >
-            <Home className="h-5 w-5" />
             Go Home
           </Link>
           <Link
-            href="/catalog"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-muted text-foreground rounded-lg font-semibold hover:bg-accent transition-all border border-border"
+            href="/catalog?sortBy=ending_soon"
+            className="inline-flex items-center justify-center gap-2 h-12 px-8 bg-soft-cloud text-ink rounded-full font-medium hover:bg-hairline-soft active:scale-95 transition-[transform,background-color]"
           >
             <TrendingUp className="h-5 w-5" />
             Browse Auctions
@@ -44,43 +43,40 @@ export default function NotFound() {
         </div>
 
         {/* Helpful Links */}
-        <div className="mt-12 pt-8 border-t border-border">
-          <p className="text-sm text-muted-foreground mb-4">
+        <div className="mt-12 pt-8 border-t border-hairline">
+          <p className="text-sm text-mute mb-4">
             Here are some helpful links instead:
           </p>
           <div className="flex flex-wrap justify-center gap-4 text-sm">
             <Link
-              href="/catalog?filter=trending"
-              className="text-primary hover:underline"
+              href="/catalog?sortBy=ending_soon"
+              className="text-ink underline underline-offset-4 hover:text-primary"
             >
               Trending Auctions
             </Link>
-            <span className="text-muted-foreground">•</span>
+            <span className="text-mute">•</span>
             <Link
-              href="/catalog?filter=ending-soon"
-              className="text-primary hover:underline"
+              href="/catalog?sortBy=ending_soon"
+              className="text-ink underline underline-offset-4 hover:text-primary"
             >
               Ending Soon
             </Link>
-            <span className="text-muted-foreground">•</span>
+            <span className="text-mute">•</span>
             <Link
               href="/how-it-works"
-              className="text-primary hover:underline"
+              className="text-ink underline underline-offset-4 hover:text-primary"
             >
               How It Works
             </Link>
-            <span className="text-muted-foreground">•</span>
+            <span className="text-mute">•</span>
             <Link
               href="/profile"
-              className="text-primary hover:underline"
+              className="text-ink underline underline-offset-4 hover:text-primary"
             >
               My Account
             </Link>
           </div>
         </div>
-
-        {/* Back Button */}
-      
       </div>
     </div>
   );

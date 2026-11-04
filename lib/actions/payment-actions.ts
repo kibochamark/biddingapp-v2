@@ -1,6 +1,7 @@
 "use server";
 
 import Stripe from "stripe";
+import { encodeBidAmountsMetadata } from "@/lib/stripe/bid-metadata";
 
 // TODO: Implement this server action with your Stripe backend
 // This is a stub - you need to add your Stripe secret key and implement the PaymentIntent creation
@@ -9,8 +10,10 @@ interface CreatePaymentIntentParams {
   productId: string;
   productTitle: string;
   biddingFee: number;
-  bidAmount: number;
-  numberOfBids: number;
+  // One bid amount per entry — e.g. 5 entries means 5 distinct amounts, not
+  // the same amount charged 5 times. The entry fee (below) is what's actually
+  // paid now; each bidAmount is only charged later if that specific entry wins.
+  bidAmounts: number[];
   bidderId: string;
   bidderName: string;
   bidderEmail: string;
@@ -29,11 +32,12 @@ export async function createPaymentIntent(
     // TODO: Uncomment and configure with your Stripe secret key
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-    const totalAmount = params.numberOfBids * params.biddingFee;
+    const numberOfBids = params.bidAmounts.length;
+    const totalAmount = numberOfBids * params.biddingFee;
 
     // TODO: Replace this with actual Stripe PaymentIntent creation
     // Example implementation:
-    
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(totalAmount * 100), // Convert to cents
       currency: "usd",
@@ -46,14 +50,14 @@ export async function createPaymentIntent(
         bidderId: params.bidderId,
         bidderName: params.bidderName,
         bidderEmail: params.bidderEmail,
-        bidAmount: params.bidAmount.toString(),
-        numberOfBids: params.numberOfBids.toString(),
+        numberOfBids: numberOfBids.toString(),
         entryFee: params.biddingFee.toString(),
         totalPaid: Math.round(totalAmount),
-        auctionId:params.auctionId
+        auctionId: params.auctionId,
+        ...encodeBidAmountsMetadata(params.bidAmounts),
       },
       receipt_email: params.bidderEmail,
-      description: `Bid entry for ${params.productTitle} - ${params.numberOfBids} entries @ ${params.biddingFee.toFixed(2)} USD each`,
+      description: `Bid entry for ${params.productTitle} - ${numberOfBids} entries @ ${params.biddingFee.toFixed(2)} USD each`,
     });
 
     return { clientSecret: paymentIntent.client_secret! };
