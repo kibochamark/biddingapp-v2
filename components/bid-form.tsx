@@ -84,7 +84,7 @@ export default function BidFormNew({
       )}
 
       {/* Bidding Info */}
-      <div className="pb-4 border-b border-hairline">
+      <div className="pb-4  ">
         <p className="text-xs font-medium text-mute uppercase tracking-wider mb-1">
           Entry Fee per Bid
         </p>

@@ -80,7 +80,7 @@ export function CookieConsent() {
       {!showSettings && (
         <div className="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6 animate-in slide-in-from-bottom duration-300">
           <div className="max-w-7xl mx-auto">
-            <div className="bg-card border border-hairline p-6">
+            <div className="bg-card shadow-overlay p-6">
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0 size-10 rounded-full bg-soft-cloud flex items-center justify-center">
                   <Cookie className="h-5 w-5 text-ink" />
@@ -132,7 +132,7 @@ export function CookieConsent() {
       {/* Detailed Settings Modal */}
       {showSettings && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
-          <div className="bg-card border border-hairline max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-card shadow-overlay max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-card sticky-edge-b p-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="size-10 rounded-full bg-soft-cloud flex items-center justify-center">
@@ -168,7 +168,7 @@ export function CookieConsent() {
                     </p>
                   </div>
                   <div className="ml-4">
-                    <div className="px-3 py-1 rounded-full bg-background border border-hairline text-ink text-xs font-medium">
+                    <div className="px-3 py-1 rounded-full bg-background shadow-overlay text-ink text-xs font-medium">
                       Always Active
                     </div>
                   </div>
@@ -176,7 +176,7 @@ export function CookieConsent() {
               </div>
 
               {/* Analytics Cookies */}
-              <div className="border border-hairline p-4">
+              <div className="shadow-overlay p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="font-semibold text-ink mb-1">
@@ -204,7 +204,7 @@ export function CookieConsent() {
               </div>
 
               {/* Functional Cookies */}
-              <div className="border border-hairline p-4">
+              <div className="shadow-overlay p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="font-semibold text-ink mb-1">
@@ -232,7 +232,7 @@ export function CookieConsent() {
               </div>
 
               {/* Marketing Cookies */}
-              <div className="border border-hairline p-4">
+              <div className="shadow-overlay p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="font-semibold text-ink mb-1">

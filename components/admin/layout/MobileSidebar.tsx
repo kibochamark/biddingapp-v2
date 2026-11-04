@@ -39,7 +39,7 @@ const MobileSidebar = ({
         </button>
       </SheetTrigger>
       <SheetContent side="left" className="w-72 sm:w-80 p-0 flex flex-col">
-        <SheetHeader className="px-5 py-4 border-b border-hairline shrink-0">
+        <SheetHeader className="px-5 py-4   shrink-0">
           <SheetTitle className="text-base">Admin Menu</SheetTitle>
           <div className="flex items-center gap-3 pt-2">
             {user.picture ? (
@@ -80,7 +80,7 @@ const MobileSidebar = ({
           })}
         </nav>
 
-        <div className="border-t border-hairline p-4 space-y-1 shrink-0">
+        <div className="  p-4 space-y-1 shrink-0">
           <SheetClose asChild>
             <Link
               href="/"

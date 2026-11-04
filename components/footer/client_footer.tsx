@@ -15,7 +15,7 @@ const ClientFooter = () => {
 
     
     return (
-      <footer className="mt-auto border-t border-hairline bg-background">
+      <footer className="mt-auto   bg-background">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
               {/* Main Footer Content */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
@@ -132,7 +132,7 @@ const ClientFooter = () => {
               </div>
 
               {/* Contact Info */}
-              <div className="border-t border-hairline pt-8 mb-8">
+              <div className="  pt-8 mb-8">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="flex items-center gap-3">
                           <div className="size-10 flex items-center justify-center rounded-full bg-soft-cloud">
@@ -169,7 +169,7 @@ const ClientFooter = () => {
               </div>
 
               {/* Bottom Bar */}
-              <div className="border-t border-hairline pt-6">
+              <div className="  pt-6">
                   <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                       <p className="text-xs text-mute">
                           © {currentYear} BidMarket. All rights reserved.

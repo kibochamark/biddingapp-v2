@@ -53,7 +53,7 @@ export default function ProfileInfoClient({
     <div className="space-y-10">
       {/* Profile Information */}
       <div>
-        <div className="pb-5 border-b border-hairline mb-6">
+        <div className="pb-5   mb-6">
           <h2 className="text-lg font-medium text-ink">
             Profile Information
           </h2>
@@ -153,7 +153,7 @@ export default function ProfileInfoClient({
 
       {/* Account Status */}
       <div>
-        <div className="pb-5 border-b border-hairline mb-6">
+        <div className="pb-5   mb-6">
           <h2 className="text-lg font-medium text-ink">Account</h2>
         </div>
         <div className="flex items-center justify-between py-3">

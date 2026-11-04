@@ -100,9 +100,9 @@ export default function CreateCategoryForm({
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-card border border-hairline max-w-lg w-full">
+      <div className="bg-card shadow-overlay max-w-lg w-full">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-hairline">
+        <div className="flex items-center justify-between p-6  ">
           <h3 className="text-xl font-bold text-ink">Create Category</h3>
           <Button variant="ghost" size="icon-sm" onClick={onClose}>
             <X className="h-5 w-5" />

@@ -27,7 +27,7 @@ function DeleteConfirmModal({
 }) {
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-card border border-hairline max-w-md w-full p-6">
+      <div className="bg-card shadow-overlay max-w-md w-full p-6">
         <h3 className="text-xl font-bold text-ink mb-2">Delete Category</h3>
         <p className="text-mute mb-6">
           Are you sure you want to delete "<strong>{category.name}</strong>"?
@@ -103,7 +103,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
           </Button>
         </div>
       ) : (
-      <div className="border-y border-hairline divide-y divide-hairline">
+      <div className="   ">
         {topLevelCategories.map((category) => (
           <div key={category.id} className="bg-background">
             {/* Parent Category */}
@@ -154,8 +154,8 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
 
             {/* Subcategories */}
             {category.children && category.children.length > 0 && (
-              <div className="border-t border-hairline bg-soft-cloud">
-                <div className="divide-y divide-hairline">
+              <div className="  bg-soft-cloud">
+                <div className=" ">
                   {category.children.map((subcat) => (
                     <div
                       key={subcat.id}

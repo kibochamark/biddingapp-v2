@@ -81,6 +81,10 @@
   --hairline: oklch(0.82 0 0);     /* #cacacb */
   --hairline-soft: oklch(0.91 0 0);/* #e5e5e5 */
 
+  /* Real shadows (offset + blur) — the card/overlay depth cue, not a line. */
+  --shadow-surface: 0 1px 2px oklch(0 0 0 / 4%), 0 8px 24px oklch(0 0 0 / 6%);
+  --shadow-overlay: 0 4px 6px oklch(0 0 0 / 5%), 0 16px 40px oklch(0 0 0 / 12%);
+
   /* Orange brand accent — kept as-is, takes over the "signal color" role that
      Nike's system reserves for pure black (primary CTA, active chip, focus ring). */
   --primary: oklch(0.65 0.19 45);
@@ -132,6 +136,10 @@
   --soft-cloud: oklch(0.22 0 0);
   --hairline: oklch(1 0 0 / 12%);
   --hairline-soft: oklch(1 0 0 / 8%);
+
+  /* Dark surfaces need a darker, more opaque shadow to still read. */
+  --shadow-surface: 0 1px 2px oklch(0 0 0 / 20%), 0 8px 24px oklch(0 0 0 / 30%);
+  --shadow-overlay: 0 4px 6px oklch(0 0 0 / 25%), 0 16px 40px oklch(0 0 0 / 45%);
 
   --primary: oklch(0.68 0.19 45);
   --primary-foreground: oklch(0.13 0 0);
@@ -185,11 +193,13 @@
   scrollbar-width: none;
 }
 
-/* Flat chrome — replaces the old blurred-glass treatment. Nike's system has no
-   drop shadow or translucency; the only depth cue is a 1px inset hairline. */
+/* Flat chrome — replaces the old blurred-glass treatment, and now also
+   replaces the old 1px border-as-depth-cue: Nike's own commerce surfaces
+   almost never show a visible rule around a card. A static page card reads
+   from a soft, real shadow (genuine offset + blur) instead of a border line. */
 .glass-card {
   background: var(--background);
-  border: 1px solid var(--border);
+  box-shadow: var(--shadow-surface);
 }
 
 .glass-navbar {
@@ -197,16 +207,33 @@
   box-shadow: inset 0 -1px 0 var(--hairline-soft);
 }
 
-/* Level 2 — the only "shadow" the system uses: an inset line for sticky/
-   elevated chrome (sticky bars, tab strips) where content scrolls under the
-   edge. Never use these for a static content divider — that's a plain
-   border-hairline (Level 1) instead. */
+/* Level 1 — static page card, sitting flush in the flow (profile sections,
+   bid-group cards, form groupings). Barely-there: offset + blur, no border. */
+.shadow-surface {
+  box-shadow: var(--shadow-surface);
+}
+
+/* Level 2 — genuinely floating chrome (dialogs, dropdowns, popovers, menus,
+   the mobile nav sheet) that sits above other content. A heavier, but still
+   soft, lift — never a hard/zero-blur block shadow. */
+.shadow-overlay {
+  box-shadow: var(--shadow-overlay);
+}
+
+/* Level 3 — the system's other shadow case: an inset line for sticky/
+   elevated chrome (sticky bars, tab strips, a fixed sidebar's vertical seam)
+   where content scrolls or sits under the edge. Never use these for a
+   static content divider. */
 .sticky-edge-b {
   box-shadow: inset 0 -1px 0 var(--hairline-soft);
 }
 
 .sticky-edge-t {
   box-shadow: inset 0 1px 0 var(--hairline-soft);
+}
+
+.sticky-edge-r {
+  box-shadow: inset -1px 0 0 var(--hairline-soft);
 }
 
 /* Editorial display tier — campaign headlines only, never section titles. */

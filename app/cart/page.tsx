@@ -40,7 +40,7 @@ export default function CartPage() {
         // Cart with Items
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items — one continuous list, single divider between rows */}
-          <div className="lg:col-span-2 border-y border-hairline divide-y divide-hairline">
+          <div className="lg:col-span-2    ">
             {cartItems.map((item) => (
               <div
                 key={item.id}
@@ -116,7 +116,7 @@ export default function CartPage() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-hairline mb-6">
+              <div className="pt-4   mb-6">
                 <div className="flex justify-between">
                   <span className="font-medium text-lg text-ink">Total</span>
                   <span className="font-semibold text-2xl text-ink">{formatPrice(total)}</span>

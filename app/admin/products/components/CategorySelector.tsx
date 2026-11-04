@@ -161,7 +161,7 @@ export default function CategorySelector({ value, onChange, error }: CategorySel
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute z-20 w-full mt-2 bg-card border border-hairline max-h-80 overflow-y-auto">
+          <div className="absolute z-20 w-full mt-2 bg-card shadow-overlay max-h-80 overflow-y-auto">
             {getParentCategories().length === 0 ? (
               <div className="px-4 py-8 text-center text-sm text-mute">
                 No categories available

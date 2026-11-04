@@ -16,7 +16,7 @@ export default async function CategoriesPage() {
             Organize products into categories and subcategories
           </p>
         </div>
-        <div className="flex items-center gap-2 p-3 bg-soft-cloud border border-hairline">
+        <div className="flex items-center gap-2 p-3 bg-soft-cloud">
           <FolderTree className="h-5 w-5 text-ink" />
           <div>
             <p className="text-xs text-mute">Hierarchy Enabled</p>

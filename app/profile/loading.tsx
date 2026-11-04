@@ -3,7 +3,7 @@ export default function Loading() {
     <div className="space-y-10">
       {/* Profile Information Skeleton */}
       <div>
-        <div className="pb-5 border-b border-hairline mb-6">
+        <div className="pb-5   mb-6">
           <div className="h-6 w-44 bg-soft-cloud rounded-full animate-pulse" />
           <div className="h-4 w-72 bg-soft-cloud rounded-full mt-2 animate-pulse" />
         </div>
@@ -22,7 +22,7 @@ export default function Loading() {
 
       {/* Account Status Skeleton */}
       <div>
-        <div className="pb-5 border-b border-hairline mb-6">
+        <div className="pb-5   mb-6">
           <div className="h-6 w-24 bg-soft-cloud rounded-full animate-pulse" />
         </div>
         <div className="flex items-center justify-between py-3">

@@ -18,6 +18,12 @@ interface CreatePaymentIntentParams {
   bidderName: string;
   bidderEmail: string;
   auctionId:string;
+  // Generated once per form-submission attempt on the client (see
+  // bid-payment-modal.tsx) and reused for every retry of that same attempt.
+  // Without this, a double-click or a retried request creates a second,
+  // fully separate PaymentIntent — Stripe has no way to know it's the same
+  // logical request — which is how a single bid ends up charged twice.
+  idempotencyKey: string;
 }
 
 interface PaymentIntentResult {
@@ -58,6 +64,8 @@ export async function createPaymentIntent(
       },
       receipt_email: params.bidderEmail,
       description: `Bid entry for ${params.productTitle} - ${numberOfBids} entries @ ${params.biddingFee.toFixed(2)} USD each`,
+    }, {
+      idempotencyKey: params.idempotencyKey,
     });
 
     return { clientSecret: paymentIntent.client_secret! };

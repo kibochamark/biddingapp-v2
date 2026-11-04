@@ -112,8 +112,8 @@ export default function AddressesSection({
 
       {/* Address Form */}
       {showForm && (
-        <div className="border border-hairline overflow-hidden">
-          <div className="px-6 py-5 border-b border-hairline">
+        <div className="shadow-surface overflow-hidden">
+          <div className="px-6 py-5  ">
             <h3 className="text-lg font-medium text-ink">
               {editingAddress ? "Edit Address" : "New Address"}
             </h3>
@@ -155,7 +155,7 @@ export default function AddressesSection({
                 }`}
               >
                 {/* Card Header */}
-                <div className="flex items-center justify-between px-5 py-3 border-b border-hairline">
+                <div className="flex items-center justify-between px-5 py-3  ">
                   <div className="flex items-center gap-2">
                     {address.isPrimary && (
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">

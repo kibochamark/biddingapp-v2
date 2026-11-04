@@ -17,6 +17,10 @@ interface CreateBidCheckoutParams {
   bidderId: string;
   bidderName: string;
   bidderEmail: string;
+  // Generated once per form-submission attempt on the client and reused for
+  // every retry of that same attempt, so a double-click or retried request
+  // returns the same Checkout Session instead of creating a second one.
+  idempotencyKey: string;
 }
 
 export async function createBidCheckoutAction(params: CreateBidCheckoutParams) {
@@ -28,6 +32,7 @@ export async function createBidCheckoutAction(params: CreateBidCheckoutParams) {
     bidderId,
     bidderName,
     bidderEmail,
+    idempotencyKey,
   } = params;
 
   const numberOfBids = bidAmounts.length;
@@ -79,9 +84,11 @@ export async function createBidCheckoutAction(params: CreateBidCheckoutParams) {
       customer_email: bidderEmail,
       // Optional: Add customer creation
       // customer: customerId, // If you have existing Stripe customers
+    }, {
+      idempotencyKey,
     });
 
-    console.log("Stripe session created:", session.id);
+    // console.log("Stripe session created:", session.id);
 
     // Redirect to Stripe Checkout
     if (session.url) {

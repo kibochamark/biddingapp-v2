@@ -11,7 +11,7 @@ export default function ListingsPage() {
           Create Listing
         </Button>
       </div>
-      <div className="border border-hairline p-8 text-center">
+      <div className="shadow-surface p-8 text-center">
         <Package className="h-16 w-16 mx-auto mb-4 text-mute" />
         <p className="text-mute">
           You haven't created any listings yet

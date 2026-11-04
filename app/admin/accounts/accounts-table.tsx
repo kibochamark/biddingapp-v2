@@ -100,7 +100,7 @@ function TerminateAccountModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-background border border-hairline max-w-lg w-full p-6">
+      <div className="bg-background shadow-overlay max-w-lg w-full p-6">
         <h3 className="text-xl font-semibold text-ink mb-2">Terminate Account</h3>
         <p className="text-sm text-mute mb-4">
           You are about to {permanent ? "permanently terminate" : "suspend"} the account for{" "}
@@ -256,7 +256,7 @@ export default function AccountsTable() {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-hairline">
+            <tbody className=" ">
               {filteredAccounts.map((account) => (
                 <tr key={account.id} className="hover:bg-soft-cloud/60 transition-colors">
                   <td className="px-6 py-4">

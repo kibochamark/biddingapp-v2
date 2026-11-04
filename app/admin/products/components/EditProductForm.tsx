@@ -294,7 +294,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
               </div>
 
               {/* Submit Button */}
-              <div className="flex justify-end gap-3 pt-4 border-t border-hairline">
+              <div className="flex justify-end gap-3 pt-4  ">
                 <Button
                   type="button"
                   variant="outline"
@@ -322,7 +322,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
       </div>
 
       {/* Image Management */}
-      <div className="pt-6 border-t border-hairline">
+      <div className="pt-6  ">
         <h2 className="text-xl font-bold mb-6 text-ink">Product Images</h2>
         <ProductImageUpload
           productId={product.id}

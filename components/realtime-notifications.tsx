@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { toast } from "sonner";
+import { revalidateBidsAction } from "@/lib/actions/revalidateBidAction";
+import { BID_TAGS } from "@/lib/api/bids";
 
 interface RealtimeEvent {
   type: "payment_success" | "payment_failed" | "connected" | "error";
@@ -13,7 +15,7 @@ interface RealtimeEvent {
 }
 
 export default function RealtimeNotifications() {
-  const { isAuthenticated, isLoading } = useKindeBrowserClient();
+  const { isAuthenticated, isLoading, user } = useKindeBrowserClient();
   const router = useRouter();
   const pathname = usePathname();
   const pathnameRef = useRef(pathname);
@@ -46,6 +48,22 @@ export default function RealtimeNotifications() {
             return;
           }
 
+          if (data.type === "payment_success" || data.type === "payment_failed") {
+            // A payment message landed — invalidate the bid-history cache
+            // right away rather than waiting out fetchUserBids' own
+            // revalidate window (lib/api/bids.ts tags this BID_TAGS.user(id),
+            // cached 60s via apiFetch). Both the route's own cache and the
+            // underlying fetch's Data Cache entry need clearing.
+            if (user?.id) {
+              revalidateBidsAction({
+                path: "/profile/bids",
+                tag: BID_TAGS.user(user.id),
+              }).catch((err) => {
+                console.error("Failed to revalidate bids after payment event:", err);
+              });
+            }
+          }
+
           if (data.type === "payment_success") {
             toast.success("Payment successful!", {
               duration: 5000,
@@ -58,6 +76,10 @@ export default function RealtimeNotifications() {
             if (data.productId && pathnameRef.current === `/product/${data.productId}`) {
               router.refresh();
             }
+            // Refresh in place if they're already looking at their bid history.
+            if (pathnameRef.current === "/profile/bids") {
+              router.refresh();
+            }
           }
 
           if (data.type === "payment_failed") {
@@ -67,6 +89,9 @@ export default function RealtimeNotifications() {
                 data.message ||
                 "Your payment could not be processed. Please try again.",
             });
+            if (pathnameRef.current === "/profile/bids") {
+              router.refresh();
+            }
           }
         } catch {
           // Ignore malformed messages

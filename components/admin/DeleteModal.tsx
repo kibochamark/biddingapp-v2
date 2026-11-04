@@ -65,7 +65,7 @@ export default function DeleteModal({
       {/* Modal */}
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-card border border-hairline max-w-md w-full p-6">
+          <div className="bg-card shadow-overlay max-w-md w-full p-6">
             {/* Icon and Title */}
             <div className="flex items-center gap-4 mb-4">
               <div className="flex-shrink-0 w-12 h-12 bg-sale/10 rounded-full flex items-center justify-center">

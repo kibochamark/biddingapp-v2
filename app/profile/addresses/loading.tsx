@@ -15,10 +15,10 @@ export default function Loading() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="border border-hairline overflow-hidden"
+            className="shadow-surface overflow-hidden"
           >
             {/* Card Header */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-hairline">
+            <div className="flex items-center justify-between px-5 py-3  ">
               <div className="flex items-center gap-2">
                 <div className="h-5 w-16 bg-soft-cloud rounded-full animate-pulse" />
                 <div className="h-5 w-12 bg-soft-cloud rounded-full animate-pulse" />

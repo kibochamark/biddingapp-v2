@@ -63,7 +63,7 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
 
       <SheetContent side="right" className="w-72 sm:w-80 p-0 flex flex-col">
         {/* Header */}
-        <SheetHeader className="px-5 py-4 border-b border-hairline shrink-0">
+        <SheetHeader className="px-5 py-4   shrink-0">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 bg-primary flex items-center justify-center">
               <Package className="h-4 w-4 text-primary-foreground" />
@@ -111,7 +111,7 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
           </div>
 
           {/* Account */}
-          <div className="border-t border-hairline pt-5">
+          <div className="  pt-5">
             {isAuthenticated ? (
               <>
                 <p className="px-1 pb-2 text-[11px] font-medium text-mute uppercase tracking-wider">
@@ -187,7 +187,7 @@ export function MobileMenu({ isAuthenticated, user }: MobileMenuProps) {
 
         {/* Sign Out pinned to bottom via SheetFooter */}
         {isAuthenticated && (
-          <SheetFooter className="border-t border-hairline p-4">
+          <SheetFooter className="  p-4">
             <LogoutLink className="flex items-center justify-center gap-2 w-full h-12 px-4 bg-soft-cloud text-sale rounded-full hover:bg-hairline-soft active:scale-95 text-sm font-medium transition-[transform,background-color]">
               <LogOut className="h-4 w-4" />
               <span>Sign Out</span>

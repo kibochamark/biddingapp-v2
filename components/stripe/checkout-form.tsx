@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   PaymentElement,
   useStripe,
@@ -27,14 +27,19 @@ export default function CheckoutForm({
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  // Synchronous re-entry lock — isProcessing (state) has a small window
+  // between click and re-render where a second click/Enter could still
+  // call confirmPayment again before the button visually disables.
+  const isSubmittingRef = useRef(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!stripe || !elements) {
+    if (!stripe || !elements || isSubmittingRef.current) {
       return;
     }
 
+    isSubmittingRef.current = true;
     setIsProcessing(true);
     setErrorMessage(null);
 
@@ -43,6 +48,14 @@ export default function CheckoutForm({
       confirmParams: {
         return_url: `${window.location.origin}/product/${productId}?payment=success`,
       },
+      // Only redirect the browser when the chosen payment method actually
+      // requires it (e.g. certain bank/wallet methods). A plain card payment
+      // that completes with no further action should resolve right here
+      // instead of always bouncing through a full-page redirect — without
+      // this, onSuccess below never runs for the common case, and the only
+      // confirmation the user gets is whatever the return_url page happens
+      // to show, which skews later attempts toward resubmitting.
+      redirect: "if_required",
     });
 
     if (error) {
@@ -51,9 +64,12 @@ export default function CheckoutForm({
       setErrorMessage(error.message || "An unexpected error occurred.");
       onError?.(error.message || "Payment failed");
       setIsProcessing(false);
+      isSubmittingRef.current = false;
     } else {
-      // Payment succeeded - the customer will be redirected to return_url
+      // Payment succeeded without needing a redirect.
       onSuccess?.();
+      setIsProcessing(false);
+      isSubmittingRef.current = false;
     }
   };
 
@@ -78,7 +94,7 @@ export default function CheckoutForm({
       )}
 
       {/* Total Amount Display */}
-      <div className="flex justify-between items-center py-4 border-y border-hairline">
+      <div className="flex justify-between items-center py-4 ">
         <span className="font-medium text-ink">Total to Pay</span>
         <span className="text-2xl font-semibold text-ink">
           {formatPrice(totalAmount)}

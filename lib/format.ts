@@ -61,6 +61,25 @@ export function formatDate(date: Date): string {
   }).format(date);
 }
 
+export function formatRelativeTime(date: Date | string): string {
+  const parsedDate = typeof date === "string" ? new Date(date) : date;
+  const diff = Date.now() - parsedDate.getTime();
+
+  if (isNaN(diff)) return "";
+  if (diff < 60_000) return "Just now";
+
+  const minutes = Math.floor(diff / 60_000);
+  if (minutes < 60) return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days} day${days === 1 ? "" : "s"} ago`;
+
+  return formatDate(parsedDate);
+}
+
 export function formatDateTime(date: Date | string): string {
   const parsedDate = typeof date === "string" ? new Date(date) : date;
 

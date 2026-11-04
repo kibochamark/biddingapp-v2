@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -62,7 +62,7 @@ const validationSchema = Yup.object({
         if (!arr) return true;
         const values = arr.filter((v): v is string => !!v);
         return new Set(values).size === values.length;
-      }
+      },
     )
     .required(),
   acceptTerms: Yup.boolean()
@@ -90,6 +90,11 @@ export default function BidPlacementForm({
 }: BidPlacementFormProps) {
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
+  // One idempotency key per submission attempt, reused across retries of
+  // that same attempt so a double-click or retried request returns the same
+  // Checkout Session instead of creating — and charging — a second one.
+  const idempotencyKeyRef = useRef<string | null>(null);
+  const isSubmittingRef = useRef(false);
 
   const initialValues: BidFormValues = {
     bidAmounts: [""],
@@ -108,6 +113,16 @@ export default function BidPlacementForm({
       return;
     }
 
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+
+    if (!idempotencyKeyRef.current) {
+      idempotencyKeyRef.current =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : `bid-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
+
     setIsProcessing(true);
     try {
       // Call server action to create Stripe checkout session
@@ -119,13 +134,17 @@ export default function BidPlacementForm({
         bidderId: user.id,
         bidderName: user.name,
         bidderEmail: user.email,
+        idempotencyKey: idempotencyKeyRef.current,
       });
 
       // Redirect happens in the server action
     } catch (error: any) {
       console.error("Checkout error:", error);
-      toast.error(error.message || "Failed to process payment. Please try again.");
+      toast.error(
+        error.message || "Failed to process payment. Please try again.",
+      );
       setIsProcessing(false);
+      isSubmittingRef.current = false;
     }
   };
 
@@ -150,7 +169,10 @@ export default function BidPlacementForm({
                   onClick={() =>
                     setFieldValue(
                       "bidAmounts",
-                      resizeBidAmounts(values.bidAmounts, Math.max(1, entryCount - 1))
+                      resizeBidAmounts(
+                        values.bidAmounts,
+                        Math.max(1, entryCount - 1),
+                      ),
                     )
                   }
                   disabled={entryCount <= 1 || isProcessing}
@@ -166,7 +188,10 @@ export default function BidPlacementForm({
                   onClick={() =>
                     setFieldValue(
                       "bidAmounts",
-                      resizeBidAmounts(values.bidAmounts, Math.min(100, entryCount + 1))
+                      resizeBidAmounts(
+                        values.bidAmounts,
+                        Math.min(100, entryCount + 1),
+                      ),
                     )
                   }
                   disabled={entryCount >= 100 || isProcessing}
@@ -187,14 +212,17 @@ export default function BidPlacementForm({
                   key={count}
                   type="button"
                   onClick={() =>
-                    setFieldValue("bidAmounts", resizeBidAmounts(values.bidAmounts, count))
+                    setFieldValue(
+                      "bidAmounts",
+                      resizeBidAmounts(values.bidAmounts, count),
+                    )
                   }
                   disabled={isProcessing}
                   className={cn(
                     "h-10 px-3 rounded-full border text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
                     entryCount === count
                       ? "border-ink bg-ink text-background"
-                      : "border-hairline text-ink hover:bg-soft-cloud"
+                      : "border-hairline text-ink hover:bg-soft-cloud",
                   )}
                 >
                   {count} {count === 1 ? "Entry" : "Entries"}
@@ -205,7 +233,8 @@ export default function BidPlacementForm({
             {/* Per-entry bid amounts */}
             <div className="space-y-3">
               <Label>
-                Your Bid Amount{entryCount > 1 ? "s" : ""} <span className="text-sale">*</span>
+                Your Bid Amount{entryCount > 1 ? "s" : ""}{" "}
+                <span className="text-sale">*</span>
               </Label>
               {values.bidAmounts.map((_, index) => (
                 <div key={index}>
@@ -233,7 +262,7 @@ export default function BidPlacementForm({
                         onClick={() =>
                           setFieldValue(
                             "bidAmounts",
-                            values.bidAmounts.filter((_, i) => i !== index)
+                            values.bidAmounts.filter((_, i) => i !== index),
                           )
                         }
                         disabled={isProcessing}
@@ -267,7 +296,7 @@ export default function BidPlacementForm({
             </div>
 
             {/* Cost Summary */}
-            <div className="py-4 border-y border-hairline space-y-2">
+            <div className="py-4 space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-mute">
                   Entry Fee ({entryCount}x)
@@ -283,16 +312,14 @@ export default function BidPlacementForm({
                 </span>
               </div>
               <p className="text-xs text-mute">
-                If one of your entries is the lowest unique bid, you&apos;ll pay that entry&apos;s
-                bid amount to win the item.
+                If one of your entries is the lowest unique bid, you&apos;ll pay
+                that entry&apos;s bid amount to win the item.
               </p>
             </div>
 
             {/* Payment Method */}
             <div>
-              <Label className="mb-3">
-                Payment Method
-              </Label>
+              <Label className="mb-3">Payment Method</Label>
               <div className="space-y-3">
                 <label
                   htmlFor="paymentMethod-stripe"
@@ -301,7 +328,7 @@ export default function BidPlacementForm({
                     values.paymentMethod === "stripe"
                       ? "border-ink bg-soft-cloud"
                       : "border-hairline hover:bg-soft-cloud",
-                    isProcessing && "opacity-50 cursor-not-allowed"
+                    isProcessing && "opacity-50 cursor-not-allowed",
                   )}
                 >
                   <div className="flex items-center gap-4">
@@ -330,7 +357,7 @@ export default function BidPlacementForm({
                   className={cn(
                     "flex items-center justify-between gap-4 p-4 border cursor-pointer transition-colors opacity-60",
                     "border-hairline hover:bg-soft-cloud",
-                    isProcessing && "opacity-50 cursor-not-allowed"
+                    isProcessing && "opacity-50 cursor-not-allowed",
                   )}
                 >
                   <div className="flex items-center gap-4">
@@ -338,9 +365,7 @@ export default function BidPlacementForm({
                     <div>
                       <p className="font-medium text-sm text-ink">
                         PayPal{" "}
-                        <span className="text-xs text-mute">
-                          (Coming Soon)
-                        </span>
+                        <span className="text-xs text-mute">(Coming Soon)</span>
                       </p>
                       <p className="text-xs text-mute">
                         PayPal Balance or Credit
@@ -377,7 +402,7 @@ export default function BidPlacementForm({
                 htmlFor="acceptTerms"
                 className={cn(
                   "flex items-start gap-3 cursor-pointer",
-                  isProcessing && "opacity-50 cursor-not-allowed"
+                  isProcessing && "opacity-50 cursor-not-allowed",
                 )}
               >
                 <Field
@@ -392,13 +417,20 @@ export default function BidPlacementForm({
                     I agree to the terms and conditions
                   </p>
                   <p className="text-mute mt-1">
-                    I understand that entry fees are non-refundable and that I am
-                    entering a paid-entry auction. I have read and agree to the{" "}
-                    <a href="/terms" className="text-ink underline underline-offset-4">
+                    I understand that entry fees are non-refundable and that I
+                    am entering a paid-entry auction. I have read and agree to
+                    the{" "}
+                    <a
+                      href="/terms"
+                      className="text-ink underline underline-offset-4"
+                    >
                       Terms of Service
                     </a>{" "}
                     and{" "}
-                    <a href="/privacy" className="text-ink underline underline-offset-4">
+                    <a
+                      href="/privacy"
+                      className="text-ink underline underline-offset-4"
+                    >
                       Privacy Policy
                     </a>
                     .

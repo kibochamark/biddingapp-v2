@@ -72,7 +72,7 @@ export default function BidPlacementClient({ product, user }: BidPlacementClient
           </div>
 
           {/* Time Remaining + Security — one flat block, single divider between them */}
-          <div className="pt-6 border-t border-hairline">
+          <div className="pt-6  ">
             <div className="flex items-center gap-2 mb-2">
               <Clock className="h-5 w-5 text-ink" />
               <span className="text-sm font-medium text-mute">
@@ -86,7 +86,7 @@ export default function BidPlacementClient({ product, user }: BidPlacementClient
               Ends {formatDateTime(new Date(product.endDate))}
             </p>
 
-            <div className="flex items-center gap-3 mt-6 pt-6 border-t border-hairline">
+            <div className="flex items-center gap-3 mt-6 pt-6  ">
               <ShieldCheck className="h-5 w-5 text-success shrink-0" />
               <div>
                 <p className="font-medium text-sm text-ink">Secure Payment</p>
@@ -110,7 +110,7 @@ export default function BidPlacementClient({ product, user }: BidPlacementClient
         </div>
 
         {/* How It Works */}
-        <div className="pb-6 border-b border-hairline space-y-4">
+        <div className="pb-6   space-y-4">
           <div className="flex items-center gap-2 mb-4">
             <Info className="h-5 w-5 text-ink" />
             <h3 className="font-medium text-lg text-ink">How It Works</h3>
@@ -164,7 +164,7 @@ export default function BidPlacementClient({ product, user }: BidPlacementClient
         </div>
 
         {/* Tips Section */}
-        <div className="pb-6 border-b border-hairline">
+        <div className="pb-6  ">
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp className="h-5 w-5 text-ink" />
             <h3 className="font-medium text-lg text-ink">Bidding Tips</h3>
@@ -208,7 +208,7 @@ export default function BidPlacementClient({ product, user }: BidPlacementClient
         </div>
 
         {/* Bid Form */}
-        <div className="pt-6 border-t border-hairline">
+        <div className="pt-6  ">
           <div className="flex items-center gap-2 mb-6">
             <Gavel className="h-6 w-6 text-ink" />
             <h3 className="font-medium text-xl text-ink">Confirm Your Entry</h3>

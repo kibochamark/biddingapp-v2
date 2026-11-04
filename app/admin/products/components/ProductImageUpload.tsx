@@ -149,7 +149,7 @@ export default function ProductImageUpload({
             {images.map((imageUrl, index) => (
               <div
                 key={index}
-                className="relative group aspect-square overflow-hidden border border-hairline bg-soft-cloud"
+                className="relative group aspect-square overflow-hidden bg-soft-cloud"
               >
                 <Image
                   src={imageUrl}
@@ -197,7 +197,7 @@ export default function ProductImageUpload({
       )}
 
       {/* Action Buttons */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-hairline">
+      <div className="flex justify-end gap-3 pt-4  ">
         <Button
           type="button"
           variant="outline"

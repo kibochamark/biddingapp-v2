@@ -55,7 +55,7 @@ function TerminateAuctionModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-card border border-hairline max-w-lg w-full p-6">
+      <div className="bg-card shadow-overlay max-w-lg w-full p-6">
         <h3 className="text-xl font-bold text-ink mb-2">Terminate Auction</h3>
         <p className="text-mute mb-6 text-sm">
           This ends the auction immediately. No further bids can be placed, and no winner will be
@@ -126,7 +126,7 @@ function ExtendAuctionModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-card border border-hairline max-w-lg w-full p-6">
+      <div className="bg-card shadow-overlay max-w-lg w-full p-6">
         <h3 className="text-xl font-bold text-ink mb-2">Extend Auction</h3>
         <p className="text-mute mb-6 text-sm">
           Choose a new end date. Bidders will see the updated countdown immediately.
@@ -276,7 +276,7 @@ export default function AuctionDetailClient({
       </div>
 
       {/* Auction stats — flat strip, single divider above and below */}
-      <div className="flex flex-wrap items-center gap-x-10 gap-y-4 py-5 border-y border-hairline">
+      <div className="flex flex-wrap items-center gap-x-10 gap-y-4 py-5  ">
         <div>
           <p className="text-xs text-mute uppercase tracking-wider mb-1">Start Date</p>
           <p className="text-sm font-medium text-ink">{formatDateTime(auction.startDate)}</p>
@@ -322,7 +322,7 @@ export default function AuctionDetailClient({
             <p className="text-mute">No bids have been placed on this auction yet.</p>
           </div>
         ) : (
-          <div className="border-y border-hairline divide-y divide-hairline">
+          <div className="   ">
             {biddersWithLeader.map((bidder) => (
               <div
                 key={bidder.id}

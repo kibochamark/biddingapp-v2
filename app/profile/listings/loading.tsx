@@ -15,7 +15,7 @@ export default function Loading() {
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div
             key={i}
-            className="border border-hairline overflow-hidden"
+            className="shadow-surface overflow-hidden"
           >
             {/* Image Placeholder */}
             <div className="aspect-4/3 bg-soft-cloud animate-pulse" />

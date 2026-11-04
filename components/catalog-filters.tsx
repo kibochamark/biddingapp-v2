@@ -112,7 +112,7 @@ export default function CatalogFilters({
           </button>
 
           {/* Sort By */}
-          <div className="space-y-3 pb-6 border-b border-hairline lg:border-b-0 lg:pb-0">
+          <div className="space-y-3 pb-6   lg:border-b-0 lg:pb-0">
             <h3 className="font-medium text-ink">Sort By</h3>
             <Select value={sortBy} onValueChange={onSortChange}>
               <SelectTrigger className="w-full bg-soft-cloud">
@@ -128,7 +128,7 @@ export default function CatalogFilters({
           </div>
 
           {/* Categories — filter-chip / filter-chip-active */}
-          <div className="space-y-3 py-6 border-b border-hairline lg:border-b-0 lg:py-0">
+          <div className="space-y-3 py-6   lg:border-b-0 lg:py-0">
             <h3 className="font-medium text-ink">Category</h3>
             <div className="flex flex-wrap gap-2">
               <button
@@ -160,7 +160,7 @@ export default function CatalogFilters({
           </div>
 
           {/* Condition */}
-          <div className="space-y-3 py-6 border-b border-hairline lg:border-b-0 lg:py-0">
+          <div className="space-y-3 py-6   lg:border-b-0 lg:py-0">
             <h3 className="font-medium text-ink">Condition</h3>
             <div className="space-y-2.5">
               {conditions.map((condition) => (

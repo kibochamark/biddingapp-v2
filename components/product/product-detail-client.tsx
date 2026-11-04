@@ -122,12 +122,12 @@ export default function ProductDetailClient({
                 <div>
                   {product.specifications &&
                   Object.keys(product.specifications).length > 0 ? (
-                    <div className="border-t border-hairline">
+                    <div className=" ">
                       {Object.entries(product.specifications).map(
                         ([key, value]) => (
                           <div
                             key={key}
-                            className="flex items-center justify-between py-3.5 text-sm border-b border-hairline"
+                            className="flex items-center justify-between py-3.5 text-sm  "
                           >
                             <span className="text-mute font-medium capitalize">
                               {key
@@ -152,7 +152,7 @@ export default function ProductDetailClient({
               {/* Shipping */}
               {activeTab === "shipping" && (
                 <div className="space-y-8">
-                  <div className="border-t border-hairline">
+                  <div className=" ">
                     {[
                       {
                         icon: Truck,
@@ -172,7 +172,7 @@ export default function ProductDetailClient({
                     ].map((item) => (
                       <div
                         key={item.title}
-                        className="flex items-start gap-3 py-4 border-b border-hairline"
+                        className="flex items-start gap-3 py-4  "
                       >
                         <item.icon className="h-5 w-5 text-ink shrink-0 mt-0.5" />
                         <div>
@@ -211,7 +211,7 @@ export default function ProductDetailClient({
         <div className="lg:col-span-1">
           <div className="sticky top-20 space-y-6">
             {/* Product Info */}
-            <div className="space-y-4 pb-6 border-b border-hairline">
+            <div className="space-y-4 pb-6  ">
               {/* Badges */}
               <div className="flex flex-wrap items-center gap-2">
                 <Badge>{formatCondition(product.condition)}</Badge>
@@ -256,7 +256,7 @@ export default function ProductDetailClient({
 
             {/* Time Remaining */}
             {!auctionEnded && !bidended && (
-              <div className="pb-6 border-b border-hairline">
+              <div className="pb-6  ">
                 <div className="flex items-center gap-2 mb-2">
                   <Clock className="h-4 w-4 text-ink" />
                   <span className="text-xs font-medium text-mute uppercase tracking-wider">
@@ -273,8 +273,8 @@ export default function ProductDetailClient({
             )}
 
             {/* Auction Stats */}
-            <div className="border-t border-hairline">
-              <div className="flex items-center justify-between py-3.5 border-b border-hairline">
+            <div className=" ">
+              <div className="flex items-center justify-between py-3.5  ">
                 <span className="text-sm text-mute flex items-center gap-2">
                   <Users className="h-4 w-4" />
                   Total Entries
@@ -285,7 +285,7 @@ export default function ProductDetailClient({
                     : 0}
                 </span>
               </div>
-              <div className="flex items-center justify-between py-3.5 border-b border-hairline">
+              <div className="flex items-center justify-between py-3.5  ">
                 <span className="text-sm text-mute flex items-center gap-2">
                   <TrendingUp className="h-4 w-4" />
                   Original Price

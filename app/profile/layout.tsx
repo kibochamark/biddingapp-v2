@@ -34,7 +34,7 @@ export default async function ProfileLayout({
   return (
     <div className="bg-background">
       {/* Profile Header */}
-      <div className="border-b border-hairline bg-background">
+      <div className="  bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
           <div className="flex items-center gap-5 sm:gap-6">
             <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-primary flex items-center justify-center shrink-0">

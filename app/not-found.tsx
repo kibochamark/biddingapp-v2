@@ -43,7 +43,7 @@ export default function NotFound() {
         </div>
 
         {/* Helpful Links */}
-        <div className="mt-12 pt-8 border-t border-hairline">
+        <div className="mt-12 pt-8  ">
           <p className="text-sm text-mute mb-4">
             Here are some helpful links instead:
           </p>

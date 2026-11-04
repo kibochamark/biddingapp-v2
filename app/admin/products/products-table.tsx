@@ -21,7 +21,7 @@ function DeleteConfirmModal({
 }) {
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-card border border-hairline max-w-md w-full p-6">
+      <div className="bg-card shadow-overlay max-w-md w-full p-6">
         <h3 className="text-xl font-bold text-ink mb-2">Delete Product</h3>
         <p className="text-mute mb-6">
           Are you sure you want to delete "<strong>{productTitle}</strong>"? This action cannot be

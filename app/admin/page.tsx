@@ -1,6 +1,17 @@
 import { Suspense } from "react";
-import { Package, Users, Gavel, ShieldCheck, TrendingUp, Clock } from "lucide-react";
+import {
+  Package,
+  Users,
+  Gavel,
+  ShieldCheck,
+  TrendingUp,
+  Clock,
+} from "lucide-react";
 import { Loader } from "lucide-react";
+import { getAllProducts } from "@/lib/api/products";
+import { fetchAccounts } from "./actions/accounts";
+import { fetchKYCStats } from "./actions/kyc";
+import { formatRelativeTime } from "@/lib/format";
 
 // Stats Card Component
 function StatsCard({
@@ -50,17 +61,44 @@ function DashboardLoading() {
   );
 }
 
-// Dashboard Stats Component (will fetch data)
+// Dashboard Stats Component — pulls real counts from the existing
+// product/account/KYC admin APIs instead of hardcoded numbers.
 async function DashboardStats() {
-  // TODO: Fetch real stats from API
-  // For now, using mock data
+  const [products, accountsResult, kycResult] = await Promise.all([
+    getAllProducts(),
+    fetchAccounts(),
+    fetchKYCStats(),
+  ]);
+
+  const totalProducts = products.length;
+  const activeProducts = products.filter((p) => p.status === "ACTIVE").length;
+
+  const allAuctions = products.flatMap((p) => p.auctions ?? []);
+  const totalBids = allAuctions.reduce(
+    (sum, a) => sum + (a.totalBidsCount ?? 0),
+    0,
+  );
+  const activeAuctions = allAuctions.filter(
+    (a) => a.status === "ACTIVE",
+  ).length;
+
+  // Both of these are permission-gated (manage:accounts / approve:kyc) — an
+  // admin role without that grant gets { success: false }, so we degrade to
+  // 0 rather than let a missing permission break the whole dashboard.
+  const accountsData = accountsResult.success ? accountsResult.data : null;
+  const totalUsers = Array.isArray(accountsData)
+    ? accountsData.length
+    : (accountsData?.total ?? accountsData?.accounts?.length ?? 0);
+
+  const pendingKYC = kycResult.success ? (kycResult.data?.pending ?? 0) : 0;
+
   const stats = {
-    totalProducts: 156,
-    activeProducts: 89,
-    totalUsers: 1243,
-    pendingKYC: 12,
-    totalBids: 5678,
-    todayBids: 234,
+    totalProducts,
+    activeProducts,
+    totalUsers,
+    pendingKYC,
+    totalBids,
+    activeAuctions,
   };
 
   return (
@@ -69,36 +107,26 @@ async function DashboardStats() {
         title="Total Products"
         value={stats.totalProducts}
         icon={Package}
-        trend="up"
-        trendValue="12%"
       />
       <StatsCard
         title="Active Products"
         value={stats.activeProducts}
         icon={TrendingUp}
-        trend="up"
-        trendValue="8%"
       />
       <StatsCard
         title="Total Users"
         value={stats.totalUsers.toLocaleString()}
         icon={Users}
-        trend="up"
-        trendValue="15%"
       />
       <StatsCard
         title="Total Bids"
         value={stats.totalBids.toLocaleString()}
         icon={Gavel}
-        trend="up"
-        trendValue="23%"
       />
       <StatsCard
-        title="Today's Bids"
-        value={stats.todayBids}
+        title="Active Auctions"
+        value={stats.activeAuctions}
         icon={Clock}
-        trend="up"
-        trendValue="5%"
       />
       <StatsCard
         title="Pending KYC"
@@ -109,48 +137,38 @@ async function DashboardStats() {
   );
 }
 
-// Recent Activity Component
-function RecentActivity() {
-  const activities = [
-    {
-      id: 1,
-      type: "product",
-      message: "New product added: iPhone 15 Pro",
-      time: "5 minutes ago",
-    },
-    {
-      id: 2,
-      type: "kyc",
-      message: "KYC approved for user John Doe",
-      time: "15 minutes ago",
-    },
-    {
-      id: 3,
-      type: "bid",
-      message: "New bid placed on MacBook Pro",
-      time: "23 minutes ago",
-    },
-    {
-      id: 4,
-      type: "user",
-      message: "New user registration: jane@example.com",
-      time: "1 hour ago",
-    },
-  ];
+// Recent Activity Component — derived from real product creation dates
+// (no unified activity-log endpoint exists yet, so this surfaces the
+// genuinely real signal we have: newest listings).
+async function RecentActivity() {
+  const products = await getAllProducts();
+  const recent = [...products]
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
+    .slice(0, 5);
 
   return (
     <div className="glass-card p-6">
       <h2 className="text-xl font-semibold text-ink mb-6">Recent Activity</h2>
       <div className="space-y-4">
-        {activities.map((activity) => (
+        {recent.length === 0 && (
+          <p className="text-sm text-mute">No recent activity</p>
+        )}
+        {recent.map((product) => (
           <div
-            key={activity.id}
-            className="flex items-start gap-3 pb-4 border-b border-hairline last:border-b-0 last:pb-0"
+            key={product.id}
+            className="flex items-start gap-3 pb-4 last:border-b-0 last:pb-0"
           >
             <div className="w-2 h-2 bg-stone rounded-full mt-2"></div>
             <div className="flex-1">
-              <p className="text-sm text-ink">{activity.message}</p>
-              <p className="text-xs text-mute mt-1">{activity.time}</p>
+              <p className="text-sm text-ink">
+                New product added: {product.title}
+              </p>
+              <p className="text-xs text-mute mt-1">
+                {formatRelativeTime(product.createdAt)}
+              </p>
             </div>
           </div>
         ))}
@@ -177,34 +195,36 @@ export default function page() {
 
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RecentActivity />
+        <Suspense fallback={<DashboardLoading />}>
+          <RecentActivity />
+        </Suspense>
         <div className="glass-card p-6">
           <h2 className="text-xl font-semibold text-ink mb-6">Quick Actions</h2>
           <div className="grid grid-cols-2 gap-4">
             <a
               href="/admin/products/new"
-              className="flex flex-col items-center justify-center gap-2 p-4 bg-soft-cloud hover:bg-hairline-soft rounded-lg transition-colors border border-hairline"
+              className="flex flex-col items-center justify-center gap-2 p-4 bg-soft-cloud hover:bg-hairline-soft rounded-lg transition-colors"
             >
               <Package className="h-8 w-8 text-ink" />
               <span className="text-sm font-medium text-ink">Add Product</span>
             </a>
             <a
               href="/admin/kyc"
-              className="flex flex-col items-center justify-center gap-2 p-4 bg-soft-cloud hover:bg-hairline-soft rounded-lg transition-colors border border-hairline"
+              className="flex flex-col items-center justify-center gap-2 p-4 bg-soft-cloud hover:bg-hairline-soft rounded-lg transition-colors"
             >
               <ShieldCheck className="h-8 w-8 text-ink" />
               <span className="text-sm font-medium text-ink">Review KYC</span>
             </a>
             <a
               href="/admin/accounts"
-              className="flex flex-col items-center justify-center gap-2 p-4 bg-soft-cloud hover:bg-hairline-soft rounded-lg transition-colors border border-hairline"
+              className="flex flex-col items-center justify-center gap-2 p-4 bg-soft-cloud hover:bg-hairline-soft rounded-lg transition-colors"
             >
               <Users className="h-8 w-8 text-ink" />
               <span className="text-sm font-medium text-ink">Manage Users</span>
             </a>
             <a
               href="/admin/bids"
-              className="flex flex-col items-center justify-center gap-2 p-4 bg-soft-cloud hover:bg-hairline-soft rounded-lg transition-colors border border-hairline"
+              className="flex flex-col items-center justify-center gap-2 p-4 bg-soft-cloud hover:bg-hairline-soft rounded-lg transition-colors"
             >
               <Gavel className="h-8 w-8 text-ink" />
               <span className="text-sm font-medium text-ink">View Bids</span>

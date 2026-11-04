@@ -21,9 +21,9 @@ const Sidebar = ({
   const navItems = getAdminNavItems(permissions).filter((item) => item.show);
 
   return (
-    <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:border-r lg:border-hairline lg:bg-background">
+    <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 sticky-edge-r lg:bg-background">
       {/* Logo/Header */}
-      <div className="flex items-center gap-3 h-16 px-6 border-b border-hairline shrink-0">
+      <div className="flex items-center gap-3 h-16 px-6   shrink-0">
         <div className="w-8 h-8 bg-primary flex items-center justify-center">
           <LayoutDashboard className="h-5 w-5 text-primary-foreground" />
         </div>
@@ -54,7 +54,7 @@ const Sidebar = ({
       </nav>
 
       {/* Identity + sign out */}
-      <div className="border-t border-hairline p-4 space-y-3 shrink-0">
+      <div className="  p-4 space-y-3 shrink-0">
         <div className="flex items-center gap-3 px-2">
           {user.picture ? (
             <img

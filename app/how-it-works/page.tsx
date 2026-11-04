@@ -12,7 +12,7 @@ export default function HowItWorksPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <div className="border-b border-hairline">
+      <div className=" ">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-6">
             <TrendingUp className="h-8 w-8 text-primary-foreground" />
@@ -32,7 +32,7 @@ export default function HowItWorksPage() {
         {/* The Concept */}
         <section className="mb-20">
           <h2 className="text-2xl sm:text-3xl font-medium text-ink uppercase mb-8 text-center">The Concept</h2>
-          <div className="bg-card border border-hairline p-8 max-w-3xl mx-auto">
+          <div className="bg-card shadow-surface p-8 max-w-3xl mx-auto">
             <p className="text-lg text-mute mb-6">
               Unlike traditional auctions where the highest bid wins, our <strong className="text-ink">Lowest Unique Bid</strong> system rewards strategy and smart thinking. The winner is the person who places the <strong className="text-primary">lowest bid amount that only one person chose</strong>.
             </p>
@@ -115,7 +115,7 @@ export default function HowItWorksPage() {
         <section className="mb-20">
           <h2 className="text-2xl sm:text-3xl font-medium text-ink uppercase mb-8 text-center">Real-World Example</h2>
           <div className="max-w-4xl mx-auto">
-            <div className="bg-card border border-hairline p-8">
+            <div className="bg-card shadow-surface p-8">
               <div className="flex items-center gap-3 mb-6">
                 <Gift className="h-6 w-6 text-primary" />
                 <h3 className="text-xl font-semibold text-ink">MacBook Pro 14&quot; Auction</h3>
@@ -234,7 +234,7 @@ export default function HowItWorksPage() {
         <section className="mb-20">
           <h2 className="text-2xl sm:text-3xl font-medium text-ink uppercase mb-8 text-center">Pro Bidding Tips</h2>
           <div className="max-w-3xl mx-auto">
-            <div className="divide-y divide-hairline border-t border-b border-hairline">
+            <div className=" ">
               <div className="p-6">
                 <h3 className="font-semibold text-ink mb-2 flex items-center gap-2">
                   <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm shrink-0">1</span>

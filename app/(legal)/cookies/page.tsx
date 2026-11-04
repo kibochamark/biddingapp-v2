@@ -52,7 +52,7 @@ export default function CookiePolicyPage() {
           <section>
             <h2 className="text-xl font-semibold text-ink mb-4">Types of Cookies We Use</h2>
 
-            <div className="divide-y divide-hairline border-t border-b border-hairline">
+            <div className=" ">
               <div className="py-6">
                 <div className="flex items-start gap-3 mb-3">
                   <div className="p-2 bg-soft-cloud rounded-full">
@@ -176,7 +176,7 @@ export default function CookiePolicyPage() {
             <p className="text-mute mb-4">
               Some cookies are placed by third-party services that appear on our pages. We use:
             </p>
-            <div className="bg-card border border-hairline p-6">
+            <div className="bg-card shadow-surface p-6">
               <ul className="space-y-3 text-sm text-mute">
                 <li className="flex items-start gap-2">
                   <span className="text-ink mt-0.5">•</span>
@@ -256,17 +256,17 @@ export default function CookiePolicyPage() {
 
           <section>
             <h2 className="text-xl font-semibold text-ink mb-4">Cookie Lifespan</h2>
-            <div className="bg-card border border-hairline p-6">
+            <div className="bg-card shadow-surface p-6">
               <div className="space-y-3 text-sm">
-                <div className="flex justify-between items-center pb-3 border-b border-hairline">
+                <div className="flex justify-between items-center pb-3  ">
                   <span className="text-ink font-medium">Session Cookies</span>
                   <span className="text-mute">Deleted when you close browser</span>
                 </div>
-                <div className="flex justify-between items-center pb-3 border-b border-hairline">
+                <div className="flex justify-between items-center pb-3  ">
                   <span className="text-ink font-medium">Authentication Cookies</span>
                   <span className="text-mute">30 days</span>
                 </div>
-                <div className="flex justify-between items-center pb-3 border-b border-hairline">
+                <div className="flex justify-between items-center pb-3  ">
                   <span className="text-ink font-medium">Preference Cookies</span>
                   <span className="text-mute">1 year</span>
                 </div>

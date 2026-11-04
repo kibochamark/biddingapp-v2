@@ -179,7 +179,7 @@ export default function BidsTable() {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-hairline">
+            <tbody className=" ">
               {filteredBids.map((bid) => (
                 <tr key={bid.id} className="hover:bg-soft-cloud/60 transition-colors">
                   <td className="px-6 py-4">

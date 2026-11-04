@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import {
@@ -37,7 +37,7 @@ interface BidPaymentModalProps {
     name: string;
     email: string;
   };
-  auction_id:string
+  auction_id: string;
 }
 
 interface BidFormValues {
@@ -45,7 +45,7 @@ interface BidFormValues {
   // the lowest unique bid, so they must be allowed to differ.
   bidAmounts: string[];
   acceptTerms: boolean;
-  auctionId:string
+  auctionId: string;
 }
 
 const bidAmountSchema = Yup.string()
@@ -72,7 +72,7 @@ const validationSchema = Yup.object({
         if (!arr) return true;
         const values = arr.filter((v): v is string => !!v);
         return new Set(values).size === values.length;
-      }
+      },
     )
     .required(),
   acceptTerms: Yup.boolean()
@@ -109,6 +109,17 @@ export default function BidPaymentModal({
     totalAmount: number;
   } | null>(null);
 
+  // One idempotency key per "attempt" at placing this bid — reused for every
+  // retry of the same attempt (a double-click, a flaky network causing a
+  // resubmit) so Stripe returns the *same* PaymentIntent instead of creating
+  // a second one, which is how a single bid ends up charged twice. A fresh
+  // key is only minted the next time the modal is opened for a new attempt.
+  const idempotencyKeyRef = useRef<string | null>(null);
+  // Synchronous re-entry lock — belt-and-suspenders alongside the
+  // isCreatingIntent state, which has a small window between click and
+  // re-render where a second click could still slip through.
+  const isSubmittingRef = useRef(false);
+
   // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
@@ -116,18 +127,29 @@ export default function BidPaymentModal({
       setClientSecret(null);
       setError(null);
       setBidData(null);
+      idempotencyKeyRef.current = null;
+      isSubmittingRef.current = false;
     }
   }, [isOpen]);
 
   const initialValues: BidFormValues = {
     bidAmounts: [""],
     acceptTerms: false,
-    auctionId: auction_id
+    auctionId: auction_id,
   };
 
   const handleFormSubmit = async (values: BidFormValues) => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     setIsCreatingIntent(true);
     setError(null);
+
+    if (!idempotencyKeyRef.current) {
+      idempotencyKeyRef.current =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : `bid-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
 
     const bidAmounts = values.bidAmounts.map((amount) => parseFloat(amount));
     const totalAmount = bidAmounts.length * biddingFee;
@@ -142,7 +164,8 @@ export default function BidPaymentModal({
         bidderId: user.id,
         bidderName: user.name,
         bidderEmail: user.email,
-        auctionId: auction_id
+        auctionId: auction_id,
+        idempotencyKey: idempotencyKeyRef.current,
       });
 
       if (result.error) {
@@ -158,9 +181,12 @@ export default function BidPaymentModal({
         setStep("payment");
       }
     } catch (err: any) {
-      setError(err.message || "Failed to initialize payment. Please try again.");
+      setError(
+        err.message || "Failed to initialize payment. Please try again.",
+      );
     } finally {
       setIsCreatingIntent(false);
+      isSubmittingRef.current = false;
     }
   };
 
@@ -187,9 +213,7 @@ export default function BidPaymentModal({
               </DialogTitle>
               <DialogDescription>
                 Enter your bid amount for{" "}
-                <span className="font-semibold text-ink">
-                  {productTitle}
-                </span>
+                <span className="font-semibold text-ink">{productTitle}</span>
               </DialogDescription>
             </DialogHeader>
 
@@ -215,7 +239,10 @@ export default function BidPaymentModal({
                           onClick={() =>
                             setFieldValue(
                               "bidAmounts",
-                              resizeBidAmounts(values.bidAmounts, Math.max(1, entryCount - 1))
+                              resizeBidAmounts(
+                                values.bidAmounts,
+                                Math.max(1, entryCount - 1),
+                              ),
                             )
                           }
                           disabled={entryCount <= 1 || isCreatingIntent}
@@ -231,7 +258,10 @@ export default function BidPaymentModal({
                           onClick={() =>
                             setFieldValue(
                               "bidAmounts",
-                              resizeBidAmounts(values.bidAmounts, Math.min(100, entryCount + 1))
+                              resizeBidAmounts(
+                                values.bidAmounts,
+                                Math.min(100, entryCount + 1),
+                              ),
                             )
                           }
                           disabled={entryCount >= 100 || isCreatingIntent}
@@ -249,14 +279,17 @@ export default function BidPaymentModal({
                           key={count}
                           type="button"
                           onClick={() =>
-                            setFieldValue("bidAmounts", resizeBidAmounts(values.bidAmounts, count))
+                            setFieldValue(
+                              "bidAmounts",
+                              resizeBidAmounts(values.bidAmounts, count),
+                            )
                           }
                           disabled={isCreatingIntent}
                           className={cn(
                             "h-10 rounded-full border text-xs font-medium transition-colors disabled:opacity-50",
                             entryCount === count
                               ? "border-ink bg-ink text-background"
-                              : "border-hairline hover:bg-soft-cloud text-ink"
+                              : "border-hairline hover:bg-soft-cloud text-ink",
                           )}
                         >
                           {count}x
@@ -267,7 +300,8 @@ export default function BidPaymentModal({
                     {/* Per-entry bid amounts */}
                     <div className="space-y-3">
                       <label className="block text-sm font-medium text-ink">
-                        Your Bid Amount{entryCount > 1 ? "s" : ""} <span className="text-sale">*</span>
+                        Your Bid Amount{entryCount > 1 ? "s" : ""}{" "}
+                        <span className="text-sale">*</span>
                       </label>
                       {values.bidAmounts.map((_, index) => (
                         <div key={index}>
@@ -295,7 +329,9 @@ export default function BidPaymentModal({
                                 onClick={() =>
                                   setFieldValue(
                                     "bidAmounts",
-                                    values.bidAmounts.filter((_, i) => i !== index)
+                                    values.bidAmounts.filter(
+                                      (_, i) => i !== index,
+                                    ),
                                   )
                                 }
                                 disabled={isCreatingIntent}
@@ -327,12 +363,13 @@ export default function BidPaymentModal({
                         </div>
                       )}
                       <p className="text-xs text-mute">
-                        Lowest unique bid wins — each entry needs its own amount.
+                        Lowest unique bid wins — each entry needs its own
+                        amount.
                       </p>
                     </div>
 
                     {/* Cost Summary */}
-                    <div className="py-4 border-y border-hairline space-y-2">
+                    <div className="py-4 space-y-2">
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-mute">
                           Entry Fee ({entryCount}x {formatPrice(biddingFee)})
@@ -364,7 +401,10 @@ export default function BidPaymentModal({
                         />
                         <p className="text-xs text-mute">
                           I agree to the{" "}
-                          <a href="/terms" className="text-ink underline underline-offset-4">
+                          <a
+                            href="/terms"
+                            className="text-ink underline underline-offset-4"
+                          >
                             Terms
                           </a>{" "}
                           and understand that entry fees are non-refundable.
@@ -421,10 +461,12 @@ export default function BidPaymentModal({
                 Complete Payment
               </DialogTitle>
               <DialogDescription>
-                {bidData.bidAmounts.length} {bidData.bidAmounts.length === 1 ? "entry" : "entries"}
+                {bidData.bidAmounts.length}{" "}
+                {bidData.bidAmounts.length === 1 ? "entry" : "entries"}
                 {bidData.bidAmounts.length === 1 ? (
                   <>
-                    {" "}for{" "}
+                    {" "}
+                    for{" "}
                     <span className="font-semibold text-ink">
                       {formatPrice(bidData.bidAmounts[0])}
                     </span>{" "}
@@ -432,7 +474,8 @@ export default function BidPaymentModal({
                   </>
                 ) : (
                   <>
-                    {" "}with bids from{" "}
+                    {" "}
+                    with bids from{" "}
                     <span className="font-semibold text-ink">
                       {formatPrice(Math.min(...bidData.bidAmounts))}
                     </span>{" "}
@@ -463,6 +506,11 @@ export default function BidPaymentModal({
                 setStep("form");
                 setClientSecret(null);
                 setError(null);
+                // Going back means the next submit is a fresh attempt (the
+                // user may change amounts/entry count) — a new key is
+                // required or Stripe will reject it as a param mismatch
+                // against the first attempt's cached idempotent response.
+                idempotencyKeyRef.current = null;
               }}
               className="w-full py-2 text-sm text-mute hover:text-ink transition-colors"
             >

@@ -166,7 +166,7 @@ export default function CreateProductForm() {
 
       {/* Step 1: Product Details Form */}
       {currentStep === 1 && (
-        <div className="border border-hairline p-6">
+        <div className="shadow-surface p-6">
           <h2 className="text-xl font-bold mb-6 text-ink">Product Information</h2>
           <Formik
             initialValues={initialValues}
@@ -412,7 +412,7 @@ export default function CreateProductForm() {
 
       {/* Step 2: Image Upload */}
       {currentStep === 2 && createdProductId && (
-        <div className="border border-hairline p-6">
+        <div className="shadow-surface p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-ink">Upload Product Images</h2>
             <button

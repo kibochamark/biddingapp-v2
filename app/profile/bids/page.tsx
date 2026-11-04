@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { fetchUserBids } from "@/lib/api/bids";
 import MyBidsSection from "@/components/profile/my-bids-section";
 
+export const dynamic = "force-dynamic";
+
 export default async function BidsPage() {
   const { isAuthenticated, getUser } = getKindeServerSession();
 

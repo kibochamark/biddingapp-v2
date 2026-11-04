@@ -70,6 +70,11 @@ export interface Account {
   id: string;
   kindeId: string;
   email?: string;
+  fullName?: string;
+  status?: "ACTIVE" | "SUSPENDED" | "TERMINATED";
+  kycStatus?: KycStatus;
+  totalBids?: number;
+  suspensionReason?: string;
   createdAt: Date;
   updatedAt: Date;
 }
