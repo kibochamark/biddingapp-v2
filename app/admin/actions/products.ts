@@ -96,7 +96,7 @@ export async function uploadProductImages(productId: string, formData: FormData)
 
     const accessToken = await getAccessTokenRaw();
 
-    console.log(formData)
+    // console.log(formData)
 
     const response = await fetch(`${API_URL}/upload/product-images/${productId}`, {
       method: "POST",

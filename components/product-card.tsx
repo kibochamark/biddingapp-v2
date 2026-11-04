@@ -9,27 +9,35 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  console.log(product,"prod")
   // convert the date strings to Date objects
   let product_endDate= new Date(product.endDate);
   const timeRemaining = formatTimeRemaining(product_endDate);
-  const isEndingSoon = product_endDate.getTime() - new Date().getTime() < 24 * 60 * 60 * 1000;
+  const auctionStatus = product.auctions?.[0]?.status;
+  const isEnded =
+    product_endDate.getTime() - new Date().getTime() <= 0 ||
+    auctionStatus === "ENDED" ||
+    auctionStatus === "WINNER_DETERMINED";
+  const isEndingSoon =
+    !isEnded && product_endDate.getTime() - new Date().getTime() < 24 * 60 * 60 * 1000;
 
-  // Single badge — priority: ENDING_SOON > HIGH_DEMAND > condition
+  // Single badge — priority: ENDED > ENDING_SOON > HIGH_DEMAND > condition
   const bidsCount = product.auctions?.length > 0 ? product.auctions[0].totalBidsCount : 0;
   const isHighDemand = bidsCount > 10;
-  const badgeLabel = isEndingSoon
+  const badgeLabel = isEnded
+    ? "Ended"
+    : isEndingSoon
     ? "Ending Soon"
     : isHighDemand
     ? "High Demand"
     : formatCondition(product.condition);
-  const badgeClass = isEndingSoon
+  const badgeClass = isEnded
+    ? "bg-muted text-muted-foreground"
+    : isEndingSoon
     ? "bg-destructive text-white"
     : isHighDemand
     ? "bg-purple-500 text-white"
     : getConditionColor(product.condition);
 
-  console.log("Rendering ProductCard for:", product.images[0]);
   const imageSrc =
     Array.isArray(product.images) &&
       product.images.length > 0 &&

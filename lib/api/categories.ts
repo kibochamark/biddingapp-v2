@@ -16,6 +16,7 @@ export async function fetchCategories(): Promise<Category[]> {
       "/categories",
       { tags: [CATEGORY_TAGS.all] }
     );
+    console.log("Fetched categories:", data);
     return data ?? [];
   } catch (error) {
     console.error("Failed to fetch categories:", error);

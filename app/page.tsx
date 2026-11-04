@@ -105,7 +105,7 @@ export default function Home() {
       {/* New Arrivals */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <Suspense fallback={<ProductsGridSkeleton count={8} />}>
-          <NewArrivalsSection />
+          {/* <NewArrivalsSection /> */}
         </Suspense>
       </section>
 

@@ -29,7 +29,7 @@ export default async function AdminLayout({
   // Check if user has admin access
   const adminAccess = await getPermission("admin:access");
 
-  console.log("Admin Access:", allowedPermissions);
+  // console.log("Admin Access:", allowedPermissions);
 
   if (!adminAccess?.isGranted) {
     redirect("/"); // Redirect to home if not admin

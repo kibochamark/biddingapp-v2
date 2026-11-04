@@ -20,7 +20,7 @@ export default async function ProductsPage({searchParams}: {searchParams: Promis
   console.log("Search Params:", params);
   const products = await getAllProducts(params?.next)?? [];
 
-  console.log("Products fetched:", products);
+  // console.log("Products fetched:", products);
 
   return (
     <div className="space-y-6">
